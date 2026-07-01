@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Sửa sản phẩm thanh lý</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+<div class="menu">
+    <a href="index.html">Trang chủ</a>
+    <a href="add-product.html">Đăng sản phẩm</a>
+    <a href="my-products.html">Sản phẩm của tôi</a>
+</div>
+</nav>
+<div class="container">
+    <h1>Sửa sản phẩm thanh lý</h1>
+
+    <form id="editProductForm" enctype="multipart/form-data">
+        <input type="hidden" id="product_id" name="product_id">
+
+        <div class="form-group">
+            <label for="title">Tên sản phẩm</label>
+            <input type="text" id="title" name="title" required maxlength="255">
+        </div>
+
+        <div class="form-group">
+            <label for="category_id">Danh mục</label>
+            <select id="category_id" name="category_id" required>
+                <option value="">-- Chọn danh mục --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Giá bán (VNĐ)</label>
+            <input type="number" id="price" name="price" min="0" step="1000" required>
+        </div>
+
+        <div class="form-group">
+            <label for="condition_status">Tình trạng</label>
+            <select id="condition_status" name="condition_status">
+                <option value="Mới">Mới</option>
+                <option value="Like new">Like new</option>
+                <option value="Đã qua sử dụng">Đã qua sử dụng</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Trạng thái đăng bán</label>
+            <select id="status" name="status">
+                <option value="Đang bán">Đang bán</option>
+                <option value="Đã bán">Đã bán</option>
+                <option value="Đã ẩn">Đã ẩn</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Mô tả sản phẩm</label>
+            <textarea id="description" name="description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Đổi ảnh sản phẩm (bỏ trống nếu giữ ảnh cũ)</label>
+            <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
+            <img id="previewImg" class="preview-img" style="display:none">
+        </div>
+
+        <button type="submit" class="btn">Lưu thay đổi</button>
+        <a href="my-products.html" class="btn btn-secondary" style="margin-left:8px; text-decoration:none;">Hủy</a>
+        <div id="message" class="message"></div>
+    </form>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8080/';
+const params = new URLSearchParams(window.location.search);
+const productId = params.get('id');
+
+if (!productId) {
+    alert('Thiếu mã sản phẩm.');
+    window.location.href = 'my-products.html';
+}
+
+document.getElementById('product_id').value = productId;
+
+fetch(`${API_BASE}/categories.php`)
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            const select = document.getElementById('category_id');
+            res.data.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.id;
+                opt.textContent = cat.name;
+                select.appendChild(opt);
+            });
+        }
+        return fetch(`${API_BASE}/my-products.php`, { credentials: 'include' });
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            const product = res.data.find(p => String(p.id) === String(productId));
+            if (product) {
+                document.getElementById('title').value = product.title;
+                document.getElementById('price').value = product.price;
+                document.getElementById('condition_status').value = product.condition_status;
+                document.getElementById('status').value = product.status;
+                if (product.image) {
+                    const preview = document.getElementById('previewImg');
+                    preview.src = '/' + product.image;
+                    preview.style.display = 'block';
+                }
+            }
+        }
+    });
+
+document.getElementById('image').addEventListener('change', function () {
+    const file = this.files[0];
+    const preview = document.getElementById('previewImg');
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+    }
+});
+
+document.getElementById('editProductForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const messageBox = document.getElementById('message');
+    messageBox.className = 'message';
+
+    const formData = new FormData(this);
+
+    try {
+        const res = await fetch(`${API_BASE}/update.php`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+        const data = await res.json();
+
+        messageBox.classList.add(data.success ? 'success' : 'error');
+        messageBox.textContent = data.message;
+    } catch (err) {
+        messageBox.classList.add('error');
+        messageBox.textContent = 'Có lỗi xảy ra, vui lòng thử lại.';
+    }
+});
+if(data.success){
+    alert("Cập nhật thành công!");
+    window.location.href = "my-products.html";
+}
+</script>
+</body>
+</html>

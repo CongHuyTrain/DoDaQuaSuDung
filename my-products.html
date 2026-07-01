@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Danh sách sản phẩm của tôi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+<div class="menu">
+    <a href="index.html" class="btn">Trang chủ</a>
+    <a href="add-product.html" class="btn">Đăng sản phẩm</a>
+    <a href="my-products.html" class="btn">Sản phẩm của tôi</a>
+</div>
+</nav>
+<div class="container" style="max-width: 960px;">
+    <h1>Danh sách sản phẩm của tôi</h1>
+    <a href="add-product.html" class="btn">+ Đăng sản phẩm mới</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="productList">
+            <tr><td colspan="6">Đang tải...</td></tr>
+        </tbody>
+    </table>
+
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8080/';
+
+const statusClassMap = {
+    'Đang bán': 'status-active',
+    'Đã bán': 'status-sold',
+    'Đã ẩn': 'status-hidden'
+};
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString('vi-VN') + ' đ';
+}
+
+async function loadProducts() {
+    const tbody = document.getElementById('productList');
+    try {
+        const res = await fetch(`${API_BASE}/my-products.php`, { credentials: 'include' });
+        const data = await res.json();
+
+        if (!data.success) {
+            tbody.innerHTML = `<tr><td colspan="6">${data.message}</td></tr>`;
+            return;
+        }
+
+        if (data.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6">Bạn chưa đăng sản phẩm nào.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.data.map(p => `
+            <tr data-id="${p.id}">
+                <td>${p.image ? `<img src="/${p.image}" alt="">` : '—'}</td>
+                <td>${p.title}</td>
+                <td>${p.category_name}</td>
+                <td>${formatCurrency(p.price)}</td>
+                <td><span class="status-tag ${statusClassMap[p.status] || ''}">${p.status}</span></td>
+                <td class="actions">
+                    <a href="edit-product.html?id=${p.id}">Sửa</a>
+                    <button class="delete" data-id="${p.id}">Xóa</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6">Không thể tải danh sách sản phẩm.</td></tr>`;
+    }
+}
+
+document.getElementById('productList').addEventListener('click', async function (e) {
+    if (!e.target.classList.contains('delete')) return;
+
+    const id = e.target.dataset.id;
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+
+    const messageBox = document.getElementById('message');
+    try {
+        const res = await fetch(`${API_BASE}/delete.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ product_id: id })
+        });
+        const data = await res.json();
+
+        messageBox.className = 'message ' + (data.success ? 'success' : 'error');
+        messageBox.textContent = data.message;
+
+        if (data.success) loadProducts();
+    } catch (err) {
+        messageBox.className = 'message error';
+        messageBox.textContent = 'Có lỗi xảy ra, vui lòng thử lại.';
+    }
+});
+
+loadProducts();
+</script>
+</body>
+</html>
