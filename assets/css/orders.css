@@ -1,0 +1,80 @@
+body{
+    background:#f5f6fa;
+}
+
+.card{
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.badge{
+    padding:10px 16px;
+    border-radius:30px;
+    font-size:14px;
+}
+
+.btn{
+    border-radius:30px;
+}
+
+img{
+    height:120px;
+    object-fit:cover;
+}
+
+body{
+    background:#f5f6fa;
+}
+
+.card{
+    border:none;
+    transition:.25s;
+}
+
+.card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+}
+
+img{
+
+    height:110px;
+
+    object-fit:cover;
+
+}
+
+.badge{
+
+    font-size:14px;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+}
+
+.btn{
+
+    border-radius:30px;
+
+}
+
+h5{
+
+    font-weight:600;
+
+}
+
+.container{
+
+    max-width:1350px;
+
+}
