@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
-$dbname = "he_thong_xac_thuc"; // Thay bằng tên database của bạn
+$dbname = "he_thong_xac_thuc";
 $username = "root";               
 $password = "";                   
 
