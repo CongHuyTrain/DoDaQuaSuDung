@@ -1,0 +1,249 @@
+/* Toàn bộ thiết lập chung */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Khung bao ngoài */
+.auth-wrapper {
+    width: 100%;
+    max-width: 500px; /* Tăng nhẹ kích thước chiều ngang để vừa giao diện ngang mới */
+    margin: 20px auto;
+}
+
+/* Các khung chức năng */
+.auth-card {
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.auth-card.active {
+    display: block;
+}
+
+/* Giao diện tiêu đề chuẩn */
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header.title-left {
+    text-align: left;
+}
+
+.auth-header h2 {
+    color: #333333;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* Dành riêng cho khung thông báo xanh nhạt ở trang Quên mật khẩu */
+.info-alert {
+    background-color: #e3f2fd;
+    border: 1px solid #cce5ff;
+    color: #1e62a1;
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* Khung nhập liệu */
+.auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #444444;
+    margin-bottom: 8px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    outline: none;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.25);
+}
+
+/* Căn label sang bên trái nằm ngang so với ô Input (cho Quên mật khẩu) */
+@media (min-width: 400px) {
+    .inline-field {
+        display: flex;
+        align-items: center;
+    }
+    .inline-field label {
+        width: 120px;
+        text-align: right;
+        margin-bottom: 0;
+        padding-right: 20px;
+        flex-shrink: 0;
+    }
+    .inline-field input {
+        flex-grow: 1;
+    }
+}
+
+.form-group select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.dob-group {
+    display: flex;
+    gap: 10px;
+}
+
+.dob-group select {
+    flex: 1;
+    text-align: center;
+    padding-right: 25px;
+    background-position: right 8px center;
+}
+
+/* CSS dành cho phần hiển thị Mã xác nhận dạng đồ họa */
+.captcha-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0 25px 120px; /* Đẩy sang phải để thẳng hàng với ô input */
+    gap: 12px;
+}
+
+@media (max-width: 399px) {
+    .captcha-wrapper {
+        margin-left: 0;
+    }
+}
+
+.captcha-box {
+    background: #ffebee;
+    border: 1px dashed #ffcdd2;
+    padding: 10px 25px;
+    letter-spacing: 5px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #c62828;
+    user-select: none;
+    font-style: italic;
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.02) 75%, transparent 75%, transparent);
+    background-size: 10px 10px;
+}
+
+.btn-refresh-captcha {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #00796b;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-refresh-captcha:hover {
+    transform: rotate(45deg);
+}
+
+.form-actions {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.forgot-link {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Nút bấm hành động */
+.btn-submit {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+/* Nút bấm màu tối cho Quên mật khẩu */
+.btn-submit.btn-dark {
+    background: #222222;
+    max-width: 160px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 4px;
+}
+
+.btn-submit:hover {
+    opacity: 0.95;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #555555;
+}
+
+.auth-footer a {
+    color: #764ba2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
