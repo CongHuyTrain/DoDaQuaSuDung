@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm – Đồ Cũ VN</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Layout 3 cột */
+        .pd-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr 320px;
+            gap: 28px;
+            padding: 24px 0 60px;
+            align-items: start;
+        }
+        /* Gallery */
+        .pd-gallery { display: flex; flex-direction: column; gap: 10px; }
+        .pd-main-img {
+            width: 100%; aspect-ratio: 4/3; object-fit: cover;
+            border-radius: 12px; background: #f1f5f9; display: block;
+        }
+        .pd-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pd-thumb {
+            width: 70px; height: 70px; object-fit: cover;
+            border-radius: 8px; cursor: pointer;
+            border: 2px solid transparent; transition: border-color .2s;
+        }
+        .pd-thumb.active, .pd-thumb:hover { border-color: #2563eb; }
+
+        /* Mô tả */
+        .pd-desc { display: flex; flex-direction: column; gap: 16px; }
+        .pd-title { font-size: 1.4rem; font-weight: 800; line-height: 1.3; }
+        .pd-box {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 10px; overflow: hidden;
+        }
+        .pd-box-head {
+            background: #f8fafc; padding: 12px 16px;
+            font-weight: 700; font-size: 0.92rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .pd-box-body { padding: 16px; }
+        .pd-specs { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .pd-specs tr:nth-child(even) { background: #f8fafc; }
+        .pd-specs td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; }
+        .pd-specs td:first-child { color: #64748b; width: 38%; font-weight: 500; }
+        .pd-specs td:last-child { font-weight: 600; }
+        .pd-desc-text {
+            white-space: pre-wrap; font-size: 0.92rem;
+            line-height: 1.85; color: #1e293b;
+        }
+
+        /* Sidebar */
+        .pd-sidebar {
+            display: flex; flex-direction: column; gap: 14px;
+            position: sticky; top: 80px;
+        }
+        .pd-price-box {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 20px;
+        }
+        .pd-price-label { font-size: 0.8rem; color: #64748b; margin-bottom: 4px; }
+        .pd-price-val {
+            font-size: 2rem; font-weight: 900;
+            color: #f97316; line-height: 1; margin-bottom: 18px;
+        }
+        .pd-btn-buy {
+            display: block; width: 100%; padding: 13px;
+            background: #f97316; color: #fff; border: none;
+            border-radius: 10px; font-size: 1rem; font-weight: 700;
+            text-align: center; cursor: pointer; text-decoration: none;
+            transition: background .2s;
+        }
+        .pd-btn-buy:hover { background: #ea6c00; }
+        .pd-btn-save {
+            display: block; width: 100%; padding: 11px;
+            background: #fff; color: #2563eb;
+            border: 2px solid #2563eb; border-radius: 10px;
+            font-size: 0.95rem; font-weight: 600;
+            text-align: center; cursor: pointer; margin-top: 8px;
+            transition: all .2s;
+        }
+        .pd-btn-save:hover { background: #2563eb; color: #fff; }
+
+        .pd-seller {
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 18px;
+        }
+        .pd-seller-top {
+            display: flex; gap: 12px; align-items: center;
+            padding-bottom: 14px; margin-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .pd-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: linear-gradient(135deg,#2563eb,#0ea5e9);
+            color: #fff; font-weight: 800; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .pd-seller-name { font-weight: 700; font-size: 0.97rem; }
+        .pd-seller-role { font-size: 0.78rem; color: #64748b; }
+        .pd-seller-row {
+            font-size: 0.875rem; color: #475569;
+            padding: 5px 0; display: flex; gap: 8px;
+        }
+        .pd-seller-row strong { color: #1e293b; }
+
+        .pd-warn {
+            background: #fffbeb; border: 1px solid #fde68a;
+            border-radius: 8px; padding: 13px;
+            font-size: 0.82rem; color: #92400e; line-height: 1.6;
+        }
+
+        /* Condition badge */
+        .pd-badge {
+            display: inline-block; padding: 3px 12px;
+            border-radius: 99px; font-size: 0.8rem; font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .pd-wrap { grid-template-columns: 1fr 300px; }
+            .pd-desc { grid-column: 1 / -1; }
+        }
+        @media (max-width: 600px) {
+            .pd-wrap { grid-template-columns: 1fr; }
+            .pd-sidebar { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..."
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="login.html" class="btn btn-primary" id="nav-auth">Đăng nhập</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" id="bc" style="display:none;">
+        <a href="index.html">Trang chủ</a> ›
+        <a href="products.html">Sản phẩm</a> ›
+        <a href="#" id="bc-cat"></a> ›
+        <span id="bc-title"></span>
+    </nav>
+
+    <!-- Loading -->
+    <div id="el-loading" class="loading" style="padding:100px 0;">
+        <div class="spinner"></div>
+        <p>Đang tải sản phẩm...</p>
+    </div>
+
+    <!-- Not found -->
+    <div id="el-notfound" style="display:none; text-align:center; padding:80px 0;">
+        <div style="font-size:3rem;">😕</div>
+        <p style="margin-top:12px; color:#64748b;">Sản phẩm không tồn tại hoặc đã bị ẩn.</p>
+        <a href="products.html" class="btn btn-primary" style="margin-top:20px; display:inline-block;">← Quay lại</a>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div id="el-main" style="display:none;">
+        <div class="pd-wrap">
+
+            <!-- CỘT 1: GALLERY -->
+            <div class="pd-gallery">
+                <img id="pd-img" class="pd-main-img" src="" alt=""
+                    onerror="this.src='';this.style.background='#f1f5f9';this.alt='Không có ảnh'">
+                <div class="pd-thumbs" id="pd-thumbs"></div>
+            </div>
+
+            <!-- CỘT 2: MÔ TẢ -->
+            <div class="pd-desc">
+                <div>
+                    <span class="pd-badge" id="pd-badge"></span>
+                    <h1 class="pd-title" id="pd-title"></h1>
+                </div>
+
+                <!-- Thông tin nhanh -->
+                <div class="pd-box">
+                    <div class="pd-box-head">📋 Thông tin sản phẩm</div>
+                    <div class="pd-box-body">
+                        <table class="pd-specs">
+                            <tr><td>Tình trạng</td><td id="sp-condition"></td></tr>
+                            <tr><td>Danh mục</td><td id="sp-category"></td></tr>
+                            <tr><td>Địa điểm</td><td id="sp-location"></td></tr>
+                            <tr><td>Ngày đăng</td><td id="sp-date"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mô tả chi tiết -->
+                <div class="pd-box" id="pd-desc-box">
+                    <div class="pd-box-head">📝 Mô tả chi tiết</div>
+                    <div class="pd-box-body">
+                        <div class="pd-desc-text" id="pd-desc-text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT 3: SIDEBAR -->
+            <div class="pd-sidebar">
+                <div class="pd-price-box">
+                    <div class="pd-price-label">Giá bán</div>
+                    <div class="pd-price-val" id="pd-price"></div>
+                    <div id="pd-action"></div>
+                    <button class="pd-btn-save" onclick="this.textContent=this.textContent.includes('🤍')?'❤️ Đã lưu':'🤍 Lưu tin'">
+                        🤍 Lưu tin
+                    </button>
+                </div>
+
+                <div class="pd-seller">
+                    <div class="pd-seller-top">
+                        <div class="pd-avatar" id="pd-avatar">?</div>
+                        <div>
+                            <div class="pd-seller-name" id="pd-seller-name"></div>
+                            <div class="pd-seller-role">Người bán</div>
+                        </div>
+                    </div>
+                    <div class="pd-seller-row" id="pd-phone-row" style="display:none;">
+                        📞&nbsp;<strong id="pd-phone"></strong>
+                    </div>
+                    <div class="pd-seller-row" id="pd-email-row" style="display:none;">
+                        ✉️&nbsp;<strong id="pd-email"></strong>
+                    </div>
+                    <div class="pd-seller-row">
+                        📅&nbsp;Đăng ngày <strong id="pd-date2"></strong>
+                    </div>
+                </div>
+
+                <div class="pd-warn">
+                    ⚠️ <strong>Lưu ý:</strong> Gặp mặt kiểm tra sản phẩm trước khi thanh toán. Không chuyển tiền trước khi nhận hàng.
+                </div>
+            </div>
+        </div>
+
+        <!-- Sản phẩm liên quan -->
+        <div id="pd-related" style="display:none; padding-bottom:48px;">
+            <div class="section-title">🔗 Sản phẩm tương tự</div>
+            <div class="product-grid" id="pd-related-grid"></div>
+        </div>
+    </div>
+
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+const COND = {
+    new:      { label: 'Mới',     cls: 'badge-new' },
+    like_new: { label: 'Như mới', cls: 'badge-like-new' },
+    good:     { label: 'Còn tốt', cls: 'badge-good' },
+    fair:     { label: 'Khá cũ',  cls: 'badge-fair' },
+};
+
+function fmtDate(s) {
+    if (!s) return '';
+    const d = new Date(s);
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function goSearch() {
+    const q = document.getElementById('header-search-input').value.trim();
+    if (q) location.href = `search.html?q=${encodeURIComponent(q)}`;
+}
+
+// Auth
+const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+if (user) {
+    const btn = document.getElementById('nav-auth');
+    btn.textContent = 'Đăng xuất';
+    btn.href = '#';
+    btn.onclick = () => { sessionStorage.clear(); location.reload(); };
+}
+
+// Gallery
+let imgs = [], imgIdx = 0;
+
+function showImg(i) {
+    imgIdx = i;
+    document.getElementById('pd-img').src = imgs[i];
+    document.querySelectorAll('.pd-thumb').forEach((t, j) =>
+        t.classList.toggle('active', j === i)
+    );
+}
+
+// Lấy ID từ URL
+const pid = parseInt(new URLSearchParams(location.search).get('id')) || 0;
+
+if (!pid) {
+    document.getElementById('el-loading').style.display = 'none';
+    document.getElementById('el-notfound').style.display = 'block';
+} else {
+    fetch('api/product-detail.php?id=' + pid)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('el-loading').style.display = 'none';
+
+            if (!data.success) {
+                document.getElementById('el-notfound').style.display = 'block';
+                return;
+            }
+
+            const p = data.data;
+            document.title = p.title + ' – Đồ Cũ VN';
+
+            // Breadcrumb
+            document.getElementById('bc').style.display = 'flex';
+            document.getElementById('bc-cat').textContent = p.category_name;
+            document.getElementById('bc-cat').href = 'products.html?category_id=' + p.category_id;
+            document.getElementById('bc-title').textContent = p.title;
+
+            // Gallery
+            imgs = (data.images && data.images.length) ? data.images : (p.image ? [p.image] : []);
+            if (imgs.length) {
+                document.getElementById('pd-img').src = imgs[0];
+                if (imgs.length > 1) {
+                    document.getElementById('pd-thumbs').innerHTML = imgs.map((url, i) =>
+                        `<img class="pd-thumb ${i===0?'active':''}" src="${url}" onclick="showImg(${i})">`
+                    ).join('');
+                }
+            } else {
+                document.getElementById('pd-img').style.background = '#f1f5f9';
+            }
+
+            // Badge + tiêu đề
+            const cond = COND[p.condition_item] || { label: p.condition_item, cls: '' };
+            const badge = document.getElementById('pd-badge');
+            badge.textContent = cond.label;
+            badge.className = 'pd-badge badge ' + cond.cls;
+            document.getElementById('pd-title').textContent = p.title;
+
+            // Specs
+            document.getElementById('sp-condition').textContent = cond.label;
+            document.getElementById('sp-category').textContent  = p.category_name;
+            document.getElementById('sp-location').textContent  = p.location || 'Không xác định';
+            document.getElementById('sp-date').textContent      = fmtDate(p.created_at);
+
+            // Mô tả
+            if (p.description) {
+                document.getElementById('pd-desc-text').textContent = p.description;
+            } else {
+                document.getElementById('pd-desc-box').style.display = 'none';
+            }
+
+            // Giá
+            document.getElementById('pd-price').textContent = p.price_formatted;
+
+            // Nút mua
+            document.getElementById('pd-action').innerHTML = user
+                ? `<a href="order/create.html?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
+                : `<a href="login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+
+            // Người bán
+            document.getElementById('pd-seller-name').textContent = p.seller_name || '';
+            document.getElementById('pd-avatar').textContent = (p.seller_name || '?').charAt(0).toUpperCase();
+            document.getElementById('pd-date2').textContent = fmtDate(p.created_at);
+            if (p.seller_phone) {
+                document.getElementById('pd-phone').textContent = p.seller_phone;
+                document.getElementById('pd-phone-row').style.display = 'flex';
+            }
+            if (p.seller_email) {
+                document.getElementById('pd-email').textContent = p.seller_email;
+                document.getElementById('pd-email-row').style.display = 'flex';
+            }
+
+            // Hiện nội dung
+            document.getElementById('el-main').style.display = 'block';
+
+            // Sản phẩm liên quan
+            if (data.related && data.related.length) {
+                document.getElementById('pd-related').style.display = 'block';
+                document.getElementById('pd-related-grid').innerHTML =
+                    data.related.map(renderProductCard).join('');
+            }
+        })
+        .catch(err => {
+            document.getElementById('el-loading').style.display = 'none';
+            document.getElementById('el-notfound').style.display = 'block';
+            console.error(err);
+        });
+}
+</script>
+</body>
+</html>

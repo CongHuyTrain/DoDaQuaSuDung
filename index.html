@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đồ Cũ VN – Mua bán đồ đã qua sử dụng</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..." autocomplete="off">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="login.html" class="btn btn-primary" id="nav-auth">Đăng nhập</a>
+        </nav>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <h1>Mua bán đồ đã qua sử dụng</h1>
+        <p>Hàng nghìn sản phẩm chất lượng, giá tốt – từ điện tử đến thời trang</p>
+        <div class="hero-search">
+            <input type="text" id="hero-search-input" placeholder="Bạn đang tìm gì?" autocomplete="off"
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button onclick="goSearch()">🔍 Tìm kiếm</button>
+        </div>
+    </div>
+</section>
+
+<!-- DANH MỤC -->
+<section class="section">
+    <div class="container">
+        <div class="section-title">📂 Danh mục</div>
+        <div class="category-list" id="category-list">
+            <a href="products.html" class="category-chip active">Tất cả</a>
+            <!-- Render động từ API -->
+        </div>
+    </div>
+</section>
+
+<!-- SẢN PHẨM MỚI NHẤT -->
+<section class="section" style="padding-top:0;">
+    <div class="container">
+        <div class="section-title">🆕 Mới đăng gần đây</div>
+        <div class="product-grid" id="product-grid">
+            <div class="loading"><div class="spinner"></div><p>Đang tải sản phẩm...</p></div>
+        </div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+</section>
+
+<script src="assets/js/main.js"></script>
+<script>
+    // Kiểm tra đăng nhập
+    const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+    if (user) {
+        document.getElementById('nav-auth').textContent = 'Đăng xuất';
+        document.getElementById('nav-auth').href = '#';
+        document.getElementById('nav-auth').onclick = () => { sessionStorage.clear(); location.reload(); };
+    }
+
+    // Tìm kiếm
+    function goSearch() {
+        const q = (document.getElementById('hero-search-input').value ||
+                   document.getElementById('header-search-input').value).trim();
+        if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+
+    // Tải danh mục
+    fetch('api/categories.php')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const list = document.getElementById('category-list');
+            data.data.forEach(c => {
+                const a = document.createElement('a');
+                a.href = `products.html?category_id=${c.id}`;
+                a.className = 'category-chip';
+                a.textContent = c.name;
+                list.appendChild(a);
+            });
+        });
+
+    // Tải sản phẩm mới nhất
+    loadProducts('product-grid', 'pagination', { limit: 8 });
+</script>
+</body>
+</html>
