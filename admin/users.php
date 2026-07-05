@@ -1,34 +1,19 @@
 <?php
-
 session_start();
-
 require_once "../config/db.php";
-
 $result = $conn->query("
-
-SELECT *
-
-FROM users
-
-ORDER BY created_at DESC
-
+    SELECT *
+    FROM users
+    ORDER BY created_at DESC
 ");
-
 ?>
-
 <!DOCTYPE html>
-
 <html lang="vi">
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Quản lý người dùng</title>
-
-<link rel="stylesheet" href="../assets/css/admin.css">
-
-<style>
+    <head>
+        <meta charset="UTF-8">
+        <title>Quản lý người dùng</title>
+        <link rel="stylesheet" href="../assets/css/admin.css">
+        <style>
 
 body{
 margin:0;
@@ -75,223 +60,116 @@ object-fit:cover;
 }
 
 .badge{
-
 padding:5px 12px;
-
 border-radius:20px;
-
 color:white;
-
 font-size:13px;
-
 }
 
 .active{
-
 background:#16a34a;
-
 }
 
 .blocked{
-
 background:#dc2626;
-
 }
 
 .btn{
-
 padding:8px 15px;
-
 text-decoration:none;
-
 border-radius:8px;
-
 color:white;
-
 font-weight:bold;
-
 }
-
 .block{
-
 background:#dc2626;
-
 }
-
 .unblock{
-
 background:#16a34a;
-
 }
 
-</style>
-
-</head>
-
+    </style>
+    </head>
 <body>
-
-<div class="container">
-
-<h1>
-
-Quản lý người dùng
-
-</h1>
-
-<table>
-
+    <div class="container">
+    <h1> Quản lý người dùng </h1>
+    <table>
 <tr>
-
-<th>ID</th>
-
-<th>Avatar</th>
-
-<th>Họ tên</th>
-
-<th>Email</th>
-
-<th>SĐT</th>
-
-<th>Vai trò</th>
-
-<th>Trạng thái</th>
-
-<th>Hành động</th>
-
+    <th>ID</th>
+    <th>Avatar</th>
+    <th>Họ tên</th>
+    <th>Email</th>
+    <th>SĐT</th>
+    <th>Vai trò</th>
+    <th>Trạng thái</th>
+    <th>Hành động</th>
 </tr>
-
-<?php
-
-while($u=$result->fetch_assoc()){
-
-?>
-
+    <?php
+    while($u=$result->fetch_assoc()){
+    ?>
 <tr>
-
-<td><?= $u["id"] ?></td>
-
-<td>
-
+    <td><?= $u["id"] ?></td>
+    <td>
+    <?php
+    $avatar = !empty($u["avatar"]) ? $u["avatar"] : "../assets/images/avatar.png";
+    ?>
+    <img src="<?= htmlspecialchars($avatar) ?>">
+    </td>
+    <td>
+    <?= htmlspecialchars($u["fullname"]) ?>
+    </td>
+    <td>
+    <?= htmlspecialchars($u["email"]) ?>
+    </td>
+    <td>
+    <?= htmlspecialchars($u["phone"]) ?>
+    </td>
+    <td>
+    <?= strtoupper($u["role"]) ?>
+    </td>
+    <td>
 <?php
-$avatar = !empty($u["avatar"]) ? $u["avatar"] : "../assets/images/avatar.png";
-?>
-
-<img src="<?= htmlspecialchars($avatar) ?>">
-
-</td>
-
-<td>
-
-<?= htmlspecialchars($u["fullname"]) ?>
-
-</td>
-
-<td>
-
-<?= htmlspecialchars($u["email"]) ?>
-
-</td>
-
-<td>
-
-<?= htmlspecialchars($u["phone"]) ?>
-
-</td>
-
-<td>
-
-<?= strtoupper($u["role"]) ?>
-
-</td>
-
-<td>
-
+    if($u["status"]=="active"){
+ ?>
+    <span class="badge active">
+    ACTIVE
+    </span>
 <?php
-
-if($u["status"]=="active"){
-
+    }else{
 ?>
-
-<span class="badge active">
-
-ACTIVE
-
-</span>
-
+    <span class="badge blocked">
+    BLOCKED
+    </span>
 <?php
-
-}else{
-
+    }
 ?>
-
-<span class="badge blocked">
-
-BLOCKED
-
-</span>
-
-<?php
-
-}
-
-?>
-
-</td>
-
-<td>
-
-<?php
-
-if($u["status"]=="active"){
-
-?>
-
-<a
-
-class="btn block"
-
-href="../api/admin/block-user.php?id=<?= $u["id"] ?>">
-
-Khóa
-
-</a>
-
-<?php
-
-}else{
-
-?>
-
-<a
-
-class="btn unblock"
-
-href="../api/admin/unblock-user.php?id=<?= $u["id"] ?>">
-
-Mở khóa
-
-</a>
-
-<?php
-
-}
-
-?>
-
-</td>
-
+    </td>
+    <td>
+    <?php
+    if($u["status"]=="active"){
+    ?>
+    <a
+    class="btn block"
+    href="../api/admin/block-user.php?id=<?= $u["id"] ?>">
+    Khóa
+    </a>
+    <?php
+    }else{
+    ?>
+    <a
+    class="btn unblock"
+    href="../api/admin/unblock-user.php?id=<?= $u["id"] ?>">
+    Mở khóa
+    </a>
+    <?php
+    }
+    ?>
+    </td>
 </tr>
-
 <?php
-
-}
-
+    }
 ?>
-
-</table>
-
-</div>
-
+        </table>
+    </div>
 </body>
-
 </html>
