@@ -19,7 +19,6 @@ if (strlen($keyword) < 1) {
     exit;
 }
 
-// Xây dựng điều kiện WHERE động
 $where   = "WHERE p.status = 'active' AND (p.title LIKE ? OR p.description LIKE ?)";
 $like    = "%$keyword%";
 $params  = [$like, $like];
@@ -57,7 +56,6 @@ $count_stmt->bind_param($types, ...$params);
 $count_stmt->execute();
 $total = $count_stmt->get_result()->fetch_assoc()['total'];
 
-// Lấy kết quả tìm kiếm (SEARCH LIKE + JOIN)
 $sql = "
     SELECT 
         p.id,
