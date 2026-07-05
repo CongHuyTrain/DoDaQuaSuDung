@@ -1,156 +1,104 @@
 <?php
-session_start();
+    session_start();
 
-require_once "../config/db.php";
+    require_once "../config/db.php";
 
-// Sau này mở khi có login admin
-// if(!isset($_SESSION["admin_id"])) header("Location: login.php");
+    if(!isset($_SESSION["admin_id"])) header("Location: login.php");
 
-$totalUsers = $conn->query("SELECT COUNT(*) total FROM users")->fetch_assoc()['total'];
+    $totalUsers = $conn->query("SELECT COUNT(*) total FROM users")->fetch_assoc()['total'];
 
-$totalProducts = $conn->query("SELECT COUNT(*) total FROM products")->fetch_assoc()['total'];
+    $totalProducts = $conn->query("SELECT COUNT(*) total FROM products")->fetch_assoc()['total'];
 
-$totalOrders = $conn->query("SELECT COUNT(*) total FROM orders")->fetch_assoc()['total'];
+    $totalOrders = $conn->query("SELECT COUNT(*) total FROM orders")->fetch_assoc()['total'];
 
-$totalRevenue = $conn->query("
-SELECT IFNULL(SUM(total_amount),0) total
-FROM orders
-WHERE status='completed'
-")->fetch_assoc()['total'];
+    $totalRevenue = $conn->query("
+        SELECT IFNULL(SUM(total_amount),0) total
+        FROM orders
+        WHERE status='completed'
+    ")->fetch_assoc()['total'];
 
-$newUsers = $conn->query("
-SELECT *
-FROM users
-ORDER BY created_at DESC
-LIMIT 5
-");
+    $newUsers = $conn->query("
+        SELECT *
+        FROM users
+        ORDER BY created_at DESC
+        LIMIT 5
+    ");
 
-$newOrders = $conn->query("
-SELECT
-o.id,
-o.total_amount,
-o.status,
-u.fullname buyer
-FROM orders o
-JOIN users u
-ON o.buyer_id=u.id
-ORDER BY o.created_at DESC
-LIMIT 5
-");
+    $newOrders = $conn->query("
+        SELECT
+        o.id,
+        o.total_amount,
+        o.status,
+        u.fullname buyer
+        FROM orders o
+        JOIN users u
+        ON o.buyer_id=u.id
+        ORDER BY o.created_at DESC
+        LIMIT 5
+    ");
 ?>
 
 <!DOCTYPE html>
-
-<html lang="vi">
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Dashboard Admin</title>
-
-<link rel="stylesheet" href="../assets/css/admin.css">
-
-<style>
-
+    <html lang="vi">
+    <head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <style>
 body{
-
 margin:0;
-
 background:#eef2f7;
-
 font-family:Arial;
-
 }
 
 .wrapper{
-
 display:flex;
-
 }
 
 .sidebar{
-
 width:240px;
-
 background:#1e293b;
-
 min-height:100vh;
-
 color:white;
-
 padding:25px;
-
 }
-
 .sidebar h2{
-
 margin-bottom:30px;
-
 }
-
 .sidebar a{
-
 display:block;
-
 padding:12px;
-
 margin:8px 0;
-
 text-decoration:none;
-
 color:white;
-
 border-radius:8px;
-
 }
-
 .sidebar a:hover{
-
 background:#334155;
-
 }
-
 .content{
-
 flex:1;
-
 padding:35px;
-
 }
 
 .cards{
-
 display:grid;
-
 grid-template-columns:repeat(4,1fr);
-
 gap:20px;
-
 margin-bottom:35px;
-
 }
 
 .card{
-
 background:white;
-
 padding:25px;
-
 border-radius:15px;
-
 box-shadow:0 8px 20px rgba(0,0,0,.06);
-
 }
 
 .card h3{
-
 margin:0;
-
 color:#666;
-
 font-size:15px;
-
 }
 
 .card h1{

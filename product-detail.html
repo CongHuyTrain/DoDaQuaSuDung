@@ -366,7 +366,7 @@ document.querySelector(".pd-specs").appendChild(tr);
             // Nút mua
             document.getElementById('pd-action').innerHTML = user
     ? `<a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
-    : `<a href="pages/login.php?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+    : `<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
 
             // Người bán
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
