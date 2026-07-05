@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug – Product Detail API</title>
+    <style>
+        body { font-family: monospace; padding: 30px; background: #f8fafc; }
+        h2 { color: #1e293b; }
+        .ok  { color: #16a34a; font-weight: bold; }
+        .err { color: #dc2626; font-weight: bold; }
+        pre  { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; }
+        .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        label { font-weight: bold; margin-right: 8px; }
+        input { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; width: 80px; }
+        button { padding: 8px 18px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+    </style>
+</head>
+<body>
+<h2>🔍 Debug API: product-detail.php</h2>
+
+<div class="box">
+    <label>Product ID:</label>
+    <input type="number" id="pid" value="1" min="1">
+    <button onclick="test()">Test API</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+function test() {
+    const id  = document.getElementById('pid').value;
+    const out = document.getElementById('result');
+    out.innerHTML = '<p>Đang gọi API...</p>';
+
+    fetch(`api/product-detail.php?id=${id}`)
+        .then(r => {
+            const status = r.status;
+            return r.text().then(text => ({ status, text }));
+        })
+        .then(({ status, text }) => {
+            let parsed = null;
+            let parseErr = '';
+            try { parsed = JSON.parse(text); } catch(e) { parseErr = e.message; }
+
+            let html = `<div class="box"><b>HTTP Status:</b> <span class="${status === 200 ? 'ok' : 'err'}">${status}</span></div>`;
+
+            if (parseErr) {
+                html += `<div class="box"><b class="err">JSON Parse Error:</b> ${parseErr}</div>`;
+                html += `<div class="box"><b>Raw Response:</b><pre>${escHtml(text)}</pre></div>`;
+            } else if (!parsed.success) {
+                html += `<div class="box"><b class="err">API Error:</b> ${escHtml(parsed.error || 'Unknown')}</div>`;
+                html += `<div class="box"><b>Full Response:</b><pre>${escHtml(JSON.stringify(parsed, null, 2))}</pre></div>`;
+            } else {
+                const p = parsed.data;
+                html += `<div class="box">
+                    <b class="ok">✅ API OK</b><br><br>
+                    <b>ID:</b> ${p.id}<br>
+                    <b>Tiêu đề:</b> ${escHtml(p.title)}<br>
+                    <b>Giá:</b> ${p.price_formatted}<br>
+                    <b>Danh mục:</b> ${escHtml(p.category_name)}<br>
+                    <b>Người bán:</b> ${escHtml(p.seller_name)}<br>
+                    <b>Ảnh (images[]):</b> ${parsed.images.length} ảnh<br>
+                    <b>Sản phẩm liên quan:</b> ${parsed.related.length} sản phẩm<br>
+                    <b>Mô tả (${p.description ? p.description.length : 0} ký tự):</b><br>
+                    <pre style="margin-top:8px;">${escHtml((p.description || '(trống)').substring(0, 300))}...</pre>
+                </div>`;
+                html += `<div class="box"><b>Full JSON:</b><pre>${escHtml(JSON.stringify(parsed, null, 2))}</pre></div>`;
+            }
+
+            out.innerHTML = html;
+        })
+        .catch(err => {
+            out.innerHTML = `<div class="box"><b class="err">Fetch Error:</b> ${err.message}</div>`;
+        });
+}
+
+function escHtml(str) {
+    return String(str || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Tự động test khi load
+window.onload = test;
+</script>
+</body>
+</html>

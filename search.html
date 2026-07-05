@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm kiếm – Đồ Cũ VN</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..."
+                   onkeydown="if(event.key==='Enter') doSearch()">
+            <button class="btn btn-primary" onclick="doSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="login.html" class="btn btn-primary">Đăng nhập</a>
+        </nav>
+    </div>
+</header>
+
+<!-- THANH LỌC -->
+<div class="search-bar-page">
+    <div class="container">
+        <div class="search-row">
+            <input type="text" id="search-input" placeholder="Nhập từ khóa tìm kiếm..."
+                   onkeydown="if(event.key==='Enter') doSearch()">
+            <button class="btn btn-primary" onclick="doSearch()" style="border-radius:8px;">🔍 Tìm</button>
+        </div>
+        <div class="filter-row">
+            <select id="filter-category">
+                <option value="">-- Tất cả danh mục --</option>
+                <!-- Render động -->
+            </select>
+
+            <select id="filter-condition">
+                <option value="">-- Tình trạng --</option>
+                <option value="new">Mới</option>
+                <option value="like_new">Như mới</option>
+                <option value="good">Còn tốt</option>
+                <option value="fair">Khá cũ</option>
+            </select>
+
+            <input type="number" id="filter-min" placeholder="Giá từ (đ)"
+                   style="padding:8px 12px; border:2px solid var(--border); border-radius:8px; width:130px;">
+            <input type="number" id="filter-max" placeholder="Giá đến (đ)"
+                   style="padding:8px 12px; border:2px solid var(--border); border-radius:8px; width:130px;">
+
+            <select id="filter-sort">
+                <option value="newest">Mới nhất</option>
+                <option value="price_asc">Giá tăng dần</option>
+                <option value="price_desc">Giá giảm dần</option>
+            </select>
+
+            <button class="btn btn-outline" onclick="doSearch()" style="border-radius:8px;">Lọc</button>
+            <button class="btn" onclick="clearFilters()"
+                    style="border-radius:8px; background:#f1f5f9; color:var(--text-muted);">✕ Xóa bộ lọc</button>
+        </div>
+    </div>
+</div>
+
+<!-- KẾT QUẢ -->
+<div class="container">
+    <div class="search-count" id="search-count"></div>
+    <div class="product-grid" id="product-grid">
+        <div class="empty" style="grid-column:1/-1;">
+            <div class="empty-icon">🔍</div>
+            <p>Nhập từ khóa để bắt đầu tìm kiếm.</p>
+        </div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+    <div style="height:48px;"></div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    // Đọc params từ URL và điền vào form
+    const urlParams = new URLSearchParams(location.search);
+    const initQ    = urlParams.get('q') || '';
+
+    document.getElementById('search-input').value       = initQ;
+    document.getElementById('header-search-input').value = initQ;
+    document.getElementById('filter-condition').value    = urlParams.get('condition') || '';
+    document.getElementById('filter-min').value          = urlParams.get('min_price') || '';
+    document.getElementById('filter-max').value          = urlParams.get('max_price') || '';
+    document.getElementById('filter-sort').value         = urlParams.get('sort') || 'newest';
+
+    // Tải danh mục vào select
+    fetch('api/categories.php')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const sel = document.getElementById('filter-category');
+            data.data.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value       = c.id;
+                opt.textContent = c.name;
+                if (parseInt(urlParams.get('category_id')) === c.id) opt.selected = true;
+                sel.appendChild(opt);
+            });
+        });
+
+    // Hàm tìm kiếm
+    function getSearchParams() {
+        return {
+            q:           document.getElementById('search-input').value.trim(),
+            category_id: document.getElementById('filter-category').value || undefined,
+            condition:   document.getElementById('filter-condition').value || undefined,
+            min_price:   document.getElementById('filter-min').value || undefined,
+            max_price:   document.getElementById('filter-max').value || undefined,
+            sort:        document.getElementById('filter-sort').value,
+        };
+    }
+
+    function doSearch(page = 1) {
+        const p = getSearchParams();
+        if (!p.q) {
+            document.getElementById('product-grid').innerHTML = `
+                <div class="empty" style="grid-column:1/-1;">
+                    <div class="empty-icon">🔍</div><p>Vui lòng nhập từ khóa.</p>
+                </div>`;
+            document.getElementById('search-count').innerHTML = '';
+            return;
+        }
+
+        // Cập nhật URL
+        const url = new URL(location);
+        Object.entries(p).forEach(([k, v]) => v ? url.searchParams.set(k, v) : url.searchParams.delete(k));
+        url.searchParams.set('page', page);
+        history.replaceState({}, '', url);
+
+        searchProducts('product-grid', 'pagination', 'search-count', p, page);
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-category').value  = '';
+        document.getElementById('filter-condition').value = '';
+        document.getElementById('filter-min').value       = '';
+        document.getElementById('filter-max').value       = '';
+        document.getElementById('filter-sort').value      = 'newest';
+        doSearch();
+    }
+
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) {
+            document.getElementById('search-input').value = q;
+            doSearch();
+        }
+    }
+
+    // Tự động tìm nếu có keyword từ URL
+    if (initQ) doSearch(parseInt(urlParams.get('page')) || 1);
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản phẩm – Đồ Cũ VN</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm...">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="login.html" class="btn btn-primary">Đăng nhập</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Danh mục filter -->
+    <div class="section">
+        <div class="section-title">📂 Danh mục</div>
+        <div class="category-list" id="category-list">
+            <a href="products.html" class="category-chip" id="chip-all">Tất cả</a>
+        </div>
+
+        <!-- Tiêu đề + sort -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:8px;">
+            <h2 style="font-size:1.15rem; font-weight:700;" id="page-title">Tất cả sản phẩm</h2>
+            <select id="sort-select" onchange="applySort(this.value)"
+                    style="padding:8px 12px; border:2px solid var(--border); border-radius:8px; font-size:0.88rem; background:#fff;">
+                <option value="newest">Mới nhất</option>
+                <option value="oldest">Cũ nhất</option>
+                <option value="price_asc">Giá tăng dần</option>
+                <option value="price_desc">Giá giảm dần</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Lưới sản phẩm -->
+    <div class="product-grid" id="product-grid">
+        <div class="loading"><div class="spinner"></div><p>Đang tải...</p></div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+    <div style="height:48px;"></div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    // Đọc params từ URL
+    const params   = new URLSearchParams(location.search);
+    let categoryId = parseInt(params.get('category_id')) || 0;
+    let sortOrder  = params.get('sort') || 'newest';
+
+    document.getElementById('sort-select').value = sortOrder;
+
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+
+    // Tải danh mục và highlight chip đang chọn
+    fetch('api/categories.php')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const list = document.getElementById('category-list');
+
+            // Chip "Tất cả"
+            const chipAll = document.getElementById('chip-all');
+            chipAll.className = 'category-chip' + (categoryId === 0 ? ' active' : '');
+
+            data.data.forEach(c => {
+                const a = document.createElement('a');
+                a.href = `products.html?category_id=${c.id}`;
+                a.className = 'category-chip' + (categoryId === c.id ? ' active' : '');
+                a.textContent = c.name;
+                list.appendChild(a);
+
+                if (categoryId === c.id)
+                    document.getElementById('page-title').textContent = c.name;
+            });
+        });
+
+    // Áp dụng sort (không reload trang)
+    function applySort(sort) {
+        sortOrder = sort;
+        const url = new URL(location);
+        url.searchParams.set('sort', sort);
+        history.replaceState({}, '', url);
+        reload();
+    }
+
+    function reload(page = 1) {
+        loadProducts('product-grid', 'pagination',
+            { category_id: categoryId || undefined, sort: sortOrder },
+            page
+        );
+    }
+
+    reload();
+</script>
+</body>
+</html>
