@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/config/db.php';
 
 try {
     $stmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
