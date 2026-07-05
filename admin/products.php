@@ -1,13 +1,8 @@
 <?php
-// admin/products.php
-
 session_start();
 require_once "../config/db.php";
-
 $keyword = trim($_GET["keyword"] ?? "");
-
 if ($keyword != "") {
-
     $stmt = $conn->prepare("
         SELECT
             p.*,
@@ -42,15 +37,12 @@ if ($keyword != "") {
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Quản lý sản phẩm</title>
-
-<link rel="stylesheet" href="../assets/css/admin.css">
-
-<style>
-
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <title>Quản lý sản phẩm</title>
+        <link rel="stylesheet" href="../assets/css/admin.css">
+        <style>
 body{
 font-family:Arial;
 background:#eef2f7;
@@ -90,149 +82,87 @@ border-radius:8px;
 }
 
 .btn{
-
 padding:8px 14px;
-
 border-radius:8px;
-
 text-decoration:none;
-
 color:#fff;
-
 font-weight:bold;
-
 display:inline-block;
-
 margin:2px;
-
 }
 
 .green{background:#16a34a;}
 .red{background:#dc2626;}
 .gray{background:#475569;}
-
 .pending{color:#f59e0b;font-weight:bold;}
 .active{color:#16a34a;font-weight:bold;}
 .sold{color:#2563eb;font-weight:bold;}
 .rejected{color:red;font-weight:bold;}
-
-</style>
-
+    </style>
 </head>
-
 <body>
-
-<div class="container">
-
-<h1>Quản lý sản phẩm</h1>
-
-<form method="GET" style="margin-bottom:20px">
-
-<input
-type="text"
-name="keyword"
-placeholder="Tìm sản phẩm..."
-value="<?= htmlspecialchars($keyword) ?>"
-style="padding:10px;width:300px;">
-
-<button style="padding:10px 18px">
-Tìm
-</button>
-
+    <div class="container">
+    <h1>Quản lý sản phẩm</h1>
+    <form method="GET" style="margin-bottom:20px">
+    <input
+    type="text"
+    name="keyword"
+    placeholder="Tìm sản phẩm..."
+    value="<?= htmlspecialchars($keyword) ?>"
+    style="padding:10px;width:300px;">
+    <button style="padding:10px 18px">
+    Tìm
+    </button>
 </form>
-
 <table>
-
 <tr>
-
-<th>ID</th>
-
-<th>Ảnh</th>
-
-<th>Tên</th>
-
-<th>Danh mục</th>
-
-<th>Người đăng</th>
-
-<th>Giá</th>
-
-<th>Trạng thái</th>
-
-<th>Hành động</th>
-
-</tr>
-
-<?php while($p=$result->fetch_assoc()){ ?>
-
-<tr>
-
-<td><?= $p["id"] ?></td>
-
-<td>
-
-<img src="../<?= htmlspecialchars($p["image"]) ?>">
-
-</td>
-
-<td><?= htmlspecialchars($p["title"]) ?></td>
-
-<td><?= htmlspecialchars($p["category_name"]) ?></td>
-
-<td><?= htmlspecialchars($p["seller_name"]) ?></td>
-
-<td><?= number_format($p["price"],0,",",".") ?>đ</td>
-
-<td>
-
-<span class="<?= $p["status"] ?>">
-
-<?= strtoupper($p["status"]) ?>
-
-</span>
-
-</td>
-
-<td>
-
-<?php if($p["status"]=="pending"){ ?>
-
-<a
-class="btn green"
-href="../api/admin/approve.php?id=<?= $p["id"] ?>">
-
-Duyệt
-
-</a>
-
-<a
-class="btn red"
-href="../api/admin/reject.php?id=<?= $p["id"] ?>">
-
-Từ chối
-
-</a>
-
+    <th>ID</th>
+    <th>Ảnh</th>
+    <th>Tên</th>
+    <th>Danh mục</th>
+    <th>Người đăng</th>
+    <th>Giá</th>
+    <th>Trạng thái</th>
+    <th>Hành động</th>
+    </tr>
+    <?php while($p=$result->fetch_assoc()){ ?>
+    <tr>
+        <td><?= $p["id"] ?></td>
+        <td>
+        <img src="../<?= htmlspecialchars($p["image"]) ?>">
+        </td>
+        <td><?= htmlspecialchars($p["title"]) ?></td>
+        <td><?= htmlspecialchars($p["category_name"]) ?></td>
+        <td><?= htmlspecialchars($p["seller_name"]) ?></td>
+        <td><?= number_format($p["price"],0,",",".") ?>đ</td>
+        <td>
+        <span class="<?= $p["status"] ?>">
+        <?= strtoupper($p["status"]) ?>
+        </span>
+        </td>
+        <td>
+        <?php if($p["status"]=="pending"){ ?>
+        <a
+        class="btn green"
+        href="../api/admin/approve.php?id=<?= $p["id"] ?>">
+        Duyệt
+        </a>
+        <a
+        class="btn red"
+        href="../api/admin/reject.php?id=<?= $p["id"] ?>">
+        Từ chối
+        </a>
 <?php } ?>
-
-<a
-class="btn gray"
-onclick="return confirm('Xóa sản phẩm?')"
-href="../api/admin/delete-product.php?id=<?= $p["id"] ?>">
-
-Xóa
-
-</a>
-
-</td>
-
-</tr>
-
-<?php } ?>
-
-</table>
-
-</div>
-
-</body>
+    <a
+        class="btn gray"
+        onclick="return confirm('Xóa sản phẩm?')"
+        href="../api/admin/delete-product.php?id=<?= $p["id"] ?>">
+        Xóa
+    </a>
+        </td>
+        </tr>
+        <?php } ?>
+        </table>
+        </div>
+    </body>
 </html>
