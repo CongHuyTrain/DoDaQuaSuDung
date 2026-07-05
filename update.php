@@ -7,7 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$userId = requireLogin();
+session_start();
+
+if (!isset($_SESSION["user_id"])) {
+    exit("Chưa đăng nhập");
+}
+
+$userId = $_SESSION["user_id"];
 
 $productId       = $_POST['product_id'] ?? null;
 $title           = trim($_POST['title'] ?? '');
@@ -24,9 +30,17 @@ if (!ctype_digit((string) $productId)) {
 }
 
 // Kiểm tra quyền sở hữu sản phẩm
-$check = $pdo->prepare("SELECT image FROM products WHERE id = :id AND user_id = :user_id");
-$check->execute([':id' => $productId, ':user_id' => $userId]);
-$existing = $check->fetch();
+$check = $conn->prepare("
+    SELECT image
+    FROM products
+    WHERE id = ? AND user_id = ?
+");
+
+$check->bind_param("ii", $productId, $userId);
+$check->execute();
+
+$result = $check->get_result();
+$existing = $result->fetch_assoc();
 
 if (!$existing) {
     http_response_code(403);
@@ -88,26 +102,32 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    $stmt = $pdo->prepare(
-        "UPDATE products
-         SET category_id = :category_id, title = :title, description = :description,
-             price = :price, condition_status = :condition_status, status = :status, image = :image
-         WHERE id = :id AND user_id = :user_id"
+    $stmt = $conn->prepare("
+    UPDATE products
+    SET
+        category_id = ?,
+        title = ?,
+        description = ?,
+        price = ?,
+        condition_status = ?,
+        status = ?,
+        image = ?
+    WHERE id = ? AND user_id = ?
+    ");
+    $stmt->bind_param(
+        "issdsssii",
+        $categoryId,
+        $title,
+        $description,
+        $price,
+        $conditionStatus,
+        $status,
+        $imagePath,
+        $productId,
+        $userId
     );
-    $stmt->execute([
-        ':category_id'      => $categoryId,
-        ':title'            => $title,
-        ':description'      => $description,
-        ':price'            => $price,
-        ':condition_status' => $conditionStatus,
-        ':status'           => $status,
-        ':image'            => $imagePath,
-        ':id'               => $productId,
-        ':user_id'          => $userId,
-    ]);
-
     echo json_encode(["success" => true, "message" => "Cập nhật sản phẩm thành công."]);
-} catch (PDOException $e) {
+} catch (mysqli_sql_exception $e) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Không thể cập nhật sản phẩm."]);
 }

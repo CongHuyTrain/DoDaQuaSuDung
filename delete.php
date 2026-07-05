@@ -7,7 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$userId = requireLogin();
+session_start();
+
+if (!isset($_SESSION["user_id"])) {
+    exit("Chưa đăng nhập");
+}
+
+$userId = $_SESSION["user_id"];
 
 $productId = $_POST['product_id'] ?? null;
 if ($productId === null) {
@@ -21,9 +27,17 @@ if (!ctype_digit((string) $productId)) {
     exit;
 }
 
-$check = $pdo->prepare("SELECT image FROM products WHERE id = :id AND user_id = :user_id");
-$check->execute([':id' => $productId, ':user_id' => $userId]);
-$existing = $check->fetch();
+$check = $conn->prepare("
+    SELECT image
+    FROM products
+    WHERE id = ? AND user_id = ?
+");
+
+$check->bind_param("ii", $productId, $userId);
+$check->execute();
+
+$result = $check->get_result();
+$existing = $result->fetch_assoc();
 
 if (!$existing) {
     http_response_code(403);
@@ -32,15 +46,16 @@ if (!$existing) {
 }
 
 try {
-    $stmt = $pdo->prepare("DELETE FROM products WHERE id = :id AND user_id = :user_id");
-    $stmt->execute([':id' => $productId, ':user_id' => $userId]);
+    $stmt = $conn->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $productId, $userId);
+    $stmt->execute();
 
     if ($existing['image'] && file_exists(__DIR__ . '/../../' . $existing['image'])) {
         unlink(__DIR__ . '/../../' . $existing['image']);
     }
 
     echo json_encode(["success" => true, "message" => "Đã xóa sản phẩm."]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Không thể xóa sản phẩm."]);
 }

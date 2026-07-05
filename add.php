@@ -7,7 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$userId = requireLogin();
+session_start();
+
+if (!isset($_SESSION["user_id"])) {
+    exit("Chưa đăng nhập");
+}
+
+$userId = $_SESSION["user_id"];
 
 $title           = trim($_POST['title'] ?? '');
 $description     = trim($_POST['description'] ?? '');
@@ -69,10 +75,9 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    $stmt = $pdo->prepare(
-        "INSERT INTO products (user_id, category_id, title, description, price, condition_status, image)
-         VALUES (:user_id, :category_id, :title, :description, :price, :condition_status, :image)"
-    );
+    $stmt = $conn->prepare("
+    INSERT INTO products (user_id, category_id, title, description, price, condition_status, image )VALUES (?, ?, ?, ?, ?, ?, ?)");
+
     $stmt->execute([
         ':user_id'          => $userId,
         ':category_id'      => $categoryId,
@@ -86,9 +91,9 @@ try {
     echo json_encode([
         "success" => true,
         "message" => "Đăng sản phẩm thành công.",
-        "product_id" => $pdo->lastInsertId(),
+        "product_id" => $conn->insert_id,
     ]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Không thể thêm sản phẩm."]);
 }
