@@ -1,5 +1,6 @@
 <?php
-require_once 'db.php';
+session_start();
+require_once "../config/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -9,57 +10,110 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST['confirm_password'];
     $gender = $_POST['gender'];
     $phone = trim($_POST['phone']);
-    
 
     $dob_day = $_POST['dob_day'];
     $dob_month = $_POST['dob_month'];
     $dob_year = $_POST['dob_year'];
-    $dob = "$dob_year-$dob_month-$dob_day"; 
-
+    $dob = "$dob_year-$dob_month-$dob_day";
 
     if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-        die("Vui lòng điền đầy đủ các thông tin bắt buộc.");
+        echo "<script>
+                alert('Vui lòng điền đầy đủ các thông tin bắt buộc.');
+                history.back();
+              </script>";
+        exit;
     }
 
     if ($password !== $confirm_password) {
-        die("Mật khẩu và xác nhận mật khẩu không trùng khớp.");
+        echo "<script>
+                alert('Mật khẩu xác nhận không khớp.');
+                history.back();
+              </script>";
+        exit;
     }
 
     if (strlen($password) < 6) {
-        die("Mật khẩu phải chứa ít nhất 6 ký tự.");
+        echo "<script>
+                alert('Mật khẩu phải có ít nhất 6 ký tự.');
+                history.back();
+              </script>";
+        exit;
     }
 
-    try {
+    // Kiểm tra username hoặc email đã tồn tại
+    $stmt = $conn->prepare("
+        SELECT id
+        FROM users
+        WHERE username = ?
+           OR email = ?
+        LIMIT 1
+    ");
 
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = :username OR email = :email");
-        $stmt->execute(['username' => $username, 'email' => $email]);
-        
-        if ($stmt->rowCount() > 0) {
-            die("Tên đăng nhập hoặc địa chỉ Email đã được sử dụng.");
-        }
+    $stmt->bind_param("ss", $username, $email);
+    $stmt->execute();
 
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    if ($stmt->get_result()->num_rows > 0) {
 
-        $sql = "INSERT INTO users (username, email, password, gender, dob, phone) 
-                VALUES (:username, :email, :password, :gender, :dob, :phone)";
-        $insertStmt = $conn->prepare($sql);
-        
-        $insertStmt->execute([
-            'username' => $username,
-            'email'    => $email,
-            'password' => $hashed_password,
-            'gender'   => $gender,
-            'dob'      => $dob,
-            'phone'    => $phone
-        ]);
+        echo "<script>
+                alert('Tên đăng nhập hoặc Email đã được sử dụng.');
+                history.back();
+              </script>";
+        exit;
+    }
+
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    $fullname = $username;
+    $role = "user";
+    $status = "active";
+
+    $stmt = $conn->prepare("
+        INSERT INTO users
+        (
+            fullname,
+            username,
+            email,
+            password,
+            gender,
+            dob,
+            phone,
+            role,
+            status,
+            created_at
+        )
+        VALUES
+        (
+            ?,?,?,?,?,?,?,?, ?,NOW()
+        )
+    ");
+
+    $stmt->bind_param(
+        "sssssssss",
+        $fullname,
+        $username,
+        $email,
+        $hashed_password,
+        $gender,
+        $dob,
+        $phone,
+        $role,
+        $status
+    );
+
+    if ($stmt->execute()) {
 
         echo "<script>
                 alert('Đăng ký tài khoản thành công!');
-                window.location.href = 'login.html'; 
+                window.location.href='login.html';
               </script>";
 
-    } catch(PDOException $e) {
-        die("Lỗi hệ thống: " . $e->getMessage());
+    } else {
+
+        echo "<script>
+                alert('Đăng ký thất bại!');
+                history.back();
+              </script>";
+
     }
 }
 ?>

@@ -1,41 +1,80 @@
 <?php
 session_start();
-require_once 'db.php';
+
+require_once "../config/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username_email = trim($_POST['username_email']);
-    $password = $_POST['password'];
 
-    if (empty($username_email) || empty($password)) {
-        die("Vui lòng nhập tài khoản và mật khẩu.");
+    $account  = trim($_POST["username_email"]);
+    $password = trim($_POST["password"]);
+
+    if (empty($account) || empty($password)) {
+        echo "<script>
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                history.back();
+              </script>";
+        exit;
     }
 
-    try {
+    $sql = "
+        SELECT *
+        FROM users
+        WHERE username = ?
+           OR email = ?
+        LIMIT 1
+    ";
 
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = :account OR email = :account");
-        $stmt->execute(['account' => $username_email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare($sql);
 
-        if ($user && password_verify($password, $user['password'])) {
-            
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['email'] = $user['email'];
+    $stmt->bind_param("ss", $account, $account);
 
-            echo "<script>
-                    alert('Đăng nhập thành công! Chào mừng " . $user['username'] . "');
-                    window.location.href = 'dashboard.php'; // Chuyển hướng tới trang chủ/giao diện chính của bạn
-                  </script>";
-        } else {
+    $stmt->execute();
 
-            echo "<script>
-                    alert('Tên đăng nhập hoặc mật khẩu không chính xác.');
-                    window.location.href = 'login.html';
-                  </script>";
-        }
+    $result = $stmt->get_result();
 
-    } catch(PDOException $e) {
-        die("Lỗi hệ thống: " . $e->getMessage());
+    if ($result->num_rows == 0) {
+
+        echo "<script>
+                alert('Tài khoản không tồn tại!');
+                window.location='login.html';
+              </script>";
+        exit;
+
     }
+
+    $user = $result->fetch_assoc();
+
+    if (!password_verify($password, $user["password"])) {
+
+        echo "<script>
+                alert('Sai mật khẩu!');
+                window.location='login.html';
+              </script>";
+        exit;
+
+    }
+
+    if (isset($user["status"]) && $user["status"] == "blocked") {
+
+        echo "<script>
+                alert('Tài khoản đã bị khóa!');
+                window.location='login.html';
+              </script>";
+        exit;
+
+    }
+
+    $_SESSION["user_id"] = $user["id"];
+    $_SESSION["username"] = $user["username"];
+    $_SESSION["fullname"] = $user["fullname"];
+    $_SESSION["email"] = $user["email"];
+    $_SESSION["role"] = $user["role"] ?? "user";
+
+    echo "<script>
+            alert('Đăng nhập thành công!');
+            window.location='../index.html';
+          </script>";
+
+    exit;
 }
 ?>

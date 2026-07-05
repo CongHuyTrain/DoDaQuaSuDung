@@ -1,17 +1,30 @@
 <?php
-// api/categories.php - Lấy danh sách danh mục
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: *");
 
-require_once '../config.php';
+require_once "../config/db.php";
 
-$result = $conn->query("SELECT id, name FROM categories ORDER BY name");
-$categories = $result->fetch_all(MYSQLI_ASSOC);
+$sql = "
+SELECT
+    id,
+    name
+FROM categories
+WHERE status = 1
+ORDER BY name ASC
+";
+
+$result = $conn->query($sql);
+
+$categories = [];
+
+while($row = $result->fetch_assoc()){
+    $categories[] = $row;
+}
 
 echo json_encode([
-    'success' => true,
-    'data'    => $categories,
-]);
+    "success"=>true,
+    "data"=>$categories
+],JSON_UNESCAPED_UNICODE);
 
 $conn->close();
 ?>

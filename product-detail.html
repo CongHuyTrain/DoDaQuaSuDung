@@ -144,7 +144,7 @@
         <nav class="header-nav">
             <a href="index.html" class="btn btn-outline">Trang chủ</a>
             <a href="products.html" class="btn btn-outline">Sản phẩm</a>
-            <a href="login.html" class="btn btn-primary" id="nav-auth">Đăng nhập</a>
+            <a href="pages/login.html" class="btn btn-primary" id="nav-auth">Đăng nhập</a>
         </nav>
     </div>
 </header>
@@ -347,7 +347,11 @@ if (!pid) {
             document.getElementById('sp-condition').textContent = cond.label;
             document.getElementById('sp-category').textContent  = p.category_name;
             document.getElementById('sp-location').textContent  = p.location || 'Không xác định';
-            document.getElementById('sp-date').textContent      = fmtDate(p.created_at);
+            document.getElementById('sp-date').textContent = fmtDate(p.created_at);
+
+const tr = document.createElement("tr");
+tr.innerHTML = `<td>Lượt xem</td><td>${p.views ?? 0}</td>`;
+document.querySelector(".pd-specs").appendChild(tr);
 
             // Mô tả
             if (p.description) {
@@ -361,8 +365,8 @@ if (!pid) {
 
             // Nút mua
             document.getElementById('pd-action').innerHTML = user
-                ? `<a href="order/create.html?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
-                : `<a href="login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+    ? `<a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
+    : `<a href="pages/login.php?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
 
             // Người bán
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
