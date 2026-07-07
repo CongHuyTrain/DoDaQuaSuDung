@@ -65,16 +65,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $_SESSION["user_id"] = $user["id"];
-    $_SESSION["username"] = $user["username"];
-    $_SESSION["fullname"] = $user["fullname"];
-    $_SESSION["email"] = $user["email"];
-    $_SESSION["role"] = $user["role"] ?? "user";
+$_SESSION["username"] = $user["username"];
+$_SESSION["fullname"] = $user["fullname"];
+$_SESSION["email"] = $user["email"];
+$_SESSION["role"] = $user["role"];
+
+if ($user["role"] == "admin") {
+
+    echo "<script>
+            alert('Đăng nhập Admin thành công!');
+            window.location='../admin/dashboard.php';
+          </script>";
+
+} else {
 
     echo "<script>
             alert('Đăng nhập thành công!');
             window.location='../index.html';
           </script>";
 
-    exit;
+}
+
+exit;
 }
 ?>
