@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 05, 2026 at 04:38 PM
+-- Generation Time: Jul 07, 2026 at 06:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -182,17 +182,17 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 2, 'active', '2026-07-05 14:18:17', '2026-07-05 14:28:49'),
-(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(8, 1, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(9, 1, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17'),
-(12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 0, 'active', '2026-07-05 14:18:17', '2026-07-05 14:18:17');
+(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:49:32'),
+(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:50:35'),
+(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:51:02'),
+(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:51:49'),
+(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:31'),
+(7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
+(8, 1, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
+(9, 1, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
+(10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
+(11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
+(12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52');
 
 -- --------------------------------------------------------
 
@@ -285,8 +285,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `phone`, `avatar`, `address`, `gender`, `dob`, `role`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', 'admin', 'admin@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0123456789', 'uploads/avatar/default.png', NULL, NULL, NULL, 'admin', 'active', '2026-07-05 14:10:43', '2026-07-05 14:10:43'),
-(2, 'huy', 'huy', 'leconghuy2005x1@gmail.com', '$2y$10$.Cfil.FMusLhQzmbuXkss.VN/Pbp8JsSlNGerWSqeEGqxPTBTQeaW', '0353166811', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-05 14:12:21', '2026-07-05 14:12:21');
+(2, 'huy', 'huy', 'leconghuy2005x1@gmail.com', '$2y$10$.Cfil.FMusLhQzmbuXkss.VN/Pbp8JsSlNGerWSqeEGqxPTBTQeaW', '0353166811', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-05 14:12:21', '2026-07-05 14:12:21'),
+(3, 'Administrator', 'admin', 'admin@gmail.com', '$2b$12$4xz4MM/KJvfFhRSyG04Sf.8gU46Kt0he8dHmCrSiwlXzck.6F2vtm', '0123456789', 'uploads/avatar/default.png', NULL, NULL, NULL, 'admin', 'active', '2026-07-07 04:14:47', '2026-07-07 04:14:47');
 
 --
 -- Indexes for dumped tables
@@ -491,7 +491,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
