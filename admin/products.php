@@ -129,6 +129,11 @@ margin:2px;
     Tìm
     </button>
 </form>
+<div style="margin:20px 0;">
+    <a href="../add-product.html" class="btn green">
+        + Thêm sản phẩm
+    </a>
+</div>
 <table>
 <tr>
     <th>ID</th>

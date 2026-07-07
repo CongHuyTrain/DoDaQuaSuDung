@@ -1,30 +1,33 @@
 <?php
+
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");
 
 require_once "../config/db.php";
 
 $sql = "
 SELECT
-    id,
-    name
+id,
+name
 FROM categories
-WHERE status = 1
-ORDER BY name ASC
+WHERE status=1
+ORDER BY name
 ";
 
 $result = $conn->query($sql);
 
-$categories = [];
+$data=[];
 
-while($row = $result->fetch_assoc()){
-    $categories[] = $row;
+while($row=$result->fetch_assoc()){
+
+    $data[]=$row;
+
 }
 
 echo json_encode([
     "success"=>true,
-    "data"=>$categories
+    "data"=>$data
 ],JSON_UNESCAPED_UNICODE);
 
 $conn->close();
+
 ?>

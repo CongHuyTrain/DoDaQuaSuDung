@@ -36,11 +36,23 @@
 
         <div class="form-group">
             <label for="condition_status">Tình trạng</label>
-            <select id="condition_status" name="condition_status">
-                <option value="Mới">Mới</option>
-                <option value="Like new">Like new</option>
-                <option value="Đã qua sử dụng" selected>Đã qua sử dụng</option>
-            </select>
+            <select name="condition_item" required>
+
+<option value="new">Mới</option>
+
+<option value="like_new">
+Như mới
+</option>
+
+<option value="good" selected>
+Tốt
+</option>
+
+<option value="fair">
+Đã qua sử dụng
+</option>
+
+</select>
         </div>
 
         <div class="form-group">
@@ -115,6 +127,277 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
         messageBox.textContent = 'Có lỗi xảy ra, vui lòng thử lại.';
     }
 }); 
+</script><!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thêm sản phẩm</title>
+
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f7fb;
+}
+
+.navbar{
+    background:#2563eb;
+    padding:15px 30px;
+}
+
+.menu{
+    display:flex;
+    gap:15px;
+}
+
+.menu a{
+    color:#fff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.container{
+    width:800px;
+    margin:40px auto;
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+h1{
+    margin-top:0;
+    margin-bottom:30px;
+    text-align:center;
+}
+
+.form-group{
+    margin-bottom:20px;
+}
+
+.form-group label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+.preview-img{
+    margin-top:15px;
+    width:220px;
+    border-radius:10px;
+    display:none;
+    border:1px solid #ddd;
+}
+
+button{
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:14px 28px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="menu">
+        <a href="index.html">Trang chủ</a>
+        <a href="add-product.html">Đăng sản phẩm</a>
+        <a href="my-products.html">Sản phẩm của tôi</a>
+    </div>
+</nav>
+
+<div class="container">
+
+<h1>Đăng sản phẩm thanh lý</h1>
+
+<form
+action="add.php"
+method="POST"
+enctype="multipart/form-data">
+
+<div class="form-group">
+<label>Tên sản phẩm</label>
+
+<input
+type="text"
+name="title"
+required>
+</div>
+
+<div class="form-group">
+<label>Danh mục</label>
+
+<select
+name="category_id"
+id="category_id"
+required>
+
+<option value="">-- Chọn danh mục --</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+<label>Giá bán</label>
+
+<input
+type="number"
+name="price"
+min="1000"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Tình trạng</label>
+
+<select
+name="condition_item"
+required>
+
+<option value="Mới">Mới</option>
+
+<option value="Như mới">Như mới</option>
+
+<option value="Tốt">Tốt</option>
+
+<option value="Đã qua sử dụng" selected>
+Đã qua sử dụng
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Địa điểm</label>
+
+<input
+type="text"
+name="location"
+placeholder="Ví dụ: TP Hồ Chí Minh"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Mô tả</label>
+
+<textarea
+name="description"
+placeholder="Mô tả sản phẩm..."></textarea>
+
+</div>
+
+<div class="form-group">
+
+<label>Ảnh sản phẩm</label>
+
+<input
+type="file"
+name="image"
+id="image"
+accept="image/*"
+required>
+
+<img
+id="previewImg"
+class="preview-img">
+
+</div>
+
+<button type="submit">
+Đăng sản phẩm
+</button>
+
+</form>
+
+</div>
+
+<script>
+
+fetch("api/categories.php")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+    if(!data.success) return;
+
+    let select=document.getElementById("category_id");
+
+    data.data.forEach(cat=>{
+
+        let option=document.createElement("option");
+
+        option.value=cat.id;
+
+        option.textContent=cat.name;
+
+        select.appendChild(option);
+
+    });
+
+})
+
+.catch(err=>console.log(err));
+
+document.getElementById("image").addEventListener("change",function(){
+
+    const file=this.files[0];
+
+    const preview=document.getElementById("previewImg");
+
+    if(file){
+
+        preview.src=URL.createObjectURL(file);
+
+        preview.style.display="block";
+
+    }else{
+
+        preview.style.display="none";
+
+    }
+
+});
+
 </script>
+
+</body>
+</html>
 </body>
 </html>
