@@ -20,11 +20,26 @@ margin:0;
 background:#eef2f7;
 font-family:Arial;
 }
+.wrapper{
+display:flex;
+}
+
+.content{
+margin-left:240px;
+width:calc(100% - 240px);
+padding:30px;
+box-sizing:border-box;
+}
 
 .container{
-width:1300px;
-margin:auto;
-padding:40px;
+width:100%;
+padding:0;
+}
+
+.container{
+width:100%;
+margin:0;
+padding:0;
 }
 
 h1{
@@ -89,11 +104,14 @@ background:#16a34a;
 }
 
     </style>
-    </head>
+</head>
 <body>
-    <div class="container">
+    <div class="wrapper">
+        <?php include "sidebar.php"; ?>
+    <div class="content">
     <h1> Quản lý người dùng </h1>
-    <table>
+    <div class="container">
+<table>
 <tr>
     <th>ID</th>
     <th>Avatar</th>
@@ -169,7 +187,9 @@ background:#16a34a;
 <?php
     }
 ?>
-        </table>
+</table>
+        </div>
+    </div>
     </div>
 </body>
 </html>

@@ -49,10 +49,21 @@ background:#eef2f7;
 margin:0;
 }
 
+.wrapper{
+display:flex;
+}
+
+.content{
+margin-left:240px;
+width:calc(100% - 240px);
+padding:30px;
+box-sizing:border-box;
+}
+
 .container{
-width:1400px;
-margin:auto;
-padding:40px;
+width:100%;
+margin:0;
+padding:0;
 }
 
 table{
@@ -100,9 +111,13 @@ margin:2px;
 .rejected{color:red;font-weight:bold;}
     </style>
 </head>
+
 <body>
+    <div class="wrapper">
+        <?php include "sidebar.php"; ?>
+    <div class="content">
+        <h1>Quản lý sản phẩm</h1>
     <div class="container">
-    <h1>Quản lý sản phẩm</h1>
     <form method="GET" style="margin-bottom:20px">
     <input
     type="text"
@@ -164,5 +179,7 @@ margin:2px;
         <?php } ?>
         </table>
         </div>
-    </body>
+    </div>
+    </div>
+</body>
 </html>

@@ -5,7 +5,7 @@ require_once "../config/db.php";
 $result = $conn->query("
     SELECT
         o.id,
-        o.total_amount,
+        o.total_price,
         o.status,
         o.created_at,
         u1.fullname AS buyer_name,
@@ -33,10 +33,19 @@ margin:0;
 font-family:Arial;
 background:#eef2f7;
 }
+.wrapper{
+display:flex;
+}
+.content{
+margin-left:240px;
+width:calc(100% - 240px);
+padding:30px;
+box-sizing:border-box;
+}
 .container{
-width:1400px;
-margin:auto;
-padding:40px;
+width:100%;
+margin:0;
+padding:0;
 }
 table{
 width:100%;
@@ -89,9 +98,12 @@ text-decoration:none;
 }
     </style>
     </head>
-    <body>
+<body>
+    <div class="wrapper">
+        <?php include "sidebar.php"; ?>
+    <div class="content">
+        <h1>Quản lý đơn hàng</h1>
     <div class="container">
-    <h1>Quản lý đơn hàng</h1>
 <table>
     <tr>
     <th>ID</th>
@@ -120,7 +132,7 @@ text-decoration:none;
     <?= htmlspecialchars($o["seller_name"]) ?>
     </td>
     <td>
-    <?= number_format($o["total_amount"],0,",",".") ?>đ
+    <?= number_format($o["total_price"],0,",",".") ?>đ
     </td>
     <td>
     <span class="<?= $o["status"] ?>">
@@ -140,6 +152,8 @@ text-decoration:none;
     </tr>
     <?php } ?>
     </table>
+    </div>
+    </div>
     </div>
     </body>
 </html>

@@ -59,30 +59,11 @@ font-family:Arial;
 .wrapper{
 display:flex;
 }
-.sidebar{
-width:240px;
-background:#1e293b;
-min-height:100vh;
-padding:25px;
-}
-.sidebar h2{
-color:#fff;
-margin-bottom:30px;
-}
-.sidebar a{
-display:block;
-padding:12px;
-margin:8px 0;
-text-decoration:none;
-color:#fff;
-border-radius:8px;
-}
-.sidebar a:hover{
-background:#334155;
-}
 .content{
-flex:1;
+margin-left:240px;
+width:calc(100% - 240px);
 padding:30px;
+box-sizing:border-box;
 }
 .cards{
 display:grid;
@@ -144,17 +125,7 @@ font-size:12px;
 
 <div class="wrapper">
 
-<div class="sidebar">
-<h2>ADMIN</h2>
-
-<a href="dashboard.php">Dashboard</a>
-<a href="users.php">Người dùng</a>
-<a href="products.php">Sản phẩm</a>
-<a href="orders.php">Đơn hàng</a>
-<a href="reports.php">Báo cáo</a>
-<a href="../pages/logout.php">Đăng xuất</a>
-
-</div>
+<?php include "sidebar.php"; ?>
 
 <div class="content">
 

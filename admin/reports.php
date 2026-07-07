@@ -7,7 +7,7 @@ $totalUsers = $conn->query("SELECT COUNT(*) total FROM users")->fetch_assoc()['t
 $totalProducts = $conn->query("SELECT COUNT(*) total FROM products")->fetch_assoc()['total'];
 $totalOrders = $conn->query("SELECT COUNT(*) total FROM orders")->fetch_assoc()['total'];
 $totalRevenue = $conn->query("
-SELECT IFNULL(SUM(total_amount),0) total
+SELECT IFNULL(SUM(total_price),0) total
 FROM orders
 WHERE status='completed'
 ")->fetch_assoc()['total'];
@@ -40,7 +40,7 @@ $latestOrders = $conn->query("
     SELECT
     o.id,
     u.fullname,
-    o.total_amount,
+    o.total_price,
     o.status,
     o.created_at
     FROM orders o
@@ -65,11 +65,21 @@ margin:0;
 font-family:Arial;
 background:#eef2f7;
 }
+.wrapper{
+display:flex;
+}
+
+.content{
+margin-left:240px;
+width:calc(100% - 240px);
+padding:30px;
+box-sizing:border-box;
+}
 
 .container{
-width:1400px;
-margin:auto;
-padding:40px;
+width:100%;
+margin:0;
+padding:0;
 }
 
 .grid{
@@ -143,8 +153,11 @@ font-weight:bold;
     </style>
 </head>
 <body>
+    <div class="wrapper">
+        <?php include "sidebar.php"; ?>
+    <div class="content">
+        <h1>Thống kê hệ thống</h1>
     <div class="container">
-    <h1>Thống kê hệ thống</h1>
     <div class="grid">
     <div class="card">
     <h4>Người dùng</h4>
@@ -193,7 +206,7 @@ font-weight:bold;
     <tr>
         <td>#<?= $o["id"] ?></td>
         <td><?= htmlspecialchars($o["fullname"]) ?></td>
-        <td><?= number_format($o["total_amount"],0,",",".") ?>đ</td>
+        <td><?= number_format($o["total_price"],0,",",".") ?>đ</td>
         <td>
         <span class="<?= $o["status"] ?>">
         <?= strtoupper($o["status"]) ?>
@@ -204,5 +217,7 @@ font-weight:bold;
 <?php } ?>
     </table>
     </div>
+    </div>
+</div>
 </body>
 </html>
