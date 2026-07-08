@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết sản phẩm – Đồ Cũ VN</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=1783406030">
     <style>
         /* Layout 3 cột */
         .pd-wrap {
@@ -144,7 +144,17 @@
         <nav class="header-nav">
             <a href="index.html" class="btn btn-outline">Trang chủ</a>
             <a href="products.html" class="btn btn-outline">Sản phẩm</a>
-            <a href="pages/login.html" class="btn btn-primary" id="nav-auth">Đăng nhập</a>
+
+            <a href="pages/login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
+
+            <div class="nav-user-area" id="nav-user" style="display:none;">
+                <a href="pages/my-orders.php" class="nav-cart-btn" id="nav-cart" title="Đơn hàng của tôi">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username"></span>
+                <a href="pages/logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
         </nav>
     </div>
 </header>
@@ -277,14 +287,20 @@ function goSearch() {
     if (q) location.href = `search.html?q=${encodeURIComponent(q)}`;
 }
 
-// Auth
-const user = JSON.parse(sessionStorage.getItem('user') || 'null');
-if (user) {
-    const btn = document.getElementById('nav-auth');
-    btn.textContent = 'Đăng xuất';
-    btn.href = '#';
-    btn.onclick = () => { sessionStorage.clear(); location.reload(); };
-}
+// Trạng thái đăng nhập (dựa trên session PHP thật)
+const authPromise = fetch('api/auth-check.php')
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && data.logged_in) {
+            document.getElementById('nav-guest').style.display = 'none';
+            document.getElementById('nav-user').style.display = 'flex';
+            document.getElementById('nav-username').textContent =
+                '👤 ' + (data.user.fullname || data.user.username);
+            return data.user;
+        }
+        return null;
+    })
+    .catch(() => null);
 
 // Gallery
 let imgs = [], imgIdx = 0;
@@ -304,9 +320,8 @@ if (!pid) {
     document.getElementById('el-loading').style.display = 'none';
     document.getElementById('el-notfound').style.display = 'block';
 } else {
-    fetch('api/product-detail.php?id=' + pid)
-        .then(r => r.json())
-        .then(data => {
+    Promise.all([authPromise, fetch('api/product-detail.php?id=' + pid).then(r => r.json())])
+        .then(([user, data]) => {
             document.getElementById('el-loading').style.display = 'none';
 
             if (!data.success) {
@@ -364,9 +379,17 @@ document.querySelector(".pd-specs").appendChild(tr);
             document.getElementById('pd-price').textContent = p.price_formatted;
 
             // Nút mua
-            document.getElementById('pd-action').innerHTML = user
-    ? `<a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
-    : `<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+            if (p.status && p.status !== 'active') {
+                const statusMsg = p.status === 'sold'
+                    ? '✅ Sản phẩm đã được bán'
+                    : '⏳ Sản phẩm đang có người đặt mua';
+                document.getElementById('pd-action').innerHTML =
+                    `<div class="pd-btn-buy" style="background:#94a3b8; cursor:not-allowed;">${statusMsg}</div>`;
+            } else {
+                document.getElementById('pd-action').innerHTML = user
+        ? `<a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
+        : `<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+            }
 
             // Người bán
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
