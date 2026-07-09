@@ -30,9 +30,10 @@ u.fullname AS seller_name,
 u.phone AS seller_phone,
 u.email AS seller_email
 FROM products p
-INNER JOIN categories c
+LEFT JOIN categories c
 ON p.category_id=c.id
-INNER JOIN users u
+
+LEFT JOIN users u
 ON p.user_id=u.id
 WHERE
 p.id=?
