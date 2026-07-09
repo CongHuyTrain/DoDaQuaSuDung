@@ -61,9 +61,9 @@ p.created_at,
 c.name AS category_name,
 u.fullname AS seller_name
 FROM products p
-INNER JOIN categories c
+LEFT JOIN categories c
 ON p.category_id=c.id
-INNER JOIN users u
+LEFT JOIN users u
 ON p.user_id=u.id
 $where
 ORDER BY $order_by
