@@ -89,7 +89,7 @@ p.condition_item,
 p.location,
 c.name AS category_name
 FROM products p
-INNER JOIN categories c
+LEFT JOIN categories c
 ON p.category_id=c.id
 WHERE
 p.category_id=?
