@@ -62,7 +62,7 @@ if(!$product){
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/style.css?v=1783406030">
 
 <style>
 
@@ -232,11 +232,14 @@ font-size:13px;
 
 <div class="card">
 
+<?php
+$imgPath = !empty($product["image"]) ? '../' . ltrim($product["image"], '/') : '';
+?>
 <img
+src="<?= htmlspecialchars($imgPath) ?>"
+class="product-img"
+onerror="this.style.background='#eee'; this.src='';">
 
-src="<?= htmlspecialchars($product["image"]) ?>"
-
-class="product-img">
 
 <div class="badge">
 

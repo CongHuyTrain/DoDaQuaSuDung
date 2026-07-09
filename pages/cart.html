@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng – Đồ Cũ VN</title>
+    <link rel="stylesheet" href="../assets/css/style.css?v=1783406030">
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a class="logo" href="../index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search"></div>
+        <nav class="header-nav">
+            <a href="../index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="../products.html" class="btn btn-outline">Sản phẩm</a>
+
+            <a href="login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
+
+            <div class="nav-user-area" id="nav-user" style="display:none;">
+                <a href="my-orders.php" class="nav-cart-btn" id="nav-cart" title="Giỏ hàng">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username"></span>
+                <a href="logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">🛒 Giỏ hàng của bạn</div>
+        <div class="empty" style="text-align:center; padding:60px 20px;">
+            <div class="empty-icon" style="font-size:2.5rem;">🚧</div>
+            <p>Chức năng giỏ hàng đang được phát triển, vui lòng quay lại sau!</p>
+        </div>
+    </div>
+</section>
+
+<script>
+    fetch('../api/auth-check.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.logged_in) {
+                document.getElementById('nav-guest').style.display = 'none';
+                document.getElementById('nav-user').style.display = 'flex';
+                document.getElementById('nav-username').textContent =
+                    '👤 ' + (data.user.fullname || data.user.username);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+</script>
+</body>
+</html>

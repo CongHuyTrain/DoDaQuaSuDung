@@ -42,7 +42,7 @@ $result = $stmt->get_result();
 <head>
 <meta charset="UTF-8">
 <title>Quản lý giao dịch</title>
-<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/style.css?v=1783406030">
 <style>
 
 body{
@@ -192,7 +192,7 @@ while($row=$result->fetch_assoc()){
 ?>
 
 <div class="card">
-<img src="<?= htmlspecialchars($row["image"]) ?>">
+<img src="<?= htmlspecialchars(!empty($row["image"]) ? '../' . ltrim($row["image"], '/') : '') ?>" onerror="this.style.background='#eee'; this.src='';">
 <div class="info">
 <h3>
 <?= htmlspecialchars($row["title"]) ?>

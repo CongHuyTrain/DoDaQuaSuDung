@@ -37,7 +37,7 @@ LEFT JOIN users u
 ON p.user_id=u.id
 WHERE
 p.id=?
-AND p.status='active'
+AND p.status IN ('active','pending','sold')
 LIMIT 1
 ";
 $stmt = $conn->prepare($sql);

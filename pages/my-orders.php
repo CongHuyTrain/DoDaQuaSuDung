@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["user_id"])) {
-    header("Location: login.php");
+    header("Location: login.html");
     exit;
 }
 require_once "../config/db.php";
@@ -30,197 +30,97 @@ $stmt=$conn->prepare($sql);
 $stmt->bind_param("i",$user_id);
 $stmt->execute();
 $result=$stmt->get_result();
+
+$statusLabel = [
+    "pending"   => "Chờ xác nhận",
+    "accepted"  => "Đã xác nhận",
+    "confirmed" => "Đã xác nhận",
+    "completed" => "Hoàn tất",
+    "cancelled" => "Đã hủy",
+    "rejected"  => "Đã từ chối",
+];
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Đơn hàng của tôi</title>
-<link rel="stylesheet" href="../assets/css/style.css">
-<style>
-body{
-background:#f5f7fb;
-font-family:Arial;
-}
-
-.container{
-width:1200px;
-margin:auto;
-padding:40px 0;
-}
-
-.title{
-font-size:32px;
-font-weight:bold;
-margin-bottom:25px;
-}
-
-.card{
-background:#fff;
-border-radius:14px;
-padding:20px;
-margin-bottom:18px;
-display:flex;
-gap:20px;
-align-items:center;
-box-shadow:0 8px 20px rgba(0,0,0,.06);
-}
-
-.card img{
-width:150px;
-height:150px;
-object-fit:cover;
-border-radius:10px;
-}
-
-.info{
-flex:1;
-}
-
-.info h3{
-margin-bottom:10px;
-}
-
-.price{
-font-size:22px;
-color:#ff5722;
-font-weight:bold;
-margin:10px 0;
-}
-
-.badge{
-display:inline-block;
-padding:5px 14px;
-border-radius:30px;
-color:#fff;
-font-size:13px;
-}
-
-.pending{
-background:#f59e0b;
-}
-
-.accepted{
-background:#2563eb;
-}
-
-.completed{
-background:#16a34a;
-}
-
-.cancelled{
-background:#dc2626;
-}
-
-.action{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-.btn{
-padding:10px 18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-text-decoration:none;
-text-align:center;
-}
-
-.view{
-background:#2563eb;
-color:#fff;
-}
-
-.cancel{
-background:#ef4444;
-color:#fff;
-}
-
-.empty{
-text-align:center;
-padding:80px;
-background:#fff;
-border-radius:14px;
-}
-
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đơn hàng của tôi – Đồ Cũ VN</title>
+<link rel="stylesheet" href="../assets/css/style.css?v=1783406030">
 </head>
 <body>
+
+<header>
+    <div class="header-inner">
+        <a class="logo" href="../index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..."
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="../index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="../products.html" class="btn btn-outline">Sản phẩm</a>
+
+            <a href="login.html" class="btn btn-primary" id="nav-guest" style="display:none;">Đăng nhập</a>
+
+            <div class="nav-user-area" id="nav-user">
+                <a href="my-orders.php" class="nav-cart-btn" id="nav-cart" title="Đơn hàng của tôi">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username">👤 <?= htmlspecialchars($_SESSION['fullname'] ?? $_SESSION['username'] ?? '') ?></span>
+                <a href="logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
 <div class="container">
-<div class="title"> Đơn hàng của tôi </div>
-<?php
-if($result->num_rows==0){
-?>
-<div class="empty">
-<h2>Bạn chưa có đơn hàng nào.</h2>
-<br>
-<a href="../products.html" class="btn view">
-Mua ngay
-</a>
-</div>
-<?php
-}else{
+    <div class="orders-page-title">🧾 Đơn hàng của tôi</div>
 
-while($row=$result->fetch_assoc()){
-$status=$row["status"];
-$class=$status;
-if($status=="confirmed"){
-$class="accepted";
-}
+    <?php if ($result->num_rows == 0): ?>
+        <div class="empty">
+            <div class="empty-icon">📭</div>
+            <p>Bạn chưa có đơn hàng nào.</p>
+            <a href="../products.html" class="btn btn-primary" style="display:inline-block; margin-top:16px;">Mua ngay</a>
+        </div>
+    <?php else: ?>
+        <div class="order-list">
+        <?php while ($row = $result->fetch_assoc()):
+            $status = $row["status"];
+            $class  = $status === "confirmed" ? "accepted" : $status;
+            $label  = $statusLabel[$status] ?? ucfirst($status);
+            $imgSrc = !empty($row["image"]) ? '../' . ltrim($row["image"], '/') : '';
+        ?>
+            <div class="order-card">
+                <img class="order-img" src="<?= htmlspecialchars($imgSrc) ?>"
+                     onerror="this.style.background='#f1f5f9'; this.src='';">
+                <div class="order-body">
+                    <div class="order-title"><?= htmlspecialchars($row["title"]) ?></div>
+                    <div class="order-seller">Người bán: <strong><?= htmlspecialchars($row["seller_name"]) ?></strong></div>
+                    <div class="order-price"><?= number_format($row["total_amount"], 0, ",", ".") ?> đ</div>
+                    <div class="order-date">Ngày đặt: <?= date("d/m/Y H:i", strtotime($row["created_at"])) ?></div>
+                    <span class="order-status <?= $class ?>"><?= htmlspecialchars($label) ?></span>
+                </div>
+                <div class="order-actions">
+                    <a href="../product-detail.html?id=<?= $row["product_id"] ?>" class="btn btn-outline">Xem sản phẩm</a>
+                    <?php if ($status === "pending"): ?>
+                        <a href="../api/order/cancel.php?id=<?= $row["id"] ?>" class="btn btn-danger"
+                           onclick="return confirm('Hủy đơn hàng này?')">Hủy đơn</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endwhile; ?>
+        </div>
+    <?php endif; ?>
+</div>
 
-?>
-
-<div class="card">
-<img src="<?= htmlspecialchars($row["image"]) ?>">
-<div class="info">
-<h3>
-<?= htmlspecialchars($row["title"]) ?>
-</h3>
-<div>
-Người bán:
-<b>
-<?= htmlspecialchars($row["seller_name"]) ?>
-</b>
-</div>
-<div class="price">
-<?= number_format($row["total_amount"],0,",",".") ?>
-đ
-</div>
-<div>
-Ngày đặt:
-<?= $row["created_at"] ?>
-</div>
-<br>
-<span class="badge <?= $class ?>">
-<?= strtoupper($status) ?>
-</span>
-</div>
-<div class="action">
-<a
-href="../product-detail.html?id=<?= $row["product_id"] ?>"
-class="btn view">
-Xem
-</a>
-<?php
-
-if($status=="pending"){
-?>
-<a
-href="../api/order/cancel.php?id=<?= $row["id"] ?>"
-class="btn cancel"
-onclick="return confirm('Hủy đơn hàng?')">
-Hủy
-</a>
-<?php
-}
-?>
-</div>
-</div>
-<?php
-}
-}
-?>
-</div>
+<script>
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) location.href = `../search.html?q=${encodeURIComponent(q)}`;
+    }
+</script>
 </body>
 </html>
