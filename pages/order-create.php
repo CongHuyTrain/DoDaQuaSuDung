@@ -15,27 +15,17 @@ if ($product_id <= 0) {
 }
 
 $sql = "
-
 SELECT
-
-p.*,
-
-c.name AS category_name,
-
-u.fullname
-
+    p.*,
+    c.name AS category_name,
+    u.fullname
 FROM products p
-
-INNER JOIN categories c
-ON p.category_id=c.id
-
-INNER JOIN users u
-ON p.user_id=u.id
-
-WHERE p.id=?
-
+LEFT JOIN categories c
+ON p.category_id = c.id
+LEFT JOIN users u
+ON p.user_id = u.id
+WHERE p.id = ?
 LIMIT 1
-
 ";
 
 $stmt = $conn->prepare($sql);
