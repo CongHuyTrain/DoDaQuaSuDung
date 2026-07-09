@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 09, 2026 at 02:11 PM
+-- Generation Time: Jul 09, 2026 at 04:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -20,6 +20,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `dodaquasudung`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_items`
+--
+
+CREATE TABLE `cart_items` (
+  `id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `price` decimal(12,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -139,8 +167,20 @@ CREATE TABLE `orders` (
   `receiver_phone` varchar(20) DEFAULT NULL,
   `receiver_address` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `payment_method` varchar(30) DEFAULT 'COD',
+  `payment_status` enum('pending','paid','failed') DEFAULT 'pending',
+  `payment_time` datetime DEFAULT NULL,
+  `transaction_id` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `buyer_id`, `seller_id`, `total_amount`, `status`, `note`, `receiver_name`, `receiver_phone`, `receiver_address`, `created_at`, `updated_at`, `payment_method`, `payment_status`, `payment_time`, `transaction_id`) VALUES
+(1, 2, 3, 1007.00, 'cancelled', 'giao nhanh', 'Lê Công Huy', '01223456778', 'Trường GTVT TP Hồ Chí Minh', '2026-07-09 13:12:21', '2026-07-09 14:03:22', 'COD', 'pending', NULL, NULL),
+(3, 2, 3, 1007.00, 'cancelled', '', 'Lê Công Huy', '01223456778', 'test', '2026-07-09 14:03:40', '2026-07-09 14:03:54', 'COD', 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -156,6 +196,14 @@ CREATE TABLE `order_details` (
   `price` decimal(12,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_details`
+--
+
+INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `price`, `created_at`) VALUES
+(1, 1, 13, 1, 1007.00, '2026-07-09 13:12:21'),
+(3, 3, 13, 1, 1007.00, '2026-07-09 14:03:40');
 
 -- --------------------------------------------------------
 
@@ -184,10 +232,10 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 2, 'active', '2026-07-05 14:18:17', '2026-07-05 14:28:49'),
-(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:49:32'),
+(1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 7, 'pending', '2026-07-05 14:18:17', '2026-07-09 13:59:43'),
+(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 5, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:05:19'),
 (3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:50:35'),
-(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:51:02'),
+(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:06:39'),
 (5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:51:49'),
 (6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:31'),
 (7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
@@ -196,7 +244,7 @@ INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, 
 (10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
 (11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
 (12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
-(13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 0, 'active', '2026-07-07 14:55:53', '2026-07-07 14:56:05');
+(13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 5, 'active', '2026-07-07 14:55:53', '2026-07-09 14:03:54');
 
 -- --------------------------------------------------------
 
@@ -295,6 +343,23 @@ INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `phone`,
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`),
+  ADD KEY `idx_cart_user` (`user_id`);
+
+--
+-- Indexes for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `cart_id` (`cart_id`,`product_id`),
+  ADD KEY `idx_cart_product` (`product_id`),
+  ADD KEY `idx_cart_cart` (`cart_id`);
 
 --
 -- Indexes for table `categories`
@@ -414,6 +479,18 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -453,13 +530,13 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -500,6 +577,19 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `fk_cart_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD CONSTRAINT `fk_cart_items_cart` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_cart_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `conversations`
