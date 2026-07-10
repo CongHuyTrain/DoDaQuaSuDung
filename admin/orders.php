@@ -143,9 +143,8 @@ text-decoration:none;
     <?= $o["created_at"] ?>
     </td>
     <td>
-    <a
-    class="btn"
-    href="../pages/transactions.php">
+    <a class="btn"
+    href="transactions.php?id=<?= $o["id"] ?>">
     Xem
     </a>
     </td>
