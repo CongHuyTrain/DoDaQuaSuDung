@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 09, 2026 at 04:21 PM
+-- Generation Time: Jul 10, 2026 at 07:45 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -46,6 +46,19 @@ CREATE TABLE `cart_items` (
   `product_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL DEFAULT 1,
   `price` decimal(12,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_items_log`
+--
+
+CREATE TABLE `cart_items_log` (
+  `id` int(11) NOT NULL,
+  `cart_id` int(11) DEFAULT NULL,
+  `action_type` enum('add','update','remove','checkout') DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -234,17 +247,17 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 7, 'pending', '2026-07-05 14:18:17', '2026-07-09 13:59:43'),
 (2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 5, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:05:19'),
-(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:50:35'),
+(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:15'),
 (4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:06:39'),
-(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:51:49'),
-(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:31'),
+(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:38'),
+(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'pending', '2026-07-05 14:18:17', '2026-07-10 03:48:34'),
 (7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
 (8, 1, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
 (9, 1, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
 (10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
 (11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
 (12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
-(13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 5, 'active', '2026-07-07 14:55:53', '2026-07-09 14:03:54');
+(13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 6, 'active', '2026-07-07 14:55:53', '2026-07-09 14:23:55');
 
 -- --------------------------------------------------------
 
@@ -338,7 +351,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `phone`, `avatar`, `address`, `gender`, `dob`, `role`, `status`, `created_at`, `updated_at`) VALUES
 (2, 'huy', 'huy', 'leconghuy2005x1@gmail.com', '$2y$10$.Cfil.FMusLhQzmbuXkss.VN/Pbp8JsSlNGerWSqeEGqxPTBTQeaW', '0353166811', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-05 14:12:21', '2026-07-05 14:12:21'),
-(3, 'Administrator', 'admin', 'admin@gmail.com', '$2b$12$4xz4MM/KJvfFhRSyG04Sf.8gU46Kt0he8dHmCrSiwlXzck.6F2vtm', '0123456789', 'uploads/avatar/default.png', NULL, NULL, NULL, 'admin', 'active', '2026-07-07 04:14:47', '2026-07-07 04:14:47');
+(3, 'Administrator', 'admin', 'admin@gmail.com', '$2b$12$4xz4MM/KJvfFhRSyG04Sf.8gU46Kt0he8dHmCrSiwlXzck.6F2vtm', '0123456789', 'uploads/avatar/default.png', NULL, NULL, NULL, 'admin', 'active', '2026-07-07 04:14:47', '2026-07-07 04:14:47'),
+(4, 'hien', 'hien', 'huylc4327@gmail.com', '$2y$10$IJSWk2mJtKJzesAfckEM1egFKqJtMUcnbiwVFoIJsKpUZFgqAh0QG', '0353166812', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-09 14:25:57', '2026-07-09 14:25:57');
 
 --
 -- Indexes for dumped tables
@@ -360,6 +374,12 @@ ALTER TABLE `cart_items`
   ADD UNIQUE KEY `cart_id` (`cart_id`,`product_id`),
   ADD KEY `idx_cart_product` (`product_id`),
   ADD KEY `idx_cart_cart` (`cart_id`);
+
+--
+-- Indexes for table `cart_items_log`
+--
+ALTER TABLE `cart_items_log`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `categories`
@@ -491,6 +511,12 @@ ALTER TABLE `cart_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `cart_items_log`
+--
+ALTER TABLE `cart_items_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -530,13 +556,13 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -572,7 +598,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
