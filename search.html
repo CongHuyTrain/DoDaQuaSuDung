@@ -4,19 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tìm kiếm – Đồ Cũ VN</title>
-    <link rel="stylesheet" href="assets/css/style.css?v=1783406030">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <header>
     <div class="header-inner">
         <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
-        <div class="header-search">
-            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..."
-                    onkeydown="if(event.key==='Enter') doSearch()">
-            <button class="btn btn-primary" onclick="doSearch()">Tìm</button>
-        </div>
-        <nav class="header-nav">
+        <nav class="header-nav" style="margin-left:auto;">
             <a href="index.html" class="btn btn-outline">Trang chủ</a>
             <a href="products.html" class="btn btn-outline">Sản phẩm</a>
 
@@ -107,7 +102,6 @@
     const initQ    = urlParams.get('q') || '';
 
     document.getElementById('search-input').value       = initQ;
-    document.getElementById('header-search-input').value = initQ;
     document.getElementById('filter-condition').value    = urlParams.get('condition') || '';
     document.getElementById('filter-min').value          = urlParams.get('min_price') || '';
     document.getElementById('filter-max').value          = urlParams.get('max_price') || '';
@@ -167,14 +161,6 @@
         document.getElementById('filter-max').value       = '';
         document.getElementById('filter-sort').value      = 'newest';
         doSearch();
-    }
-
-    function goSearch() {
-        const q = document.getElementById('header-search-input').value.trim();
-        if (q) {
-            document.getElementById('search-input').value = q;
-            doSearch();
-        }
     }
 
     // Tự động tìm nếu có keyword từ URL
