@@ -48,7 +48,13 @@ font-family:Arial;
 background:#eef2f7;
 margin:0;
 }
+.blue{
+    background:#2563eb;
+}
 
+.blue:hover{
+    background:#1d4ed8;
+}
 .wrapper{
 display:flex;
 }
@@ -173,6 +179,11 @@ margin:2px;
         Từ chối
         </a>
 <?php } ?>
+    <a
+        class="btn blue"
+        href="edit-product.php?id=<?= $p["id"] ?>">
+        Chỉnh sửa
+    </a>
     <a
         class="btn gray"
         onclick="return confirm('Xóa sản phẩm?')"
