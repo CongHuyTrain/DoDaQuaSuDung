@@ -7,7 +7,7 @@ $totalUsers = $conn->query("SELECT COUNT(*) total FROM users")->fetch_assoc()['t
 $totalProducts = $conn->query("SELECT COUNT(*) total FROM products")->fetch_assoc()['total'];
 $totalOrders = $conn->query("SELECT COUNT(*) total FROM orders")->fetch_assoc()['total'];
 $totalRevenue = $conn->query("
-SELECT IFNULL(SUM(total_price),0) total
+SELECT IFNULL(SUM(total_amount),0) total
 FROM orders
 WHERE status='completed'
 ")->fetch_assoc()['total'];
@@ -40,7 +40,7 @@ $latestOrders = $conn->query("
     SELECT
     o.id,
     u.fullname,
-    o.total_price,
+    o.total_amount,
     o.status,
     o.created_at
     FROM orders o
@@ -206,7 +206,7 @@ font-weight:bold;
     <tr>
         <td>#<?= $o["id"] ?></td>
         <td><?= htmlspecialchars($o["fullname"]) ?></td>
-        <td><?= number_format($o["total_price"],0,",",".") ?>đ</td>
+        <td><?= number_format($o["total_amount"],0,",",".") ?>đ</td>
         <td>
         <span class="<?= $o["status"] ?>">
         <?= strtoupper($o["status"]) ?>

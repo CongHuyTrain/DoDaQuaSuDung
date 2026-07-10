@@ -5,7 +5,7 @@ require_once "../config/db.php";
 $result = $conn->query("
     SELECT
         o.id,
-        o.total_price,
+        o.total_amount,
         o.status,
         o.created_at,
         u1.fullname AS buyer_name,
@@ -132,7 +132,7 @@ text-decoration:none;
     <?= htmlspecialchars($o["seller_name"]) ?>
     </td>
     <td>
-    <?= number_format($o["total_price"],0,",",".") ?>đ
+    <?= number_format($o["total_amount"],0,",",".") ?>đ
     </td>
     <td>
     <span class="<?= $o["status"] ?>">

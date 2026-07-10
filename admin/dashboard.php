@@ -38,7 +38,7 @@ LIMIT 5
 $newOrders = $conn->query("
 SELECT
 o.id,
-o.total_price,
+o.total_amount,
 o.status,
 u.fullname AS buyer
 FROM orders o
@@ -210,7 +210,7 @@ font-size:12px;
 
 <td><?= htmlspecialchars($o["buyer"]) ?></td>
 
-    <td><?= number_format($o["total_price"],0,",",".") ?>đ</td>
+    <td><?= number_format($o["total_amount"],0,",",".") ?>đ</td>
 
     <td>
     <span class="badge <?= $o["status"] ?>">
