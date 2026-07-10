@@ -16,11 +16,17 @@ $totalProducts = $conn->query("SELECT COUNT(*) AS total FROM products")->fetch_a
 
 $totalOrders = $conn->query("SELECT COUNT(*) AS total FROM orders")->fetch_assoc()["total"];
 
-$totalRevenue = $conn->query("
-SELECT IFNULL(SUM(total_price),0) AS total
+$result = $conn->query("
+SELECT IFNULL(SUM(total_amount),0) AS total
 FROM orders
 WHERE status='completed'
-")->fetch_assoc()["total"];
+");
+
+if(!$result){
+    die($conn->error);
+}
+
+$totalRevenue = $result->fetch_assoc()['total'];
 
 $newUsers = $conn->query("
 SELECT id,fullname,email,created_at
