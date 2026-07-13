@@ -245,18 +245,18 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 7, 'pending', '2026-07-05 14:18:17', '2026-07-09 13:59:43'),
-(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 5, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:05:19'),
-(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:15'),
-(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:06:39'),
-(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:38'),
-(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'pending', '2026-07-05 14:18:17', '2026-07-10 03:48:34'),
-(7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
-(8, 1, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
-(9, 1, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
-(10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
-(11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
-(12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
+(1, 3, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 7, 'pending', '2026-07-05 14:18:17', '2026-07-09 13:59:43'),
+(2, 3, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 5, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:05:19'),
+(3, 3, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:15'),
+(4, 3, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:06:39'),
+(5, 3, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:38'),
+(6, 3, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'pending', '2026-07-05 14:18:17', '2026-07-10 03:48:34'),
+(7, 3, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
+(8, 3, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
+(9, 3, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
+(10, 3, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
+(11, 3, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
+(12, 3, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
 (13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 6, 'active', '2026-07-07 14:55:53', '2026-07-09 14:23:55');
 
 -- --------------------------------------------------------

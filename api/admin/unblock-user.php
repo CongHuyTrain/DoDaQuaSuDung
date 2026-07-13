@@ -9,7 +9,7 @@ $stmt=$conn->prepare("
     UPDATE users
     SET status='active'
     WHERE id=?
-")
+");
 $stmt->bind_param("i",$id);
 $stmt->execute();
 header("Location: ../../admin/users.php");
