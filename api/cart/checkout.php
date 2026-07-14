@@ -6,230 +6,223 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once "../../config/db.php";
 
 if (!isset($_SESSION["user_id"])) {
-    exit(json_encode([
+    echo json_encode([
         "success" => false,
         "message" => "Bạn chưa đăng nhập."
-    ]));
+    ]);
+    exit;
 }
 
 $user_id = (int)$_SESSION["user_id"];
 
+$payment_method = trim($_POST["payment_method"] ?? "");
+
+if (!in_array($payment_method, ["cod", "momo"])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Phương thức thanh toán không hợp lệ."
+    ]);
+    exit;
+}
+
 /*
-Lấy toàn bộ sản phẩm trong giỏ
+====================================
+Lấy giỏ hàng
+====================================
 */
 
 $sql = "
 SELECT
 c.product_id,
 c.quantity,
-
 p.user_id AS seller_id,
 p.price,
 p.status
-
 FROM cart c
-
 INNER JOIN products p
 ON c.product_id=p.id
-
 WHERE c.user_id=?
 ";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i",$user_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 
 $rs = $stmt->get_result();
 
-$items=[];
+if ($rs->num_rows == 0) {
 
-$total=0;
+    echo json_encode([
+        "success" => false,
+        "message" => "Giỏ hàng đang trống."
+    ]);
 
-while($row=$rs->fetch_assoc()){
+    exit;
+}
 
-    if($row["status"]!="active"){
+$items = [];
+$total = 0;
+$seller_id = 0;
 
-        exit(json_encode([
-            "success"=>false,
-            "message"=>"Có sản phẩm không còn khả dụng."
-        ]));
+while ($row = $rs->fetch_assoc()) {
 
+    if ($row["status"] != "active") {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Có sản phẩm không còn khả dụng."
+        ]);
+
+        exit;
     }
 
-    $items[]=$row;
+    $seller_id = $row["seller_id"];
 
-    $total += $row["price"]*$row["quantity"];
+    $total += $row["price"] * $row["quantity"];
 
+    $items[] = $row;
 }
 
-if(empty($items)){
+$status = "pending";
 
-    exit(json_encode([
-        "success"=>false,
-        "message"=>"Giỏ hàng đang trống."
-    ]));
-
-}
-
-/*
-Hiện tại 1 đơn chỉ cho 1 người bán.
-*/
-
-$seller_id=$items[0]["seller_id"];
-
-foreach($items as $i){
-
-    if($i["seller_id"]!=$seller_id){
-
-        exit(json_encode([
-            "success"=>false,
-            "message"=>"Hiện tại chỉ hỗ trợ thanh toán các sản phẩm cùng một người bán."
-        ]));
-
-    }
-
-}
+$payment_status = ($payment_method == "cod")
+    ? "unpaid"
+    : "pending";
 
 $conn->begin_transaction();
 
-try{
+try {
 
-$status="pending";
+/*
+====================================
+Orders
+====================================
+*/
 
-$stmt=$conn->prepare("
-INSERT INTO orders(
-
+$stmt = $conn->prepare("
+INSERT INTO orders
+(
 buyer_id,
 seller_id,
 total_amount,
-status
-
+status,
+payment_method,
+payment_status
 )
-
-VALUES(
-
-?,?,?,?
-
+VALUES
+(
+?,?,?,?,?,?
 )
 ");
 
 $stmt->bind_param(
-
-"iids",
-
+"iidsss",
 $user_id,
 $seller_id,
 $total,
-$status
-
+$status,
+$payment_method,
+$payment_status
 );
 
 $stmt->execute();
 
-$order_id=$conn->insert_id;
-
+$order_id = $conn->insert_id;
 
 /*
-order_details
+====================================
+Order Details
+====================================
 */
 
-$stmt=$conn->prepare("
-INSERT INTO order_details(
+foreach ($items as $item) {
 
+$stmt = $conn->prepare("
+INSERT INTO order_details
+(
 order_id,
 product_id,
 quantity,
 price
-
 )
-
-VALUES(
-
+VALUES
+(
 ?,?,?,?
-
 )
-
 ");
 
-foreach($items as $i){
-
 $stmt->bind_param(
-
 "iiid",
-
 $order_id,
-$i["product_id"],
-$i["quantity"],
-$i["price"]
-
+$item["product_id"],
+$item["quantity"],
+$item["price"]
 );
 
 $stmt->execute();
 
-}
-
-
 /*
-đổi trạng thái sản phẩm
+Đánh dấu giữ sản phẩm
 */
 
-$stmt=$conn->prepare("
+$stmt = $conn->prepare("
 UPDATE products
 SET status='pending'
 WHERE id=?
 ");
 
-foreach($items as $i++){
-
-}
-foreach($items as $i){
-
-$id=$i["product_id"];
-
-$stmt->bind_param("i",$id);
+$stmt->bind_param(
+"i",
+$item["product_id"]
+);
 
 $stmt->execute();
 
 }
 
-
 /*
-xóa giỏ hàng
+====================================
+Xóa giỏ hàng
+====================================
 */
 
-$stmt=$conn->prepare("
+$stmt = $conn->prepare("
 DELETE FROM cart
 WHERE user_id=?
 ");
 
-$stmt->bind_param("i",$user_id);
+$stmt->bind_param(
+"i",
+$user_id
+);
 
 $stmt->execute();
 
 $conn->commit();
 
+$message =
+($payment_method == "cod")
+?
+"Đặt hàng thành công."
+:
+"Đơn hàng đã được tạo, vui lòng chờ xác nhận thanh toán MoMo.";
+
 echo json_encode([
-
-"success"=>true,
-
-"payment_url"=>"../payment/vnpay_create.php?order_id=".$order_id
-
+"success" => true,
+"message" => $message,
+"order_id" => $order_id
 ]);
 
-}catch(Exception $e){
+}
+catch (Exception $e) {
 
 $conn->rollback();
 
 echo json_encode([
-
-"success"=>false,
-
-"message"=>$e->getMessage()
-
+"success" => false,
+"message" => $e->getMessage()
 ]);
 
 }
 
 $conn->close();
-
-?>

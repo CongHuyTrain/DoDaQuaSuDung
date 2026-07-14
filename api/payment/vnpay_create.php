@@ -1,64 +1,83 @@
 <?php
-
 session_start();
 
 require_once "../config/db.php";
+require_once "config.php";
 
-require_once "config_vnpay.php";
-
-if(!isset($_SESSION["user_id"])){
-
-die("Chưa đăng nhập.");
-
+if (!isset($_SESSION["user_id"])) {
+    die("Bạn chưa đăng nhập.");
 }
 
-$order_id=(int)($_GET["order_id"]??0);
+$user_id = (int)$_SESSION["user_id"];
 
-if($order_id<=0){
+/*
+=====================================
+Lấy toàn bộ giỏ hàng
+=====================================
+*/
 
-die("Order không hợp lệ");
+$sql = "
+SELECT
+c.quantity,
+p.price
+FROM cart c
+INNER JOIN products p
+ON c.product_id=p.id
+WHERE c.user_id=?
+AND p.status='active'
+";
 
-}
-
-$stmt=$conn->prepare("
-
-SELECT *
-
-FROM orders
-
-WHERE id=?
-
-LIMIT 1
-
-");
-
-$stmt->bind_param("i",$order_id);
-
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i",$user_id);
 $stmt->execute();
 
-$order=$stmt->get_result()->fetch_assoc();
+$rs = $stmt->get_result();
 
-if(!$order){
+$total = 0;
 
-die("Không tìm thấy đơn.");
+while($row = $rs->fetch_assoc()){
+
+    $total += $row["price"] * $row["quantity"];
 
 }
 
-$vnp_TxnRef=$order["id"];
+if($total<=0){
 
-$vnp_OrderInfo="Thanh toan don hang #".$order["id"];
+    die("Giỏ hàng đang trống.");
 
-$vnp_OrderType="billpayment";
+}
 
-$vnp_Amount=$order["total_amount"]*100;
+/*
+=====================================
+Mã giao dịch
+=====================================
+*/
 
-$vnp_Locale="vn";
+$vnp_TxnRef =
+date("YmdHis").rand(1000,9999);
 
-$vnp_BankCode="";
+$vnp_OrderInfo =
+"Thanh toan gio hang";
 
-$vnp_IpAddr=$_SERVER["REMOTE_ADDR"];
+$vnp_OrderType = "billpayment";
 
-$inputData=array(
+$vnp_Amount = $total * 100;
+
+$vnp_Locale = "vn";
+
+$vnp_BankCode = "";
+
+$vnp_IpAddr = $_SERVER["REMOTE_ADDR"];
+
+$vnp_CreateDate = date("YmdHis");
+
+$vnp_ExpireDate =
+date(
+"YmdHis",
+strtotime("+15 minutes")
+);
+
+$inputData = [
 
 "vnp_Version"=>"2.1.0",
 
@@ -68,7 +87,7 @@ $inputData=array(
 
 "vnp_Command"=>"pay",
 
-"vnp_CreateDate"=>date("YmdHis"),
+"vnp_CreateDate"=>$vnp_CreateDate,
 
 "vnp_CurrCode"=>"VND",
 
@@ -80,31 +99,37 @@ $inputData=array(
 
 "vnp_OrderType"=>$vnp_OrderType,
 
-"vnp_ReturnUrl"=>$vnp_ReturnUrl,
+"vnp_ReturnUrl"=>$vnp_Returnurl,
 
-"vnp_TxnRef"=>$vnp_TxnRef
+"vnp_TxnRef"=>$vnp_TxnRef,
 
-);
+"vnp_ExpireDate"=>$vnp_ExpireDate
+
+];
 
 ksort($inputData);
 
-$query="";
+$query = "";
 
-$hashdata="";
+$hashdata = "";
 
 foreach($inputData as $key=>$value){
 
-$hashdata.=$key."=".$value."&";
+$hashdata .=
+urlencode($key)."=".
+urlencode($value)."&";
 
-$query.=urlencode($key)."=".urlencode($value)."&";
+$query .=
+urlencode($key)."=".
+urlencode($value)."&";
 
 }
 
-$hashdata=rtrim($hashdata,"&");
+$hashdata = rtrim($hashdata,"&");
 
-$query=rtrim($query,"&");
+$query = rtrim($query,"&");
 
-$vnpSecureHash=hash_hmac(
+$vnpSecureHash = hash_hmac(
 
 "sha512",
 
@@ -114,7 +139,12 @@ $vnp_HashSecret
 
 );
 
-$paymentUrl=$vnp_Url."?".$query."&vnp_SecureHash=".$vnpSecureHash;
+$paymentUrl =
+$vnp_Url
+."?"
+.$query
+."&vnp_SecureHash="
+.$vnpSecureHash;
 
 header("Location: ".$paymentUrl);
 

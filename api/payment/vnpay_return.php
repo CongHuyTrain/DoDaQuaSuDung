@@ -1,119 +1,220 @@
 <?php
+session_start();
 
 require_once "../config/db.php";
+require_once "config.php";
 
-require_once "config_vnpay.php";
+if (!isset($_SESSION["user_id"])) {
+    die("Bạn chưa đăng nhập.");
+}
 
-$vnp_SecureHash=$_GET["vnp_SecureHash"];
+$vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
 
-$data=$_GET;
-
-unset($data["vnp_SecureHash"]);
-
-unset($data["vnp_SecureHashType"]);
+$data = $_GET;
+unset($data['vnp_SecureHash']);
+unset($data['vnp_SecureHashType']);
 
 ksort($data);
 
-$hashData="";
+$hashData = "";
 
-foreach($data as $k=>$v){
-
-$hashData.=$k."=".$v."&";
-
+foreach ($data as $key => $value) {
+    $hashData .= urlencode($key) . "=" . urlencode($value) . "&";
 }
 
-$hashData=rtrim($hashData,"&");
+$hashData = rtrim($hashData, "&");
 
-$secureHash=hash_hmac(
-
-"sha512",
-
-$hashData,
-
-$vnp_HashSecret
-
+$secureHash = hash_hmac(
+    "sha512",
+    $hashData,
+    $vnp_HashSecret
 );
 
-if($secureHash!=$vnp_SecureHash){
+if ($secureHash != $vnp_SecureHash) {
+    die("Sai checksum.");
+}
 
-die("Sai chữ ký.");
+if ($_GET["vnp_ResponseCode"] != "00") {
+
+    die("Thanh toán thất bại.");
 
 }
 
-$order_id=(int)$_GET["vnp_TxnRef"];
+/*
+=================================
+Lấy cart của user
+=================================
+*/
 
-$response=$_GET["vnp_ResponseCode"];
+$user_id = $_SESSION["user_id"];
 
-if($response=="00"){
+$sql = "
+SELECT
+c.product_id,
+c.quantity,
+p.user_id seller_id,
+p.price
+FROM cart c
+JOIN products p
+ON c.product_id=p.id
+WHERE c.user_id=?
+";
 
-$stmt=$conn->prepare("
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i",$user_id);
+$stmt->execute();
 
-UPDATE orders
+$rs = $stmt->get_result();
 
-SET
+if($rs->num_rows==0){
 
-status='paid',
+    die("Giỏ hàng rỗng.");
 
-payment_method='vnpay',
+}
 
-payment_status='paid',
+$conn->begin_transaction();
 
-paid_at=NOW(),
+try{
 
-transaction_no=?
+$total = 0;
 
-WHERE id=?
+$items = [];
 
+while($r=$rs->fetch_assoc()){
+
+    $total += $r["price"]*$r["quantity"];
+
+    $items[] = $r;
+
+}
+
+/*
+=================================
+Seller
+=================================
+*/
+
+$seller = $items[0]["seller_id"];
+
+/*
+=================================
+Orders
+=================================
+*/
+
+$status = "pending";
+
+$payment_method = "vnpay";
+
+$payment_status = "paid";
+
+$stmt = $conn->prepare("
+INSERT INTO orders
+(
+buyer_id,
+seller_id,
+total_amount,
+status,
+payment_method,
+payment_status
+)
+VALUES
+(
+?,?,?,?,?,?
+)
 ");
-
-$txn=$_GET["vnp_TransactionNo"];
 
 $stmt->bind_param(
-
-"si",
-
-$txn,
-
-$order_id
-
+"iidsss",
+$user_id,
+$seller,
+$total,
+$status,
+$payment_method,
+$payment_status
 );
 
 $stmt->execute();
 
-echo "<script>
+$order_id = $conn->insert_id;
 
-alert('Thanh toán thành công');
+/*
+=================================
+Order Details
+=================================
+*/
 
-location='../pages/my-orders.php';
+foreach($items as $item){
 
-</script>";
-
-}else{
-
-$stmt=$conn->prepare("
-
-UPDATE orders
-
-SET
-
-status='cancelled',
-
-payment_status='failed'
-
-WHERE id=?
-
+$stmt = $conn->prepare("
+INSERT INTO order_details
+(
+order_id,
+product_id,
+quantity,
+price
+)
+VALUES
+(
+?,?,?,?
+)
 ");
 
-$stmt->bind_param("i",$order_id);
+$stmt->bind_param(
+"iiid",
+$order_id,
+$item["product_id"],
+$item["quantity"],
+$item["price"]
+);
 
 $stmt->execute();
 
-echo "<script>
+/*
+Product
+*/
 
-alert('Thanh toán thất bại');
+$stmt=$conn->prepare("
+UPDATE products
+SET status='pending'
+WHERE id=?
+");
 
-location='../pages/my-orders.php';
+$stmt->bind_param(
+"i",
+$item["product_id"]
+);
 
-</script>";
+$stmt->execute();
+
+}
+
+/*
+Delete Cart
+*/
+
+$stmt=$conn->prepare("
+DELETE FROM cart
+WHERE user_id=?
+");
+
+$stmt->bind_param(
+"i",
+$user_id
+);
+
+$stmt->execute();
+
+$conn->commit();
+
+header("Location: ../pages/my-orders.php");
+
+exit;
+
+}catch(Exception $e){
+
+$conn->rollback();
+
+die($e->getMessage());
 
 }
