@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once "../../config/db.php";
@@ -14,7 +15,6 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = (int)$_SESSION["user_id"];
 $product_id = isset($_POST["product_id"]) ? (int)$_POST["product_id"] : 0;
-$quantity = isset($_POST["quantity"]) ? max(1, (int)$_POST["quantity"]) : 1;
 
 if ($product_id <= 0) {
     echo json_encode([
@@ -24,15 +24,12 @@ if ($product_id <= 0) {
     exit;
 }
 
-/*==============================
-=      Kiểm tra sản phẩm       =
-==============================*/
+/* Kiểm tra sản phẩm */
 
 $sql = "
 SELECT
     id,
     user_id,
-    price,
     status
 FROM products
 WHERE id = ?
@@ -56,7 +53,7 @@ if (!$product) {
 if ($product["status"] != "active") {
     echo json_encode([
         "success" => false,
-        "message" => "Sản phẩm đã được bán hoặc tạm khóa."
+        "message" => "Sản phẩm không còn khả dụng."
     ]);
     exit;
 }
@@ -64,49 +61,44 @@ if ($product["status"] != "active") {
 if ($product["user_id"] == $user_id) {
     echo json_encode([
         "success" => false,
-        "message" => "Bạn không thể mua sản phẩm của chính mình."
+        "message" => "Không thể thêm sản phẩm của chính mình."
     ]);
     exit;
 }
 
-/*==============================
-=       Lấy giỏ hàng           =
-==============================*/
+/* Lấy cart */
 
-$sql = "
+$stmt = $conn->prepare("
 SELECT id
 FROM cart
-WHERE user_id = ?
+WHERE user_id=?
 LIMIT 1
-";
+");
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i",$user_id);
 $stmt->execute();
 
 $cart = $stmt->get_result()->fetch_assoc();
 
-if (!$cart) {
+if(!$cart){
 
     $stmt = $conn->prepare("
-        INSERT INTO cart(user_id)
-        VALUES(?)
+    INSERT INTO cart(user_id)
+    VALUES(?)
     ");
 
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("i",$user_id);
     $stmt->execute();
 
     $cart_id = $conn->insert_id;
 
-} else {
+}else{
 
     $cart_id = $cart["id"];
 
 }
 
-/*==============================
-=   Kiểm tra cart_items        =
-==============================*/
+/* Kiểm tra đã có chưa */
 
 $stmt = $conn->prepare("
 SELECT
@@ -119,9 +111,9 @@ LIMIT 1
 ");
 
 $stmt->bind_param(
-    "ii",
-    $cart_id,
-    $product_id
+"ii",
+$cart_id,
+$product_id
 );
 
 $stmt->execute();
@@ -130,73 +122,70 @@ $item = $stmt->get_result()->fetch_assoc();
 
 if($item){
 
-    $newQty = $item["quantity"] + $quantity;
-
     $stmt = $conn->prepare("
     UPDATE cart_items
-    SET quantity=?
+    SET quantity=quantity+1
     WHERE id=?
     ");
 
     $stmt->bind_param(
-        "ii",
-        $newQty,
-        $item["id"]
+    "i",
+    $item["id"]
     );
 
     $stmt->execute();
 
 }else{
 
+    $qty = 1;
+
     $stmt = $conn->prepare("
-    INSERT INTO cart_items(
-    cart_id,
-    product_id,
-    quantity,
-    price
+    INSERT INTO cart_items
+    (
+        cart_id,
+        product_id,
+        quantity
     )
-    VALUES(
-    ?,?,?,?
+    VALUES
+    (
+        ?,?,?
     )
     ");
 
     $stmt->bind_param(
-        "iiid",
-        $cart_id,
-        $product_id,
-        $quantity,
-        $product["price"]
+    "iii",
+    $cart_id,
+    $product_id,
+    $qty
     );
 
     $stmt->execute();
 
 }
 
-/*==============================
-=    Update thời gian cart     =
-==============================*/
+/* Đếm số lượng */
 
-$conn->query("
-UPDATE cart
-SET updated_at=NOW()
-WHERE id=".$cart_id);
-
-/*==============================
-=     Đếm số sản phẩm          =
-==============================*/
-
-$rs = $conn->query("
+$stmt = $conn->prepare("
 SELECT
-SUM(quantity) total
+IFNULL(SUM(quantity),0) total
 FROM cart_items
-WHERE cart_id=".$cart_id);
+WHERE cart_id=?
+");
 
-$total = (int)$rs->fetch_assoc()["total"];
+$stmt->bind_param("i",$cart_id);
+
+$stmt->execute();
+
+$total = $stmt->get_result()->fetch_assoc()["total"];
 
 echo json_encode([
+
     "success"=>true,
+
     "message"=>"Đã thêm vào giỏ hàng.",
-    "cart_count"=>$total
-]);
+
+    "count"=>(int)$total
+
+],JSON_UNESCAPED_UNICODE);
 
 $conn->close();

@@ -383,13 +383,67 @@ document.querySelector(".pd-specs").appendChild(tr);
                 const statusMsg = p.status === 'sold'
                     ? '✅ Sản phẩm đã được bán'
                     : '⏳ Sản phẩm đang có người đặt mua';
-                document.getElementById('pd-action').innerHTML =
+                document.getElementById('pd-action').innerHTML = user ? `
+<button class="pd-btn-cart" onclick="addToCart(${p.id})">
+🛒 Thêm vào giỏ
+</button>
+
+<button class="pd-btn-buy" onclick="buyNow(${p.id})">
+⚡ Mua ngay
+</button>
+`
+:
+`<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}"
+class="pd-btn-buy">
+🔑 Đăng nhập để mua
+</a>`;
                     `<div class="pd-btn-buy" style="background:#94a3b8; cursor:not-allowed;">${statusMsg}</div>`;
             } else {
-                document.getElementById('pd-action').innerHTML = user
-        ? `<a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">🛒 Đặt mua ngay</a>`
-        : `<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}" class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
-            }
+
+    if(user){
+
+        document.getElementById("pd-action").innerHTML = `
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+
+            <button
+                class="pd-btn-cart"
+                onclick="addToCart(${p.id})">
+
+                🛒 Thêm vào giỏ
+
+            </button>
+
+            <a
+                href="pages/order-create.php?product_id=${p.id}"
+                class="pd-btn-buy">
+
+                ⚡ Đặt mua ngay
+
+            </a>
+
+        </div>
+
+        `;
+
+    }else{
+
+        document.getElementById("pd-action").innerHTML = `
+
+        <a
+        href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}
+        "
+        class="pd-btn-buy">
+
+        🔑 Đăng nhập để mua
+
+        </a>
+
+        `;
+
+    }
+
+}
 
             // Người bán
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
@@ -420,6 +474,104 @@ document.querySelector(".pd-specs").appendChild(tr);
             console.error(err);
         });
 }
+function addToCart(productId){
+
+    fetch("api/cart/add.php",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"product_id="+productId
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        alert(data.message);
+
+        if(data.success){
+
+            // nếu có badge trên header thì cập nhật luôn
+
+            const badge=document.getElementById("nav-cart-count");
+
+            if(badge){
+
+                badge.style.display="inline-block";
+
+                badge.innerHTML=data.count;
+
+            }
+
+        }
+
+    })
+
+    .catch(()=>{
+
+        alert("Không thể thêm vào giỏ hàng.");
+
+    });
+
+}
+function addToCart(productId){
+
+    fetch("api/cart/add.php",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"product_id="+productId
+
+    })
+
+    .then(r=>r.json())
+
+    .then(res=>{
+
+        alert(res.message);
+
+        if(res.success){
+            location.href="pages/cart.php";
+        }
+
+    });
+
+}
+function buyNow(productId) {
+
+    fetch("api/cart/buy_now.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "product_id=" + productId
+    })
+    .then(r => r.json())
+    .then(data => {
+
+        if (data.success) {
+
+            window.location = "pages/cart.php";
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    });
+
+}
 </script>
+
 </body>
 </html>
