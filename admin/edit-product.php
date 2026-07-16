@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once "../config/db.php";
+require_once "inc/auth.php";
 
 if (!isset($_GET["id"])) {
     die("Thiếu ID sản phẩm.");
@@ -8,10 +7,12 @@ if (!isset($_GET["id"])) {
 
 $id = (int)$_GET["id"];
 
-/* Lấy danh mục */
-$categories = $conn->query("SELECT id,name FROM categories ORDER BY name");
+/* Danh sách trạng thái hợp lệ - PHẢI khớp với enum cột products.status trong DB.
+   (Xem sql/fix-schema.sql để mở rộng enum nếu muốn dùng 'hidden' / 'rejected'.) */
+$validStatuses = ["pending", "active", "sold", "hidden", "rejected", "deleted"];
 
-/* Lấy thông tin sản phẩm */
+$categories = $conn->query("SELECT id, name FROM categories ORDER BY name");
+
 $stmt = $conn->prepare("SELECT * FROM products WHERE id=?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -21,64 +22,86 @@ if (!$product) {
     die("Không tìm thấy sản phẩm.");
 }
 
-/* Cập nhật */
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$error = null;
 
-    $title = trim($_POST["title"]);
-    $description = trim($_POST["description"]);
-    $price = $_POST["price"];
-    $category_id = $_POST["category_id"];
-    $condition_item = $_POST["condition_item"];
-    $location = trim($_POST["location"]);
-    $status = $_POST["status"];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $title = trim($_POST["title"] ?? "");
+    $description = trim($_POST["description"] ?? "");
+    $price = $_POST["price"] ?? 0;
+    $category_id = (int)($_POST["category_id"] ?? 0);
+    $condition_item = $_POST["condition_item"] ?? "good";
+    $location = trim($_POST["location"] ?? "");
+    $status = $_POST["status"] ?? "pending";
+
+    if ($title === "") {
+        $error = "Tên sản phẩm không được để trống.";
+    } elseif (!is_numeric($price) || (float)$price < 0) {
+        $error = "Giá sản phẩm không hợp lệ.";
+    } elseif (!in_array($status, $validStatuses, true)) {
+        // Đây chính là lỗi từng khiến sản phẩm #3 bị lưu status = '' (rỗng):
+        // trước đây form gửi lên giá trị không nằm trong enum của cột products.status,
+        // MySQL tự chuyển thành chuỗi rỗng và sản phẩm biến mất khỏi mọi bộ lọc.
+        $error = "Trạng thái không hợp lệ.";
+    }
 
     $image = $product["image"];
 
-    if (
-        isset($_FILES["image"]) &&
-        $_FILES["image"]["error"] == 0
-    ) {
+    if (!$error && isset($_FILES["image"]) && $_FILES["image"]["error"] === UPLOAD_ERR_OK) {
 
-        $filename = time() . "_" . basename($_FILES["image"]["name"]);
-        $target = "../uploads/" . $filename;
+        $allowedExt = ["jpg", "jpeg", "png", "webp"];
+        $ext = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+        $maxSize = 5 * 1024 * 1024; // 5MB
 
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target)) {
-            $image = "uploads/" . $filename;
+        if (!in_array($ext, $allowedExt, true)) {
+            $error = "Chỉ chấp nhận ảnh định dạng JPG, PNG hoặc WEBP.";
+        } elseif ($_FILES["image"]["size"] > $maxSize) {
+            $error = "Ảnh không được vượt quá 5MB.";
+        } else {
+            $filename = time() . "_" . preg_replace('/[^a-zA-Z0-9._-]/', '', basename($_FILES["image"]["name"]));
+            $target = "../uploads/" . $filename;
+
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $target)) {
+                $image = "uploads/" . $filename;
+            } else {
+                $error = "Tải ảnh lên thất bại.";
+            }
         }
     }
 
-    $update = $conn->prepare("
-        UPDATE products
-        SET
-            title=?,
-            description=?,
-            price=?,
-            category_id=?,
-            image=?,
-            condition_item=?,
-            location=?,
-            status=?
-        WHERE id=?
-    ");
+    if (!$error) {
+        $update = $conn->prepare("
+            UPDATE products
+            SET
+                title=?,
+                description=?,
+                price=?,
+                category_id=?,
+                image=?,
+                condition_item=?,
+                location=?,
+                status=?
+            WHERE id=?
+        ");
 
-    $update->bind_param(
-        "ssdissssi",
-        $title,
-        $description,
-        $price,
-        $category_id,
-        $image,
-        $condition_item,
-        $location,
-        $status,
-        $id
-    );
+        $update->bind_param(
+            "ssdissssi",
+            $title,
+            $description,
+            $price,
+            $category_id,
+            $image,
+            $condition_item,
+            $location,
+            $status,
+            $id
+        );
 
-    if ($update->execute()) {
-        header("Location: products.php");
-        exit;
-    } else {
-        $error = "Cập nhật thất bại!";
+        if ($update->execute()) {
+            header("Location: products.php");
+            exit;
+        }
+        $error = "Cập nhật thất bại: " . $conn->error;
     }
 }
 ?>
@@ -87,247 +110,119 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Chỉnh sửa sản phẩm</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chỉnh sửa sản phẩm – Đồ Cũ VN Admin</title>
 <link rel="stylesheet" href="../assets/css/admin.css">
-
-<style>
-
-body{
-    font-family:Arial;
-    background:#eef2f7;
-}
-
-.wrapper{
-    display:flex;
-}
-
-.content{
-    margin-left:240px;
-    width:calc(100% - 240px);
-    padding:30px;
-}
-
-.form-box{
-    background:#fff;
-    padding:25px;
-    border-radius:10px;
-    box-shadow:0 5px 20px rgba(0,0,0,.1);
-}
-
-.form-group{
-    margin-bottom:18px;
-}
-
-label{
-    display:block;
-    margin-bottom:6px;
-    font-weight:bold;
-}
-
-input,
-textarea,
-select{
-
-    width:100%;
-    padding:10px;
-    border:1px solid #ccc;
-    border-radius:6px;
-    box-sizing:border-box;
-}
-
-textarea{
-    resize:vertical;
-    height:120px;
-}
-
-img{
-    width:160px;
-    border-radius:8px;
-    margin-top:10px;
-}
-
-.btn{
-    padding:10px 20px;
-    border:none;
-    border-radius:6px;
-    color:white;
-    text-decoration:none;
-    cursor:pointer;
-    font-size:15px;
-}
-
-.save{
-    background:#16a34a;
-}
-
-.cancel{
-    background:#64748b;
-}
-
-.error{
-    color:red;
-    margin-bottom:15px;
-}
-
-</style>
-
 </head>
-
 <body>
 
-<div class="wrapper">
+<div class="admin-wrapper">
 
-<?php include "sidebar.php"; ?>
+    <?php include "sidebar.php"; ?>
 
-<div class="content">
+    <main class="admin-main">
 
-<h1>Chỉnh sửa sản phẩm</h1>
+        <div class="admin-topbar">
+            <div>
+                <h1>Chỉnh sửa sản phẩm</h1>
+                <div class="subtitle">#<?= (int)$product["id"] ?> — <?= e($product["title"]) ?></div>
+            </div>
+            <a href="products.php" class="btn btn-outline">← Quay lại</a>
+        </div>
 
-<div class="form-box">
+        <div class="panel">
 
-<?php
-if(isset($error)){
-    echo "<p class='error'>$error</p>";
-}
-?>
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?= e($error) ?></div>
+            <?php endif; ?>
 
-<form method="POST" enctype="multipart/form-data">
+            <?php if (trim((string)$product["status"]) === ""): ?>
+                <div class="alert alert-info">
+                    ⚠️ Sản phẩm này đang có trạng thái không hợp lệ trong dữ liệu gốc (rỗng).
+                    Hãy chọn lại một trạng thái hợp lệ ở bên dưới rồi lưu để sửa lỗi.
+                </div>
+            <?php endif; ?>
 
-<div class="form-group">
-<label>Tên sản phẩm</label>
-<input
-type="text"
-name="title"
-required
-value="<?= htmlspecialchars($product["title"]) ?>">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>Tên sản phẩm</label>
+                        <input type="text" name="title" required value="<?= e($product["title"]) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Giá (đ)</label>
+                        <input type="number" name="price" min="0" step="1000" required value="<?= e($product["price"]) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Danh mục</label>
+                        <select name="category_id">
+                            <?php $categories->data_seek(0); while ($c = $categories->fetch_assoc()): ?>
+                                <option value="<?= (int)$c["id"] ?>" <?= (int)$c["id"] === (int)$product["category_id"] ? "selected" : "" ?>>
+                                    <?= e($c["name"]) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tình trạng</label>
+                        <select name="condition_item">
+                            <option value="new" <?= $product["condition_item"] === "new" ? "selected" : "" ?>>Mới</option>
+                            <option value="like_new" <?= $product["condition_item"] === "like_new" ? "selected" : "" ?>>Như mới</option>
+                            <option value="good" <?= $product["condition_item"] === "good" ? "selected" : "" ?>>Tốt</option>
+                            <option value="fair" <?= $product["condition_item"] === "fair" ? "selected" : "" ?>>Khá</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Mô tả</label>
+                        <textarea name="description"><?= e($product["description"]) ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa điểm</label>
+                        <input type="text" name="location" value="<?= e($product["location"]) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <select name="status">
+                            <option value="pending"  <?= $product["status"] === "pending"  ? "selected" : "" ?>>Chờ duyệt</option>
+                            <option value="active"   <?= $product["status"] === "active"   ? "selected" : "" ?>>Đang bán</option>
+                            <option value="sold"     <?= $product["status"] === "sold"     ? "selected" : "" ?>>Đã bán</option>
+                            <option value="hidden"   <?= $product["status"] === "hidden"   ? "selected" : "" ?>>Đã ẩn</option>
+                            <option value="rejected" <?= $product["status"] === "rejected" ? "selected" : "" ?>>Từ chối</option>
+                        </select>
+                        <div class="hint">Cần chạy sql/fix-schema.sql một lần để DB chấp nhận "Đã ẩn" / "Từ chối".</div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Ảnh hiện tại</label>
+                        <img class="current-image" src="../<?= e($product["image"]) ?>" alt="">
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Chọn ảnh mới (nếu muốn)</label>
+                        <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
+                        <div class="hint">Định dạng JPG / PNG / WEBP, tối đa 5MB.</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary">Lưu thay đổi</button>
+                        <a href="products.php" class="btn btn-outline">Hủy</a>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+    </main>
 </div>
 
-<div class="form-group">
-<label>Giá</label>
-<input
-type="number"
-name="price"
-required
-value="<?= $product["price"] ?>">
-</div>
-
-<div class="form-group">
-<label>Danh mục</label>
-
-<select name="category_id">
-
-<?php
-$categories->data_seek(0);
-
-while($c = $categories->fetch_assoc()){
-?>
-
-<option
-value="<?= $c["id"] ?>"
-<?= $c["id"]==$product["category_id"]?"selected":"" ?>>
-<?= htmlspecialchars($c["name"]) ?>
-</option>
-
-<?php } ?>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>Mô tả</label>
-
-<textarea
-name="description"><?= htmlspecialchars($product["description"]) ?></textarea>
-
-</div>
-
-<div class="form-group">
-
-<label>Tình trạng</label>
-
-<select name="condition_item">
-
-<option value="new" <?= $product["condition_item"]=="new"?"selected":"" ?>>Mới</option>
-
-<option value="like_new" <?= $product["condition_item"]=="like_new"?"selected":"" ?>>Như mới</option>
-
-<option value="good" <?= $product["condition_item"]=="good"?"selected":"" ?>>Tốt</option>
-
-<option value="fair" <?= $product["condition_item"]=="fair"?"selected":"" ?>>Khá</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>Địa điểm</label>
-
-<input
-type="text"
-name="location"
-value="<?= htmlspecialchars($product["location"]) ?>">
-
-</div>
-
-<div class="form-group">
-
-<label>Trạng thái</label>
-
-<select name="status">
-
-<option value="pending" <?= $product["status"]=="pending"?"selected":"" ?>>Pending</option>
-
-<option value="active" <?= $product["status"]=="active"?"selected":"" ?>>Active</option>
-
-<option value="sold" <?= $product["status"]=="sold"?"selected":"" ?>>Sold</option>
-
-<option value="hidden" <?= $product["status"]=="hidden"?"selected":"" ?>>Hidden</option>
-
-<option value="rejected" <?= $product["status"]=="rejected"?"selected":"" ?>>Rejected</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>Ảnh hiện tại</label>
-
-<br>
-
-<img src="../<?= htmlspecialchars($product["image"]) ?>">
-
-</div>
-
-<div class="form-group">
-
-<label>Chọn ảnh mới (nếu muốn)</label>
-
-<input type="file" name="image">
-
-</div>
-
-<button class="btn save">
-Lưu thay đổi
-</button>
-
-<a
-href="products.php"
-class="btn cancel">
-Quay lại
-</a>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
+<script src="../assets/js/admin.js"></script>
 </body>
 </html>

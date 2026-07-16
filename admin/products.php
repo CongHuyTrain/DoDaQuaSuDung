@@ -1,201 +1,132 @@
 <?php
-session_start();
-require_once "../config/db.php";
+require_once "inc/auth.php";
+
 $keyword = trim($_GET["keyword"] ?? "");
-if ($keyword != "") {
+
+if ($keyword !== "") {
     $stmt = $conn->prepare("
         SELECT
             p.*,
-            c.name category_name,
-            u.fullname seller_name
+            c.name AS category_name,
+            u.fullname AS seller_name
         FROM products p
-        LEFT JOIN categories c ON p.category_id=c.id
-        LEFT JOIN users u ON p.user_id=u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN users u ON p.user_id = u.id
         WHERE p.title LIKE ?
         ORDER BY p.created_at DESC
     ");
-
-    $like="%".$keyword."%";
-    $stmt->bind_param("s",$like);
+    $like = "%" . $keyword . "%";
+    $stmt->bind_param("s", $like);
     $stmt->execute();
-    $result=$stmt->get_result();
-
-}else{
-
-    $result=$conn->query("
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query("
         SELECT
             p.*,
-            c.name category_name,
-            u.fullname seller_name
+            c.name AS category_name,
+            u.fullname AS seller_name
         FROM products p
-        LEFT JOIN categories c ON p.category_id=c.id
-        LEFT JOIN users u ON p.user_id=u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN users u ON p.user_id = u.id
         ORDER BY p.created_at DESC
     ");
-
 }
 ?>
-
 <!DOCTYPE html>
-    <html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <title>Quản lý sản phẩm</title>
-        <link rel="stylesheet" href="../assets/css/admin.css">
-        <style>
-body{
-font-family:Arial;
-background:#eef2f7;
-margin:0;
-}
-.blue{
-    background:#2563eb;
-}
-
-.blue:hover{
-    background:#1d4ed8;
-}
-.wrapper{
-display:flex;
-}
-
-.content{
-margin-left:240px;
-width:calc(100% - 240px);
-padding:30px;
-box-sizing:border-box;
-}
-
-.container{
-width:100%;
-margin:0;
-padding:0;
-}
-
-table{
-width:100%;
-background:#fff;
-border-collapse:collapse;
-box-shadow:0 10px 25px rgba(0,0,0,.08);
-}
-
-th{
-background:#2563eb;
-color:white;
-padding:15px;
-}
-
-td{
-padding:12px;
-text-align:center;
-border-bottom:1px solid #eee;
-}
-
-img{
-width:70px;
-height:70px;
-object-fit:cover;
-border-radius:8px;
-}
-
-.btn{
-padding:8px 14px;
-border-radius:8px;
-text-decoration:none;
-color:#fff;
-font-weight:bold;
-display:inline-block;
-margin:2px;
-}
-
-.green{background:#16a34a;}
-.red{background:#dc2626;}
-.gray{background:#475569;}
-.pending{color:#f59e0b;font-weight:bold;}
-.active{color:#16a34a;font-weight:bold;}
-.sold{color:#2563eb;font-weight:bold;}
-.rejected{color:red;font-weight:bold;}
-    </style>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý sản phẩm – Đồ Cũ VN Admin</title>
+<link rel="stylesheet" href="../assets/css/admin.css">
 </head>
-
 <body>
-    <div class="wrapper">
-        <?php include "sidebar.php"; ?>
-    <div class="content">
-        <h1>Quản lý sản phẩm</h1>
-    <div class="container">
-    <form method="GET" style="margin-bottom:20px">
-    <input
-    type="text"
-    name="keyword"
-    placeholder="Tìm sản phẩm..."
-    value="<?= htmlspecialchars($keyword) ?>"
-    style="padding:10px;width:300px;">
-    <button style="padding:10px 18px">
-    Tìm
-    </button>
-</form>
-<div style="margin:20px 0;">
-    <a href="../add-product.html" class="btn green">
-        + Thêm sản phẩm
-    </a>
-</div>
-<table>
-<tr>
-    <th>ID</th>
-    <th>Ảnh</th>
-    <th>Tên</th>
-    <th>Danh mục</th>
-    <th>Người đăng</th>
-    <th>Giá</th>
-    <th>Trạng thái</th>
-    <th>Hành động</th>
-    </tr>
-    <?php while($p=$result->fetch_assoc()){ ?>
-    <tr>
-        <td><?= $p["id"] ?></td>
-        <td>
-        <img src="../<?= htmlspecialchars($p["image"]) ?>">
-        </td>
-        <td><?= htmlspecialchars($p["title"]) ?></td>
-        <td><?= htmlspecialchars($p["category_name"]) ?></td>
-        <td><?= htmlspecialchars($p["seller_name"]) ?></td>
-        <td><?= number_format($p["price"],0,",",".") ?>đ</td>
-        <td>
-        <span class="<?= $p["status"] ?>">
-        <?= strtoupper($p["status"]) ?>
-        </span>
-        </td>
-        <td>
-        <?php if($p["status"]=="pending"){ ?>
-        <a
-        class="btn green"
-        href="../api/admin/approve.php?id=<?= $p["id"] ?>">
-        Duyệt
-        </a>
-        <a
-        class="btn red"
-        href="../api/admin/reject.php?id=<?= $p["id"] ?>">
-        Từ chối
-        </a>
-<?php } ?>
-    <a
-        class="btn blue"
-        href="edit-product.php?id=<?= $p["id"] ?>">
-        Chỉnh sửa
-    </a>
-    <a
-        class="btn gray"
-        onclick="return confirm('Xóa sản phẩm?')"
-        href="../api/admin/delete-product.php?id=<?= $p["id"] ?>">
-        Xóa
-    </a>
-        </td>
-        </tr>
-        <?php } ?>
-        </table>
+
+<div class="admin-wrapper">
+
+    <?php include "sidebar.php"; ?>
+
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+            <div>
+                <h1>📦 Quản lý sản phẩm</h1>
+                <div class="subtitle"><?= $result->num_rows ?> sản phẩm<?= $keyword !== "" ? " khớp với \"" . e($keyword) . "\"" : "" ?></div>
+            </div>
+            <a href="../add-product.html" class="btn btn-primary">+ Thêm sản phẩm</a>
         </div>
-    </div>
-    </div>
+
+        <div class="panel">
+
+            <form method="GET" class="filter-bar">
+                <input type="text" name="keyword" placeholder="Tìm sản phẩm theo tên..." value="<?= e($keyword) ?>">
+                <button class="btn btn-outline">Tìm</button>
+                <?php if ($keyword !== ""): ?>
+                    <a href="products.php" class="btn btn-neutral btn-sm">Xóa lọc</a>
+                <?php endif; ?>
+            </form>
+
+            <div class="table-scroll">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ảnh</th>
+                        <th>Tên</th>
+                        <th>Danh mục</th>
+                        <th>Người đăng</th>
+                        <th>Giá</th>
+                        <th class="center">Trạng thái</th>
+                        <th class="center">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($result->num_rows === 0): ?>
+                        <tr class="empty-row"><td colspan="8">Không có sản phẩm nào.</td></tr>
+                    <?php else: while ($p = $result->fetch_assoc()):
+                        [$label, $cls] = statusBadge($p["status"]);
+                    ?>
+                        <tr>
+                            <td>#<?= (int)$p["id"] ?></td>
+                            <td><img class="thumb" src="../<?= e($p["image"]) ?>" alt="<?= e($p["title"]) ?>"></td>
+                            <td><?= e($p["title"]) ?></td>
+                            <td><?= $p["category_name"] !== null ? e($p["category_name"]) : "<em>—</em>" ?></td>
+                            <td><?= $p["seller_name"] !== null ? e($p["seller_name"]) : "<em>(tài khoản đã xóa)</em>" ?></td>
+                            <td><?= money($p["price"]) ?></td>
+                            <td class="center"><span class="badge <?= $cls ?>"><?= e($label) ?></span></td>
+                            <td class="center">
+                                <div class="action-group">
+                                <?php if ($p["status"] === "pending"): ?>
+                                    <a class="btn btn-sm btn-success"
+                                       href="../api/admin/approve.php?id=<?= (int)$p["id"] ?>">
+                                        Duyệt
+                                    </a>
+                                    <a class="btn btn-sm btn-danger"
+                                       href="../api/admin/reject.php?id=<?= (int)$p["id"] ?>"
+                                       onclick="return confirmAction('Từ chối sản phẩm này?')">
+                                        Từ chối
+                                    </a>
+                                <?php endif; ?>
+                                    <a class="btn btn-sm btn-outline" href="edit-product.php?id=<?= (int)$p["id"] ?>">
+                                        Sửa
+                                    </a>
+                                    <a class="btn btn-sm btn-neutral"
+                                       onclick="return confirmAction('Xóa sản phẩm này? Hành động không thể hoàn tác.')"
+                                       href="../api/admin/delete-product.php?id=<?= (int)$p["id"] ?>">
+                                        Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="../assets/js/admin.js"></script>
 </body>
 </html>

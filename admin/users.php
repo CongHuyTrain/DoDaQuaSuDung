@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once "../config/db.php";
+require_once "inc/auth.php";
+
 $result = $conn->query("
     SELECT *
     FROM users
@@ -9,187 +9,84 @@ $result = $conn->query("
 ?>
 <!DOCTYPE html>
 <html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <title>Quản lý người dùng</title>
-        <link rel="stylesheet" href="../assets/css/admin.css">
-        <style>
-
-body{
-margin:0;
-background:#eef2f7;
-font-family:Arial;
-}
-.wrapper{
-display:flex;
-}
-
-.content{
-margin-left:240px;
-width:calc(100% - 240px);
-padding:30px;
-box-sizing:border-box;
-}
-
-.container{
-width:100%;
-padding:0;
-}
-
-.container{
-width:100%;
-margin:0;
-padding:0;
-}
-
-h1{
-margin-bottom:25px;
-}
-
-table{
-width:100%;
-background:white;
-border-collapse:collapse;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,.06);
-}
-
-th{
-background:#2563eb;
-color:white;
-padding:15px;
-}
-
-td{
-padding:15px;
-border-bottom:1px solid #eee;
-text-align:center;
-}
-
-img{
-width:55px;
-height:55px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.badge{
-padding:5px 12px;
-border-radius:20px;
-color:white;
-font-size:13px;
-}
-
-.active{
-background:#16a34a;
-}
-
-.blocked{
-background:#dc2626;
-}
-
-.btn{
-padding:8px 15px;
-text-decoration:none;
-border-radius:8px;
-color:white;
-font-weight:bold;
-}
-.block{
-background:#dc2626;
-}
-.unblock{
-background:#16a34a;
-}
-
-    </style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý người dùng – Đồ Cũ VN Admin</title>
+<link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
-    <div class="wrapper">
-        <?php include "sidebar.php"; ?>
-    <div class="content">
-    <h1> Quản lý người dùng </h1>
-    <div class="container">
-<table>
-<tr>
-    <th>ID</th>
-    <th>Avatar</th>
-    <th>Họ tên</th>
-    <th>Email</th>
-    <th>SĐT</th>
-    <th>Vai trò</th>
-    <th>Trạng thái</th>
-    <th>Hành động</th>
-</tr>
-    <?php
-    while($u=$result->fetch_assoc()){
-    ?>
-<tr>
-    <td><?= $u["id"] ?></td>
-    <td>
-    <?php
-    $avatar = !empty($u["avatar"]) ? $u["avatar"] : "../assets/images/avatar.png";
-    ?>
-    <img src="<?= htmlspecialchars($avatar) ?>">
-    </td>
-    <td>
-    <?= htmlspecialchars($u["fullname"]) ?>
-    </td>
-    <td>
-    <?= htmlspecialchars($u["email"]) ?>
-    </td>
-    <td>
-    <?= htmlspecialchars($u["phone"]) ?>
-    </td>
-    <td>
-    <?= strtoupper($u["role"]) ?>
-    </td>
-    <td>
-<?php
-    if($u["status"]=="active"){
- ?>
-    <span class="badge active">
-    ACTIVE
-    </span>
-<?php
-    }else{
-?>
-    <span class="badge blocked">
-    BLOCKED
-    </span>
-<?php
-    }
-?>
-    </td>
-    <td>
-    <?php
-    if($u["status"]=="active"){
-    ?>
-    <a
-    class="btn block"
-    href="../api/admin/block-user.php?id=<?= $u["id"] ?>">
-    Khóa
-    </a>
-    <?php
-    }else{
-    ?>
-    <a
-    class="btn unblock"
-    href="../api/admin/unblock-user.php?id=<?= $u["id"] ?>">
-    Mở khóa
-    </a>
-    <?php
-    }
-    ?>
-    </td>
-</tr>
-<?php
-    }
-?>
-</table>
+
+<div class="admin-wrapper">
+
+    <?php include "sidebar.php"; ?>
+
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+            <div>
+                <h1>👥 Quản lý người dùng</h1>
+                <div class="subtitle"><?= $result->num_rows ?> tài khoản</div>
+            </div>
         </div>
-    </div>
-    </div>
+
+        <div class="panel">
+            <div class="table-scroll">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Avatar</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Vai trò</th>
+                        <th class="center">Trạng thái</th>
+                        <th class="center">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($result->num_rows === 0): ?>
+                        <tr class="empty-row"><td colspan="8">Chưa có người dùng nào.</td></tr>
+                    <?php else: while ($u = $result->fetch_assoc()):
+                        $avatar = !empty($u["avatar"]) ? "../" . $u["avatar"] : "../assets/images/avatar.png";
+                        [$label, $cls] = statusBadge($u["status"]);
+                    ?>
+                        <tr>
+                            <td>#<?= (int)$u["id"] ?></td>
+                            <td><img class="thumb round" src="<?= e($avatar) ?>" alt="avatar"></td>
+                            <td><?= e($u["fullname"]) ?></td>
+                            <td><?= e($u["email"]) ?></td>
+                            <td><?= e($u["phone"]) ?></td>
+                            <td><?= e(strtoupper($u["role"])) ?></td>
+                            <td class="center"><span class="badge <?= $cls ?>"><?= e($label) ?></span></td>
+                            <td class="center">
+                                <div class="action-group">
+                                <?php if ($u["status"] === "active"): ?>
+                                    <a class="btn btn-sm btn-danger"
+                                       href="../api/admin/block-user.php?id=<?= (int)$u["id"] ?>"
+                                       onclick="return confirmAction('Khóa tài khoản này?')">
+                                        Khóa
+                                    </a>
+                                <?php else: ?>
+                                    <a class="btn btn-sm btn-success"
+                                       href="../api/admin/unblock-user.php?id=<?= (int)$u["id"] ?>"
+                                       onclick="return confirmAction('Mở khóa tài khoản này?')">
+                                        Mở khóa
+                                    </a>
+                                <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endwhile; endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="../assets/js/admin.js"></script>
 </body>
 </html>
