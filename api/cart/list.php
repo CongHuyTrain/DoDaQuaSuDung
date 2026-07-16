@@ -1,77 +1,120 @@
 <?php
 session_start();
+
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once "../../config/db.php";
 
-if (!isset($_SESSION["user_id"])) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Bạn chưa đăng nhập."
-    ]);
-    exit;
+if(!isset($_SESSION["user_id"])){
+
+echo json_encode([
+"success"=>false
+]);
+
+exit;
+
 }
 
-$user_id = $_SESSION["user_id"];
+$user_id=(int)$_SESSION["user_id"];
 
-$sql = "
-SELECT
-    c.id AS cart_id,
-    ci.id AS cart_item_id,
-    ci.quantity,
+$stmt=$conn->prepare("
 
-    p.id AS product_id,
-    p.title,
-    p.price,
-    p.image,
-    p.location,
-    p.condition_item,
-    p.status,
+SELECT id
+FROM cart
+WHERE user_id=?
+LIMIT 1
 
-    u.fullname AS seller_name
+");
 
-FROM cart c
-
-INNER JOIN cart_items ci
-ON c.id = ci.cart_id
-
-INNER JOIN products p
-ON ci.product_id = p.id
-
-LEFT JOIN users u
-ON p.user_id = u.id
-
-WHERE c.user_id = ?
-
-ORDER BY ci.id DESC
-";
-
-$stmt = $conn->prepare($sql);
 $stmt->bind_param("i",$user_id);
+
 $stmt->execute();
 
-$rs = $stmt->get_result();
+$cart=$stmt->get_result()->fetch_assoc();
 
-$items = [];
-$total = 0;
+if(!$cart){
 
-while($row = $rs->fetch_assoc()){
+echo json_encode([
 
-    $row["subtotal"] = $row["price"] * $row["quantity"];
-    $row["price_formatted"] = number_format($row["price"],0,",",".")." đ";
-    $row["subtotal_formatted"] = number_format($row["subtotal"],0,",",".")." đ";
+"success"=>true,
 
-    $total += $row["subtotal"];
+"items"=>[]
 
-    $items[] = $row;
+]);
+
+exit;
+
+}
+
+$cart_id=$cart["id"];
+
+$stmt=$conn->prepare("
+
+SELECT
+
+ci.id AS cart_item_id,
+
+ci.product_id,
+
+ci.quantity,
+
+p.title,
+
+p.price,
+
+p.image,
+
+p.status,
+
+p.location,
+
+p.condition_item,
+
+u.fullname AS seller
+
+FROM cart_items ci
+
+JOIN products p
+ON ci.product_id=p.id
+
+JOIN users u
+ON p.user_id=u.id
+
+WHERE ci.cart_id=?
+
+ORDER BY ci.id DESC
+
+");
+
+$stmt->bind_param("i",$cart_id);
+
+$stmt->execute();
+
+$rs=$stmt->get_result();
+
+$items=[];
+
+$total=0;
+
+while($r=$rs->fetch_assoc()){
+
+$r["subtotal"]=
+$r["price"]*$r["quantity"];
+
+$total+=$r["subtotal"];
+
+$items[]=$r;
+
 }
 
 echo json_encode([
-    "success"=>true,
-    "items"=>$items,
-    "total"=>$total,
-    "total_formatted"=>number_format($total,0,",",".")." đ"
-],JSON_UNESCAPED_UNICODE);
 
-$stmt->close();
+"success"=>true,
+
+"items"=>$items,
+
+"total"=>$total
+
+]);
+
 $conn->close();

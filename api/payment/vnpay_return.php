@@ -3,6 +3,7 @@ session_start();
 
 require_once "../config/db.php";
 require_once "config.php";
+require_once "../api/order/create_order.php";
 
 if (!isset($_SESSION["user_id"])) {
     die("Bạn chưa đăng nhập.");
@@ -76,134 +77,17 @@ $conn->begin_transaction();
 
 try{
 
-$total = 0;
+$order_ids = createOrder(
 
-$items = [];
+$conn,
 
-while($r=$rs->fetch_assoc()){
+$_SESSION["user_id"],
 
-    $total += $r["price"]*$r["quantity"];
+"vnpay",
 
-    $items[] = $r;
+"paid"
 
-}
-
-/*
-=================================
-Seller
-=================================
-*/
-
-$seller = $items[0]["seller_id"];
-
-/*
-=================================
-Orders
-=================================
-*/
-
-$status = "pending";
-
-$payment_method = "vnpay";
-
-$payment_status = "paid";
-
-$stmt = $conn->prepare("
-INSERT INTO orders
-(
-buyer_id,
-seller_id,
-total_amount,
-status,
-payment_method,
-payment_status
-)
-VALUES
-(
-?,?,?,?,?,?
-)
-");
-
-$stmt->bind_param(
-"iidsss",
-$user_id,
-$seller,
-$total,
-$status,
-$payment_method,
-$payment_status
 );
-
-$stmt->execute();
-
-$order_id = $conn->insert_id;
-
-/*
-=================================
-Order Details
-=================================
-*/
-
-foreach($items as $item){
-
-$stmt = $conn->prepare("
-INSERT INTO order_details
-(
-order_id,
-product_id,
-quantity,
-price
-)
-VALUES
-(
-?,?,?,?
-)
-");
-
-$stmt->bind_param(
-"iiid",
-$order_id,
-$item["product_id"],
-$item["quantity"],
-$item["price"]
-);
-
-$stmt->execute();
-
-/*
-Product
-*/
-
-$stmt=$conn->prepare("
-UPDATE products
-SET status='pending'
-WHERE id=?
-");
-
-$stmt->bind_param(
-"i",
-$item["product_id"]
-);
-
-$stmt->execute();
-
-}
-
-/*
-Delete Cart
-*/
-
-$stmt=$conn->prepare("
-DELETE FROM cart
-WHERE user_id=?
-");
-
-$stmt->bind_param(
-"i",
-$user_id
-);
-
-$stmt->execute();
 
 $conn->commit();
 
@@ -211,7 +95,8 @@ header("Location: ../pages/my-orders.php");
 
 exit;
 
-}catch(Exception $e){
+}
+catch(Exception $e){
 
 $conn->rollback();
 

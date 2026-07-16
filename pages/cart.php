@@ -798,7 +798,7 @@ async function checkout(){
     if(payment=="vnpay"){
 
         location.href=
-        "../payment/vnpay_create.php";
+        "../api/payment/vnpay_create.php";
 
         return;
 

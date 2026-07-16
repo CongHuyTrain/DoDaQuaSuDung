@@ -20,9 +20,9 @@ $user=(int)$_SESSION["user_id"];
 $id=(int)($_POST["cart_id"]??0);
 
 $stmt=$conn->prepare("
-DELETE FROM cart
-WHERE id=?
-AND user_id=?
+DELETE FROM cart_items
+WHERE cart_id=?
+AND product_id=?
 ");
 
 $stmt->bind_param("ii",$id,$user);

@@ -4,6 +4,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once "../../config/db.php";
+require_once "../order/create_order.php";
 
 if (!isset($_SESSION["user_id"])) {
     echo json_encode([
@@ -91,137 +92,51 @@ $payment_status = ($payment_method == "cod")
 
 $conn->begin_transaction();
 
-try {
+try{
 
-/*
-====================================
-Orders
-====================================
-*/
+    $order_ids = createOrder(
 
-$stmt = $conn->prepare("
-INSERT INTO orders
-(
-buyer_id,
-seller_id,
-total_amount,
-status,
-payment_method,
-payment_status
-)
-VALUES
-(
-?,?,?,?,?,?
-)
-");
+        $conn,
 
-$stmt->bind_param(
-"iidsss",
-$user_id,
-$seller_id,
-$total,
-$status,
-$payment_method,
-$payment_status
-);
+        $user_id,
 
-$stmt->execute();
+        $payment_method,
 
-$order_id = $conn->insert_id;
+        $payment_status
 
-/*
-====================================
-Order Details
-====================================
-*/
+    );
 
-foreach ($items as $item) {
+    $conn->commit();
 
-$stmt = $conn->prepare("
-INSERT INTO order_details
-(
-order_id,
-product_id,
-quantity,
-price
-)
-VALUES
-(
-?,?,?,?
-)
-");
+    $message =
+    ($payment_method=="cod")
+    ?
+    "Đặt hàng thành công."
+    :
+    "Đơn hàng đã được tạo, vui lòng chờ xác nhận thanh toán MoMo.";
 
-$stmt->bind_param(
-"iiid",
-$order_id,
-$item["product_id"],
-$item["quantity"],
-$item["price"]
-);
+    echo json_encode([
 
-$stmt->execute();
+        "success"=>true,
 
-/*
-Đánh dấu giữ sản phẩm
-*/
+        "message"=>$message,
 
-$stmt = $conn->prepare("
-UPDATE products
-SET status='pending'
-WHERE id=?
-");
+        "order_id"=>$order_id
 
-$stmt->bind_param(
-"i",
-$item["product_id"]
-);
-
-$stmt->execute();
+    ]);
 
 }
+catch(Exception $e){
 
-/*
-====================================
-Xóa giỏ hàng
-====================================
-*/
+    $conn->rollback();
 
-$stmt = $conn->prepare("
-DELETE FROM cart
-WHERE user_id=?
-");
+    echo json_encode([
 
-$stmt->bind_param(
-"i",
-$user_id
-);
+        "success"=>false,
 
-$stmt->execute();
+        "message"=>$e->getMessage()
 
-$conn->commit();
-
-$message =
-($payment_method == "cod")
-?
-"Đặt hàng thành công."
-:
-"Đơn hàng đã được tạo, vui lòng chờ xác nhận thanh toán MoMo.";
-
-echo json_encode([
-"success" => true,
-"message" => $message,
-"order_id" => $order_id
-]);
-
-}
-catch (Exception $e) {
-
-$conn->rollback();
-
-echo json_encode([
-"success" => false,
-"message" => $e->getMessage()
-]);
+    ]);
 
 }
 
