@@ -176,11 +176,33 @@ if($item){
 
 }
 
+/*
+----------------------------------
+Đếm tổng số lượng sản phẩm trong giỏ (để cập nhật badge)
+----------------------------------
+*/
+
+$stmt=$conn->prepare("
+SELECT COALESCE(SUM(quantity),0) AS total
+FROM cart_items
+WHERE cart_id=?
+");
+
+$stmt->bind_param("i",$cart_id);
+
+$stmt->execute();
+
+$countRow=$stmt->get_result()->fetch_assoc();
+
+$cartCount=(int)$countRow["total"];
+
 echo json_encode([
 
 "success"=>true,
 
-"message"=>"Đã thêm vào giỏ."
+"message"=>"Đã thêm vào giỏ.",
+
+"count"=>$cartCount
 
 ]);
 
