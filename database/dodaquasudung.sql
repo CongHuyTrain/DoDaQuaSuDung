@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2026 at 02:26 PM
+-- Generation Time: Jul 16, 2026 at 03:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -248,18 +248,19 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
 (1, 3, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 25, 'active', '2026-07-05 14:18:17', '2026-07-16 12:25:43'),
 (2, 3, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 9, 'active', '2026-07-05 14:18:17', '2026-07-16 12:25:52'),
-(3, 3, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(4, 3, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 3, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(5, 3, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 3, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(6, 3, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(7, 3, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
+(3, 3, 4, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-16 13:18:15'),
+(4, 3, 1, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 3, 'active', '2026-07-05 14:18:17', '2026-07-16 13:18:29'),
+(5, 3, 3, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 3, 'active', '2026-07-05 14:18:17', '2026-07-16 13:18:38'),
+(6, 3, 7, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 13:18:45'),
+(7, 3, 8, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:05'),
 (8, 3, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(9, 3, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(10, 3, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(11, 3, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
-(12, 3, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
+(9, 3, 8, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:25'),
+(10, 3, 8, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:37'),
+(11, 3, 3, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:43'),
+(12, 3, 10, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:58'),
 (13, 3, 1, 'Điện thoại đồ chơi', 'đồ tốt, còn xài được', 100000.00, 'uploads/17834361531499.jpg', 'new', 'An giang', 28, 'active', '2026-07-07 14:55:53', '2026-07-16 12:23:43'),
-(16, 3, 5, 'test', '', 23452541.00, 'uploads/17839464943621.jpg', 'new', 'An giang', 4, 'active', '2026-07-13 12:41:34', '2026-07-16 12:23:47');
+(16, 3, 5, 'Ghế nhựa', '', 25000.00, 'uploads/17839464943621.jpg', 'new', 'An giang', 4, 'active', '2026-07-13 12:41:34', '2026-07-16 13:25:40'),
+(17, 3, 6, 'Set Quần, Áo Sơ Mi Và Áo Khoác Bé Trai', '', 105000.00, 'uploads/17842084441799.jpg', 'good', 'TP.HCM', 0, 'active', '2026-07-16 13:27:24', '2026-07-16 13:28:00');
 
 -- --------------------------------------------------------
 
@@ -570,7 +571,7 @@ ALTER TABLE `order_details`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `product_images`
