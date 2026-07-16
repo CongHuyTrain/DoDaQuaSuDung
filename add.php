@@ -3,30 +3,39 @@
 session_start();
 require_once "config/db.php";
 
+header("Content-Type: application/json; charset=utf-8");
+
+function respond($success, $message) {
+    echo json_encode([
+        "success" => $success,
+        "message" => $message
+    ]);
+    exit;
+}
+
 if (!isset($_SESSION["user_id"])) {
-    die("Bạn chưa đăng nhập.");
+    respond(false, "Bạn chưa đăng nhập.");
 }
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    header("Location: add-product.html");
-    exit;
+    respond(false, "Phương thức không hợp lệ.");
 }
 
 $user_id = $_SESSION["user_id"];
 
-$title = trim($_POST["title"]);
-$category_id = intval($_POST["category_id"]);
-$price = floatval($_POST["price"]);
-$condition_item = $_POST["condition_item"];
-$location = trim($_POST["location"]);
-$description = trim($_POST["description"]);
+$title = trim($_POST["title"] ?? "");
+$category_id = intval($_POST["category_id"] ?? 0);
+$price = floatval($_POST["price"] ?? 0);
+$condition_item = $_POST["condition_item"] ?? "";
+$location = trim($_POST["location"] ?? "");
+$description = trim($_POST["description"] ?? "");
 
 if (
     empty($title) ||
     empty($category_id) ||
     empty($price)
 ) {
-    die("Vui lòng nhập đầy đủ thông tin.");
+    respond(false, "Vui lòng nhập đầy đủ thông tin.");
 }
 
 $image = "";
@@ -39,19 +48,19 @@ if (
     $uploadDir = "uploads/";
 
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir,0777,true);
+        mkdir($uploadDir, 0777, true);
     }
 
-    $ext = strtolower(pathinfo($_FILES["image"]["name"],PATHINFO_EXTENSION));
+    $ext = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
 
-    $fileName = time().rand(1000,9999).".".$ext;
+    $fileName = time() . rand(1000, 9999) . "." . $ext;
 
     move_uploaded_file(
         $_FILES["image"]["tmp_name"],
-        $uploadDir.$fileName
+        $uploadDir . $fileName
     );
 
-    $image = $uploadDir.$fileName;
+    $image = $uploadDir . $fileName;
 }
 
 $sql = "
@@ -74,6 +83,10 @@ VALUES
 
 $stmt = $conn->prepare($sql);
 
+if (!$stmt) {
+    respond(false, "Lỗi chuẩn bị câu lệnh SQL: " . $conn->error);
+}
+
 $stmt->bind_param(
     "iissdsss",
     $user_id,
@@ -86,23 +99,11 @@ $stmt->bind_param(
     $location
 );
 
-if($stmt->execute()){
-
-    echo "<script>
-    alert('Thêm sản phẩm thành công!');
-    window.location='admin/products.php';
-    </script>";
-
-}else{
-
-    echo "<script>
-    alert('Không thể thêm sản phẩm!');
-    history.back();
-    </script>";
-
+if ($stmt->execute()) {
+    respond(true, "Đăng sản phẩm thành công!");
+} else {
+    respond(false, "Không thể thêm sản phẩm: " . $stmt->error);
 }
 
 $stmt->close();
 $conn->close();
-
-?>
