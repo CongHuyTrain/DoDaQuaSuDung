@@ -70,7 +70,7 @@
             background: #f97316; color: #fff; border: none;
             border-radius: 10px; font-size: 1rem; font-weight: 700;
             text-align: center; cursor: pointer; text-decoration: none;
-            transition: background .2s;
+            transition: background .2s; font-family: inherit;
         }
         .pd-btn-buy:hover { background: #ea6c00; }
         .pd-btn-cart {
@@ -401,7 +401,7 @@ document.querySelector(".pd-specs").appendChild(tr);
                 pdAction.innerHTML = `
                     <div style="display:flex;gap:12px;flex-wrap:wrap;">
                         <button class="pd-btn-cart" onclick="addToCart(${p.id})">🛒 Thêm vào giỏ</button>
-                        <a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">⚡ Đặt mua ngay</a>
+                        <button class="pd-btn-buy" onclick="buyNow(${p.id})">⚡ Đặt mua ngay</button>
                     </div>`;
             } else {
                 pdAction.innerHTML =
