@@ -1,28 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
 <meta charset="UTF-8">
-<title>Quản lý sản phẩm</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý sản phẩm – Đồ Cũ VN</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+    /* ---- Trang Quản lý sản phẩm (bảng điều khiển nhanh cho người bán) ---- */
+    .pm-hero{
+        background:linear-gradient(135deg,#2563eb,#1d4ed8);
+        color:#fff; padding:48px 0 40px; text-align:center;
+    }
+    .pm-hero h1{ font-size:1.8rem; font-weight:800; margin:0 0 10px; }
+    .pm-hero p{ font-size:0.98rem; opacity:.9; max-width:520px; margin:0 auto; }
+
+    .pm-wrap{ padding:32px 0 60px; }
+
+    .pm-stats{
+        display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+        margin-bottom:28px;
+    }
+    .pm-stat{
+        background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+        padding:20px; text-align:center;
+    }
+    .pm-stat .num{ font-size:1.7rem; font-weight:800; color:#2563eb; }
+    .pm-stat.orange .num{ color:#f97316; }
+    .pm-stat .lbl{ font-size:0.85rem; color:#64748b; margin-top:4px; }
+
+    .pm-actions{
+        display:grid; grid-template-columns:1fr 1fr; gap:20px;
+    }
+    .pm-action-card{
+        background:#fff; border:1px solid #e2e8f0; border-radius:14px;
+        padding:28px; text-decoration:none; color:inherit;
+        display:flex; flex-direction:column; gap:10px;
+        transition:.18s;
+    }
+    .pm-action-card:hover{
+        border-color:#2563eb; box-shadow:0 10px 24px rgba(37,99,235,.1);
+        transform:translateY(-2px);
+    }
+    .pm-action-icon{ font-size:2.2rem; }
+    .pm-action-card h3{ font-size:1.1rem; font-weight:800; margin:0; }
+    .pm-action-card p{ font-size:0.88rem; color:#64748b; margin:0; line-height:1.6; }
+    .pm-action-cta{ font-size:0.85rem; font-weight:700; color:#2563eb; margin-top:4px; }
+
+    @media (max-width:700px){
+        .pm-stats, .pm-actions{ grid-template-columns:1fr; }
+    }
+</style>
 </head>
 <body>
-<div class="home">
 
-    <h1>Hệ thống quản lý sản phẩm thanh lý</h1>
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..." autocomplete="off"
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="pages/login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
+            <div class="nav-user-area" id="nav-user" style="display:none;">
+                <a href="pages/cart.php" class="nav-cart-btn" id="nav-cart" title="Đơn hàng của tôi">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username"></span>
+                <a href="pages/logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
+        </nav>
+    </div>
+</header>
 
-    <p>
-        Chào mừng bạn đến với hệ thống quản lý sản phẩm thanh lý.
-    </p>
+<section class="pm-hero">
+    <h1>🗂️ Quản lý sản phẩm thanh lý</h1>
+    <p>Đăng bán, theo dõi và cập nhật các sản phẩm thanh lý của bạn tại một nơi.</p>
+</section>
 
-    <div class="home-buttons">
+<div class="container pm-wrap">
 
-        <a href="add-product.html" class="btn">
-            Đăng sản phẩm mới
+    <div class="pm-stats">
+        <div class="pm-stat">
+            <div class="num" id="stat-total">–</div>
+            <div class="lbl">Tổng sản phẩm</div>
+        </div>
+        <div class="pm-stat">
+            <div class="num" id="stat-active">–</div>
+            <div class="lbl">Đang bán</div>
+        </div>
+        <div class="pm-stat orange">
+            <div class="num" id="stat-sold">–</div>
+            <div class="lbl">Đã bán</div>
+        </div>
+    </div>
+
+    <div class="pm-actions">
+        <a href="add-product.html" class="pm-action-card">
+            <div class="pm-action-icon">➕</div>
+            <h3>Đăng sản phẩm mới</h3>
+            <p>Đăng bán một món đồ mới lên hệ thống chỉ trong vài bước.</p>
+            <span class="pm-action-cta">Bắt đầu đăng →</span>
         </a>
-
-        <a href="my-products.html" class="btn">
-            Xem sản phẩm của tôi
+        <a href="my-products.html" class="pm-action-card">
+            <div class="pm-action-icon">📦</div>
+            <h3>Sản phẩm của tôi</h3>
+            <p>Xem, chỉnh sửa hoặc gỡ các sản phẩm bạn đã đăng bán.</p>
+            <span class="pm-action-cta">Xem danh sách →</span>
         </a>
-
     </div>
 
 </div>
+
+<script>
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+
+    // Kiểm tra đăng nhập
+    fetch('api/auth-check.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.logged_in) {
+                document.getElementById('nav-guest').style.display = 'none';
+                document.getElementById('nav-user').style.display = 'flex';
+                document.getElementById('nav-username').textContent =
+                    '👤 ' + (data.user.fullname || data.user.username);
+            } else {
+                window.location.href = `pages/login.html?redirect=${encodeURIComponent('product-manager.html')}`;
+            }
+        })
+        .catch(() => {});
+
+    // Thống kê nhanh
+    fetch('api/my-products.php', { credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const list = data.data;
+            document.getElementById('stat-total').textContent  = list.length;
+            document.getElementById('stat-active').textContent = list.filter(p => p.status === 'active').length;
+            document.getElementById('stat-sold').textContent   = list.filter(p => p.status === 'sold').length;
+        })
+        .catch(() => {});
+</script>
+
 </body>
 </html>

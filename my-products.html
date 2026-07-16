@@ -2,114 +2,301 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Danh sách sản phẩm của tôi</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sản phẩm của tôi – Đồ Cũ VN</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+    /* ---- Trang Sản phẩm của tôi ---- */
+    .mp-wrap{ padding:24px 0 60px; }
+
+    .mp-headrow{
+        display:flex; justify-content:space-between; align-items:flex-end;
+        flex-wrap:wrap; gap:14px; margin-bottom:18px;
+    }
+    .mp-headrow h1{ font-size:1.5rem; font-weight:800; margin:6px 0 4px; }
+    .mp-headrow p{ color:#64748b; font-size:0.92rem; margin:0; }
+    .mp-add-btn{
+        background:#2563eb; color:#fff; border:none; padding:12px 22px;
+        border-radius:8px; font-size:0.92rem; font-weight:700; cursor:pointer;
+        text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+        white-space:nowrap; transition:.15s;
+    }
+    .mp-add-btn:hover{ background:#1d4ed8; }
+
+    /* Tabs trạng thái */
+    .mp-tabs{
+        display:flex; gap:6px; border-bottom:2px solid #e2e8f0;
+        margin-bottom:20px; overflow-x:auto;
+    }
+    .mp-tab{
+        padding:11px 18px; font-size:0.88rem; font-weight:600; color:#64748b;
+        cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px;
+        white-space:nowrap; transition:.15s; background:none; border-top:none; border-left:none; border-right:none;
+    }
+    .mp-tab:hover{ color:#2563eb; }
+    .mp-tab.active{ color:#2563eb; border-bottom-color:#2563eb; }
+    .mp-tab .cnt{
+        display:inline-block; margin-left:5px; background:#f1f5f9; color:#64748b;
+        border-radius:99px; padding:1px 8px; font-size:0.75rem;
+    }
+    .mp-tab.active .cnt{ background:#dbeafe; color:#2563eb; }
+
+    /* Danh sách dạng thẻ */
+    .mp-grid{ display:flex; flex-direction:column; gap:12px; }
+    .mp-card{
+        background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+        padding:14px; display:flex; gap:16px; align-items:center;
+        transition:.15s;
+    }
+    .mp-card:hover{ box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .mp-thumb{
+        width:84px; height:84px; border-radius:10px; object-fit:cover;
+        background:#f1f5f9; flex-shrink:0;
+    }
+    .mp-thumb-empty{
+        width:84px; height:84px; border-radius:10px; background:#f1f5f9;
+        display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+        flex-shrink:0; color:#cbd5e1;
+    }
+    .mp-info{ flex:1; min-width:0; }
+    .mp-title{
+        font-weight:700; font-size:0.98rem; color:#1e293b;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px;
+    }
+    .mp-meta{ font-size:0.82rem; color:#64748b; margin-bottom:6px; }
+    .mp-price{ font-weight:800; color:#f97316; font-size:1.05rem; }
+
+    .mp-status{
+        display:inline-block; padding:4px 12px; border-radius:99px;
+        font-size:0.78rem; font-weight:700; white-space:nowrap;
+    }
+    .mp-status.active{ background:#dcfce7; color:#16a34a; }
+    .mp-status.sold{ background:#dbeafe; color:#2563eb; }
+    .mp-status.pending{ background:#fef3c7; color:#b45309; }
+    .mp-status.deleted{ background:#f1f5f9; color:#64748b; }
+
+    .mp-actions{ display:flex; gap:8px; flex-shrink:0; }
+    .mp-btn-edit, .mp-btn-del{
+        padding:9px 16px; border-radius:8px; font-size:0.85rem; font-weight:600;
+        cursor:pointer; text-decoration:none; text-align:center; border:1px solid transparent;
+        transition:.15s;
+    }
+    .mp-btn-edit{ background:#eff6ff; color:#2563eb; }
+    .mp-btn-edit:hover{ background:#dbeafe; }
+    .mp-btn-del{ background:#fef2f2; color:#dc2626; }
+    .mp-btn-del:hover{ background:#fee2e2; }
+
+    .mp-empty{
+        text-align:center; padding:70px 20px; color:#94a3b8;
+        background:#fff; border:1px dashed #e2e8f0; border-radius:12px;
+    }
+    .mp-empty .icon{ font-size:2.6rem; margin-bottom:10px; }
+    .mp-empty a{ color:#2563eb; font-weight:700; text-decoration:none; }
+
+    #mp-message{ margin-bottom:14px; font-size:0.88rem; font-weight:600; display:none; padding:12px 14px; border-radius:8px; }
+    #mp-message.success{ display:block; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+    #mp-message.error{ display:block; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+
+    @media (max-width:600px){
+        .mp-card{ flex-wrap:wrap; }
+        .mp-actions{ width:100%; }
+        .mp-btn-edit, .mp-btn-del{ flex:1; }
+    }
+</style>
 </head>
 <body>
-<nav class="navbar">
-<div class="menu">
-    <a href="index.html" class="btn">Trang chủ</a>
-    <a href="add-product.html" class="btn">Đăng sản phẩm</a>
-    <a href="my-products.html" class="btn">Sản phẩm của tôi</a>
-</div>
-</nav>
-<div class="container" style="max-width: 960px;">
-    <h1>Danh sách sản phẩm của tôi</h1>
-    <a href="add-product.html" class="btn">+ Đăng sản phẩm mới</a>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Ảnh</th>
-                <th>Tên sản phẩm</th>
-                <th>Danh mục</th>
-                <th>Giá</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="productList">
-            <tr><td colspan="6">Đang tải...</td></tr>
-        </tbody>
-    </table>
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..." autocomplete="off"
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="pages/login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
+            <div class="nav-user-area" id="nav-user" style="display:none;">
+                <a href="pages/cart.php" class="nav-cart-btn" id="nav-cart" title="Đơn hàng của tôi">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username"></span>
+                <a href="pages/logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
+        </nav>
+    </div>
+</header>
 
-    <div id="message" class="message"></div>
+<div class="container mp-wrap">
+
+    <nav class="breadcrumb">
+        <a href="index.html">Trang chủ</a> › <span>Sản phẩm của tôi</span>
+    </nav>
+
+    <div class="mp-headrow">
+        <div>
+            <h1>🗂️ Sản phẩm của tôi</h1>
+            <p>Quản lý các tin đăng thanh lý bạn đã đăng bán.</p>
+        </div>
+        <a href="add-product.html" class="mp-add-btn">➕ Đăng sản phẩm mới</a>
+    </div>
+
+    <div id="mp-message"></div>
+
+    <div class="mp-tabs" id="mp-tabs">
+        <button class="mp-tab active" data-filter="all">Tất cả <span class="cnt" id="cnt-all">0</span></button>
+        <button class="mp-tab" data-filter="active">Đang bán <span class="cnt" id="cnt-active">0</span></button>
+        <button class="mp-tab" data-filter="pending">Chờ duyệt <span class="cnt" id="cnt-pending">0</span></button>
+        <button class="mp-tab" data-filter="sold">Đã bán <span class="cnt" id="cnt-sold">0</span></button>
+    </div>
+
+    <div class="mp-grid" id="productList">
+        <div class="loading"><div class="spinner"></div><p>Đang tải...</p></div>
+    </div>
+
 </div>
 
 <script>
-const API_BASE = 'http://localhost:8080/';
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
 
-const statusClassMap = {
-    'Đang bán': 'status-active',
-    'Đã bán': 'status-sold',
-    'Đã ẩn': 'status-hidden'
-};
+    // Kiểm tra đăng nhập
+    fetch('api/auth-check.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.logged_in) {
+                document.getElementById('nav-guest').style.display = 'none';
+                document.getElementById('nav-user').style.display = 'flex';
+                document.getElementById('nav-username').textContent =
+                    '👤 ' + (data.user.fullname || data.user.username);
+            } else {
+                window.location.href = `pages/login.html?redirect=${encodeURIComponent('my-products.html')}`;
+            }
+        })
+        .catch(() => {});
 
-function formatCurrency(value) {
-    return Number(value).toLocaleString('vi-VN') + ' đ';
-}
+    const statusMap = {
+        active:  { cls: 'active',  label: 'Đang bán' },
+        sold:    { cls: 'sold',    label: 'Đã bán'   },
+        pending: { cls: 'pending', label: 'Chờ duyệt' },
+        deleted: { cls: 'deleted', label: 'Đã ẩn'     }
+    };
 
-async function loadProducts() {
-    const tbody = document.getElementById('productList');
-    try {
-        const res = await fetch(`${API_BASE}/my-products.php`, { credentials: 'include' });
-        const data = await res.json();
+    const CONDITION_LABEL = { new: 'Mới', like_new: 'Như mới', good: 'Còn tốt', fair: 'Khá cũ' };
 
-        if (!data.success) {
-            tbody.innerHTML = `<tr><td colspan="6">${data.message}</td></tr>`;
+    let allProducts = [];
+    let currentFilter = 'all';
+
+    function formatCurrency(value) {
+        return Number(value).toLocaleString('vi-VN') + ' đ';
+    }
+
+    function renderList() {
+        const tbody = document.getElementById('productList');
+        const items = currentFilter === 'all'
+            ? allProducts
+            : allProducts.filter(p => p.status === currentFilter);
+
+        if (items.length === 0) {
+            tbody.innerHTML = `
+                <div class="mp-empty">
+                    <div class="icon">📭</div>
+                    <p>${allProducts.length === 0
+                        ? 'Bạn chưa đăng sản phẩm nào. <a href="add-product.html">Đăng ngay →</a>'
+                        : 'Không có sản phẩm nào ở trạng thái này.'}</p>
+                </div>`;
             return;
         }
 
-        if (data.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6">Bạn chưa đăng sản phẩm nào.</td></tr>`;
-            return;
+        tbody.innerHTML = items.map(p => {
+            const st = statusMap[p.status] || { cls: 'deleted', label: p.status };
+            return `
+            <div class="mp-card" data-id="${p.id}">
+                ${p.image
+                    ? `<img class="mp-thumb" src="/${p.image}" alt="">`
+                    : `<div class="mp-thumb-empty">🖼️</div>`}
+                <div class="mp-info">
+                    <div class="mp-title">${p.title}</div>
+                    <div class="mp-meta">${p.category_name || ''}${p.condition_item ? ' · ' + (CONDITION_LABEL[p.condition_item] || p.condition_item) : ''}</div>
+                    <div class="mp-price">${formatCurrency(p.price)}</div>
+                </div>
+                <span class="mp-status ${st.cls}">${st.label}</span>
+                <div class="mp-actions">
+                    <a href="edit-product.html?id=${p.id}" class="mp-btn-edit">Sửa</a>
+                    <button class="mp-btn-del" data-id="${p.id}">Xóa</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function updateCounts() {
+        document.getElementById('cnt-all').textContent     = allProducts.length;
+        document.getElementById('cnt-active').textContent  = allProducts.filter(p => p.status === 'active').length;
+        document.getElementById('cnt-pending').textContent = allProducts.filter(p => p.status === 'pending').length;
+        document.getElementById('cnt-sold').textContent    = allProducts.filter(p => p.status === 'sold').length;
+    }
+
+    async function loadProductsList() {
+        const tbody = document.getElementById('productList');
+        try {
+            const res = await fetch('api/my-products.php', { credentials: 'include' });
+            const data = await res.json();
+
+            if (!data.success) {
+                tbody.innerHTML = `<div class="mp-empty"><div class="icon">⚠️</div><p>${data.message || 'Không thể tải danh sách.'}</p></div>`;
+                return;
+            }
+
+            allProducts = data.data;
+            updateCounts();
+            renderList();
+        } catch (err) {
+            tbody.innerHTML = `<div class="mp-empty"><div class="icon">⚠️</div><p>Không thể tải danh sách sản phẩm.</p></div>`;
         }
-
-        tbody.innerHTML = data.data.map(p => `
-            <tr data-id="${p.id}">
-                <td>${p.image ? `<img src="/${p.image}" alt="">` : '—'}</td>
-                <td>${p.title}</td>
-                <td>${p.category_name}</td>
-                <td>${formatCurrency(p.price)}</td>
-                <td><span class="status-tag ${statusClassMap[p.status] || ''}">${p.status}</span></td>
-                <td class="actions">
-                    <a href="edit-product.html?id=${p.id}">Sửa</a>
-                    <button class="delete" data-id="${p.id}">Xóa</button>
-                </td>
-            </tr>
-        `).join('');
-    } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6">Không thể tải danh sách sản phẩm.</td></tr>`;
     }
-}
 
-document.getElementById('productList').addEventListener('click', async function (e) {
-    if (!e.target.classList.contains('delete')) return;
+    document.getElementById('mp-tabs').addEventListener('click', function (e) {
+        const btn = e.target.closest('.mp-tab');
+        if (!btn) return;
+        document.querySelectorAll('.mp-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderList();
+    });
 
-    const id = e.target.dataset.id;
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+    document.getElementById('productList').addEventListener('click', async function (e) {
+        if (!e.target.classList.contains('mp-btn-del')) return;
 
-    const messageBox = document.getElementById('message');
-    try {
-        const res = await fetch(`${API_BASE}/delete.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ product_id: id })
-        });
-        const data = await res.json();
+        const id = e.target.dataset.id;
+        if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
 
-        messageBox.className = 'message ' + (data.success ? 'success' : 'error');
-        messageBox.textContent = data.message;
+        const messageBox = document.getElementById('mp-message');
+        try {
+            const res = await fetch('delete.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ product_id: id })
+            });
+            const data = await res.json();
 
-        if (data.success) loadProducts();
-    } catch (err) {
-        messageBox.className = 'message error';
-        messageBox.textContent = 'Có lỗi xảy ra, vui lòng thử lại.';
-    }
-});
+            messageBox.className = data.success ? 'success' : 'error';
+            messageBox.textContent = data.message;
 
-loadProducts();
+            if (data.success) loadProductsList();
+        } catch (err) {
+            messageBox.className = 'error';
+            messageBox.textContent = 'Có lỗi xảy ra, vui lòng thử lại.';
+        }
+    });
+
+    loadProductsList();
 </script>
+
 </body>
 </html>

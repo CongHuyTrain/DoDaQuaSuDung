@@ -73,6 +73,15 @@
             transition: background .2s;
         }
         .pd-btn-buy:hover { background: #ea6c00; }
+        .pd-btn-cart {
+            flex: 1; min-width: 140px; padding: 13px;
+            background: #fff; color: #f97316;
+            border: 2px solid #f97316; border-radius: 10px;
+            font-size: 1rem; font-weight: 700;
+            text-align: center; cursor: pointer;
+            transition: all .2s;
+        }
+        .pd-btn-cart:hover { background: #f97316; color: #fff; }
         .pd-btn-save {
             display: block; width: 100%; padding: 11px;
             background: #fff; color: #2563eb;
@@ -379,71 +388,26 @@ document.querySelector(".pd-specs").appendChild(tr);
             document.getElementById('pd-price').textContent = p.price_formatted;
 
             // Nút mua
+            const pdAction = document.getElementById('pd-action');
+
             if (p.status && p.status !== 'active') {
+                // Sản phẩm đã bán / đang chờ duyệt / đã ẩn -> không cho mua
                 const statusMsg = p.status === 'sold'
                     ? '✅ Sản phẩm đã được bán'
-                    : '⏳ Sản phẩm đang có người đặt mua';
-                document.getElementById('pd-action').innerHTML = user ? `
-<button class="pd-btn-cart" onclick="addToCart(${p.id})">
-🛒 Thêm vào giỏ
-</button>
-
-<button class="pd-btn-buy" onclick="buyNow(${p.id})">
-⚡ Mua ngay
-</button>
-`
-:
-`<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}"
-class="pd-btn-buy">
-🔑 Đăng nhập để mua
-</a>`;
+                    : (p.status === 'pending' ? '⏳ Sản phẩm đang chờ duyệt' : '🚫 Sản phẩm không còn khả dụng');
+                pdAction.innerHTML =
                     `<div class="pd-btn-buy" style="background:#94a3b8; cursor:not-allowed;">${statusMsg}</div>`;
+            } else if (user) {
+                pdAction.innerHTML = `
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <button class="pd-btn-cart" onclick="addToCart(${p.id})">🛒 Thêm vào giỏ</button>
+                        <a href="pages/order-create.php?product_id=${p.id}" class="pd-btn-buy">⚡ Đặt mua ngay</a>
+                    </div>`;
             } else {
-
-    if(user){
-
-        document.getElementById("pd-action").innerHTML = `
-
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-
-            <button
-                class="pd-btn-cart"
-                onclick="addToCart(${p.id})">
-
-                🛒 Thêm vào giỏ
-
-            </button>
-
-            <a
-                href="pages/order-create.php?product_id=${p.id}"
-                class="pd-btn-buy">
-
-                ⚡ Đặt mua ngay
-
-            </a>
-
-        </div>
-
-        `;
-
-    }else{
-
-        document.getElementById("pd-action").innerHTML = `
-
-        <a
-        href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id='+p.id)}
-        "
-        class="pd-btn-buy">
-
-        🔑 Đăng nhập để mua
-
-        </a>
-
-        `;
-
-    }
-
-}
+                pdAction.innerHTML =
+                    `<a href="pages/login.html?redirect=${encodeURIComponent('product-detail.html?id=' + p.id)}"
+                        class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
+            }
 
             // Người bán
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
@@ -515,33 +479,6 @@ function addToCart(productId){
     .catch(()=>{
 
         alert("Không thể thêm vào giỏ hàng.");
-
-    });
-
-}
-function addToCart(productId){
-
-    fetch("api/cart/add.php",{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
-
-        body:"product_id="+productId
-
-    })
-
-    .then(r=>r.json())
-
-    .then(res=>{
-
-        alert(res.message);
-
-        if(res.success){
-            location.href="pages/cart.php";
-        }
 
     });
 

@@ -3,272 +3,345 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thêm sản phẩm</title>
-
+<title>Đăng sản phẩm – Đồ Cũ VN</title>
 <link rel="stylesheet" href="assets/css/style.css">
-
 <style>
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f5f7fb;
-}
+    /* ---- Trang Đăng sản phẩm (dùng chung theme của assets/css/style.css) ---- */
+    .ap-wrap{ padding:24px 0 60px; }
+    .ap-head{ margin-bottom:20px; }
+    .ap-head h1{ font-size:1.5rem; font-weight:800; margin:6px 0 4px; }
+    .ap-head p{ color:#64748b; font-size:0.92rem; margin:0; }
 
-.navbar{
-    background:#2563eb;
-    padding:15px 30px;
-}
+    .ap-grid{
+        display:grid;
+        grid-template-columns:300px 1fr;
+        gap:24px;
+        align-items:start;
+    }
 
-.menu{
-    display:flex;
-    gap:15px;
-}
+    .ap-card{
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        overflow:hidden;
+    }
+    .ap-card-head{
+        background:#f8fafc;
+        padding:14px 18px;
+        font-weight:700;
+        font-size:0.92rem;
+        border-bottom:1px solid #e2e8f0;
+    }
+    .ap-card-body{ padding:18px; }
 
-.menu a{
-    color:#fff;
-    text-decoration:none;
-    font-weight:bold;
-}
+    /* Upload ảnh */
+    .ap-drop{
+        border:2px dashed #cbd5e1;
+        border-radius:10px;
+        padding:22px 14px;
+        text-align:center;
+        cursor:pointer;
+        transition:.2s;
+        background:#f8fafc;
+    }
+    .ap-drop:hover, .ap-drop.dragover{ border-color:#2563eb; background:#eff6ff; }
+    .ap-drop .ap-drop-icon{ font-size:2rem; margin-bottom:6px; }
+    .ap-drop p{ margin:2px 0; font-size:0.85rem; color:#64748b; }
+    .ap-drop small{ color:#94a3b8; }
+    .ap-preview{
+        margin-top:14px;
+        width:100%;
+        aspect-ratio:4/3;
+        object-fit:cover;
+        border-radius:10px;
+        display:none;
+        border:1px solid #e2e8f0;
+    }
+    .ap-hint{
+        margin-top:14px;
+        background:#fffbeb;
+        border:1px solid #fde68a;
+        border-radius:8px;
+        padding:12px;
+        font-size:0.8rem;
+        color:#92400e;
+        line-height:1.6;
+    }
 
-.container{
-    width:800px;
-    margin:40px auto;
-    background:#fff;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
-}
+    /* Form */
+    .ap-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .ap-group{ margin-bottom:18px; }
+    .ap-group label{
+        display:block; font-weight:700; font-size:0.88rem;
+        margin-bottom:7px; color:#1e293b;
+    }
+    .ap-group .req{ color:#ef4444; }
+    .ap-group input,
+    .ap-group select,
+    .ap-group textarea{
+        width:100%;
+        padding:11px 13px;
+        border:1px solid #d8dee8;
+        border-radius:8px;
+        font-size:0.92rem;
+        font-family:inherit;
+        box-sizing:border-box;
+        transition:.15s;
+        background:#fff;
+    }
+    .ap-group input:focus,
+    .ap-group select:focus,
+    .ap-group textarea:focus{
+        outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+    .ap-group textarea{ resize:vertical; min-height:130px; }
+    .ap-price-wrap{ position:relative; }
+    .ap-price-wrap span{
+        position:absolute; right:13px; top:50%; transform:translateY(-50%);
+        color:#94a3b8; font-size:0.85rem; pointer-events:none;
+    }
 
-h1{
-    margin-top:0;
-    margin-bottom:30px;
-    text-align:center;
-}
+    .ap-actions{
+        display:flex; gap:10px; justify-content:flex-end;
+        padding-top:6px; border-top:1px solid #f1f5f9; margin-top:4px;
+    }
+    .ap-btn-submit{
+        background:#2563eb; color:#fff; border:none;
+        padding:13px 30px; border-radius:8px;
+        font-size:0.95rem; font-weight:700; cursor:pointer;
+        transition:.15s;
+    }
+    .ap-btn-submit:hover{ background:#1d4ed8; }
+    .ap-btn-submit:disabled{ background:#93c5fd; cursor:not-allowed; }
+    .ap-btn-cancel{
+        background:#fff; color:#475569; border:1px solid #d8dee8;
+        padding:13px 22px; border-radius:8px; font-size:0.95rem;
+        font-weight:600; cursor:pointer; text-decoration:none; display:inline-flex;
+        align-items:center;
+    }
+    .ap-btn-cancel:hover{ background:#f1f5f9; }
 
-.form-group{
-    margin-bottom:20px;
-}
+    #ap-message{ margin-top:14px; font-size:0.88rem; font-weight:600; display:none; padding:12px 14px; border-radius:8px; }
+    #ap-message.success{ display:block; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+    #ap-message.error{ display:block; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
 
-.form-group label{
-    display:block;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea{
-    width:100%;
-    padding:12px;
-    border:1px solid #ddd;
-    border-radius:8px;
-    font-size:15px;
-    box-sizing:border-box;
-}
-
-textarea{
-    resize:vertical;
-    min-height:120px;
-}
-
-.preview-img{
-    margin-top:15px;
-    width:220px;
-    border-radius:10px;
-    display:none;
-    border:1px solid #ddd;
-}
-
-button{
-    background:#2563eb;
-    color:#fff;
-    border:none;
-    padding:14px 28px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:16px;
-}
-
-button:hover{
-    background:#1d4ed8;
-}
+    @media (max-width:760px){
+        .ap-grid{ grid-template-columns:1fr; }
+        .ap-row{ grid-template-columns:1fr; }
+    }
 </style>
-
 </head>
-
 <body>
 
-<nav class="navbar">
-    <div class="menu">
-        <a href="index.html">Trang chủ</a>
-        <a href="add-product.html">Đăng sản phẩm</a>
-        <a href="my-products.html">Sản phẩm của tôi</a>
+<header>
+    <div class="header-inner">
+        <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
+        <div class="header-search">
+            <input type="text" id="header-search-input" placeholder="Tìm kiếm sản phẩm..." autocomplete="off"
+                   onkeydown="if(event.key==='Enter') goSearch()">
+            <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
+        </div>
+        <nav class="header-nav">
+            <a href="index.html" class="btn btn-outline">Trang chủ</a>
+            <a href="products.html" class="btn btn-outline">Sản phẩm</a>
+            <a href="pages/login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
+            <div class="nav-user-area" id="nav-user" style="display:none;">
+                <a href="pages/cart.php" class="nav-cart-btn" id="nav-cart" title="Đơn hàng của tôi">
+                    🛒
+                    <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
+                </a>
+                <span class="nav-username" id="nav-username"></span>
+                <a href="pages/logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+            </div>
+        </nav>
     </div>
-</nav>
+</header>
 
-<div class="container">
+<div class="container ap-wrap">
 
-<h1>Đăng sản phẩm thanh lý</h1>
+    <nav class="breadcrumb">
+        <a href="index.html">Trang chủ</a> ›
+        <a href="my-products.html">Sản phẩm của tôi</a> ›
+        <span>Đăng sản phẩm</span>
+    </nav>
 
-<form
-action="add.php"
-method="POST"
-enctype="multipart/form-data">
+    <div class="ap-head">
+        <h1>📦 Đăng sản phẩm thanh lý</h1>
+        <p>Điền đầy đủ thông tin để sản phẩm của bạn tiếp cận đúng người mua hơn.</p>
+    </div>
 
-<div class="form-group">
-<label>Tên sản phẩm</label>
+    <form id="addProductForm" action="add.php" method="POST" enctype="multipart/form-data">
+    <div class="ap-grid">
 
-<input
-type="text"
-name="title"
-required>
-</div>
+        <!-- CỘT TRÁI: ẢNH -->
+        <div class="ap-card">
+            <div class="ap-card-head">🖼️ Ảnh sản phẩm</div>
+            <div class="ap-card-body">
+                <label class="ap-drop" id="dropZone">
+                    <div class="ap-drop-icon">⬆️</div>
+                    <p><strong>Chọn ảnh</strong> hoặc kéo thả vào đây</p>
+                    <small>JPG, PNG, WEBP — tối đa 5MB</small>
+                    <input type="file" name="image" id="image" accept="image/*" required style="display:none;">
+                </label>
+                <img id="previewImg" class="ap-preview" alt="Xem trước ảnh sản phẩm">
+                <div class="ap-hint">
+                    💡 Nên chụp ảnh thật, đủ sáng, rõ nét sản phẩm để tăng độ tin cậy và tỉ lệ bán được.
+                </div>
+            </div>
+        </div>
 
-<div class="form-group">
-<label>Danh mục</label>
+        <!-- CỘT PHẢI: THÔNG TIN -->
+        <div class="ap-card">
+            <div class="ap-card-head">📝 Thông tin chi tiết</div>
+            <div class="ap-card-body">
 
-<select
-name="category_id"
-id="category_id"
-required>
+                <div class="ap-group">
+                    <label>Tên sản phẩm <span class="req">*</span></label>
+                    <input type="text" name="title" maxlength="255" placeholder="Ví dụ: iPhone 13 128GB màu xanh" required>
+                </div>
 
-<option value="">-- Chọn danh mục --</option>
+                <div class="ap-row">
+                    <div class="ap-group">
+                        <label>Danh mục <span class="req">*</span></label>
+                        <select name="category_id" id="category_id" required>
+                            <option value="">-- Chọn danh mục --</option>
+                        </select>
+                    </div>
+                    <div class="ap-group">
+                        <label>Tình trạng <span class="req">*</span></label>
+                        <select name="condition_item" required>
+                            <option value="new">Mới</option>
+                            <option value="like_new">Như mới</option>
+                            <option value="good" selected>Còn tốt</option>
+                            <option value="fair">Khá cũ</option>
+                        </select>
+                    </div>
+                </div>
 
-</select>
+                <div class="ap-row">
+                    <div class="ap-group">
+                        <label>Giá bán <span class="req">*</span></label>
+                        <div class="ap-price-wrap">
+                            <input type="number" name="price" min="1000" step="1000" placeholder="0" required>
+                            <span>đ</span>
+                        </div>
+                    </div>
+                    <div class="ap-group">
+                        <label>Địa điểm <span class="req">*</span></label>
+                        <input type="text" name="location" placeholder="Ví dụ: TP Hồ Chí Minh" required>
+                    </div>
+                </div>
 
-</div>
+                <div class="ap-group">
+                    <label>Mô tả sản phẩm</label>
+                    <textarea name="description" placeholder="Mô tả tình trạng, lý do bán, phụ kiện đi kèm..."></textarea>
+                </div>
 
-<div class="form-group">
-<label>Giá bán</label>
+                <div class="ap-actions">
+                    <a href="my-products.html" class="ap-btn-cancel">Hủy</a>
+                    <button type="submit" class="ap-btn-submit" id="submitBtn">Đăng sản phẩm</button>
+                </div>
 
-<input
-type="number"
-name="price"
-min="1000"
-required>
+                <div id="ap-message"></div>
+            </div>
+        </div>
 
-</div>
-
-<div class="form-group">
-
-<label>Tình trạng</label>
-
-<select
-name="condition_item"
-required>
-
-<option value="Mới">Mới</option>
-
-<option value="Như mới">Như mới</option>
-
-<option value="Tốt">Tốt</option>
-
-<option value="Đã qua sử dụng" selected>
-Đã qua sử dụng
-</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>Địa điểm</label>
-
-<input
-type="text"
-name="location"
-placeholder="Ví dụ: TP Hồ Chí Minh"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>Mô tả</label>
-
-<textarea
-name="description"
-placeholder="Mô tả sản phẩm..."></textarea>
-
-</div>
-
-<div class="form-group">
-
-<label>Ảnh sản phẩm</label>
-
-<input
-type="file"
-name="image"
-id="image"
-accept="image/*"
-required>
-
-<img
-id="previewImg"
-class="preview-img">
-
-</div>
-
-<button type="submit">
-Đăng sản phẩm
-</button>
-
-</form>
+    </div>
+    </form>
 
 </div>
 
 <script>
-
-fetch("api/categories.php")
-
-.then(res=>res.json())
-
-.then(data=>{
-
-    if(!data.success) return;
-
-    let select=document.getElementById("category_id");
-
-    data.data.forEach(cat=>{
-
-        let option=document.createElement("option");
-
-        option.value=cat.id;
-
-        option.textContent=cat.name;
-
-        select.appendChild(option);
-
-    });
-
-})
-
-.catch(err=>console.log(err));
-
-document.getElementById("image").addEventListener("change",function(){
-
-    const file=this.files[0];
-
-    const preview=document.getElementById("previewImg");
-
-    if(file){
-
-        preview.src=URL.createObjectURL(file);
-
-        preview.style.display="block";
-
-    }else{
-
-        preview.style.display="none";
-
+    function goSearch() {
+        const q = document.getElementById('header-search-input').value.trim();
+        if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
     }
 
-});
+    // Kiểm tra đăng nhập
+    fetch('api/auth-check.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.logged_in) {
+                document.getElementById('nav-guest').style.display = 'none';
+                document.getElementById('nav-user').style.display = 'flex';
+                document.getElementById('nav-username').textContent =
+                    '👤 ' + (data.user.fullname || data.user.username);
+            } else {
+                window.location.href = `pages/login.html?redirect=${encodeURIComponent('add-product.html')}`;
+            }
+        })
+        .catch(() => {});
 
+    // Tải danh mục
+    fetch('api/categories.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const select = document.getElementById('category_id');
+            data.data.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(err => console.log(err));
+
+    // Ảnh: preview + kéo thả
+    const dropZone   = document.getElementById('dropZone');
+    const imageInput = document.getElementById('image');
+    const previewImg = document.getElementById('previewImg');
+
+    function showPreview(file) {
+        if (!file) { previewImg.style.display = 'none'; return; }
+        previewImg.src = URL.createObjectURL(file);
+        previewImg.style.display = 'block';
+    }
+
+    imageInput.addEventListener('change', function () { showPreview(this.files[0]); });
+
+    ['dragenter', 'dragover'].forEach(evt =>
+        dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('dragover'); })
+    );
+    ['dragleave', 'drop'].forEach(evt =>
+        dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('dragover'); })
+    );
+    dropZone.addEventListener('drop', e => {
+        const file = e.dataTransfer.files[0];
+        if (file) { imageInput.files = e.dataTransfer.files; showPreview(file); }
+    });
+
+    // Submit qua AJAX để hiện thông báo đẹp thay vì reload trang
+    document.getElementById('addProductForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const msgBox = document.getElementById('ap-message');
+        const btn = document.getElementById('submitBtn');
+        msgBox.className = '';
+        msgBox.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Đang đăng...';
+
+        try {
+            const res = await fetch('add.php', { method: 'POST', body: new FormData(this), credentials: 'include' });
+            const data = await res.json();
+
+            msgBox.className = data.success ? 'success' : 'error';
+            msgBox.textContent = data.message || (data.success ? 'Đăng sản phẩm thành công!' : 'Có lỗi xảy ra.');
+
+            if (data.success) {
+                setTimeout(() => { window.location.href = 'my-products.html'; }, 900);
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Đăng sản phẩm';
+            }
+        } catch (err) {
+            msgBox.className = 'error';
+            msgBox.textContent = 'Không thể kết nối máy chủ, vui lòng thử lại.';
+            btn.disabled = false;
+            btn.textContent = 'Đăng sản phẩm';
+        }
+    });
 </script>
 
-</body>
-</html>
 </body>
 </html>
