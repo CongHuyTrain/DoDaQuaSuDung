@@ -196,7 +196,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <option value="hidden"   <?= $product["status"] === "hidden"   ? "selected" : "" ?>>Đã ẩn</option>
                             <option value="rejected" <?= $product["status"] === "rejected" ? "selected" : "" ?>>Từ chối</option>
                         </select>
-                        <div class="hint">Cần chạy sql/fix-schema.sql một lần để DB chấp nhận "Đã ẩn" / "Từ chối".</div>
                     </div>
 
                     <div class="form-group full">
