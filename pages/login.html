@@ -3,13 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Xác thực - Nhóm</title>
-    <link rel="stylesheet" href="../assets/css/login.css">
+    <title>Đăng nhập – Đồ Cũ VN</title>
+    <style>
+        *{ box-sizing:border-box; }
+        body{
+            margin:0; font-family:Arial,Helvetica,sans-serif;
+            background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 55%,#1e3a8a 100%);
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            padding:30px 16px;
+        }
+
+        .brand{
+            position:fixed; top:24px; left:28px; color:#fff;
+            font-weight:900; font-size:1.3rem; text-decoration:none;
+        }
+        .brand span{ color:#fde68a; }
+
+        .auth-wrapper{ width:100%; max-width:440px; }
+
+        .auth-card{
+            display:none; background:#fff; border-radius:16px;
+            padding:34px 32px; box-shadow:0 20px 50px rgba(0,0,0,.25);
+        }
+        .auth-card.active{ display:block; }
+
+        .auth-header{ text-align:center; margin-bottom:22px; }
+        .auth-header.title-left{ text-align:left; }
+        .auth-header h2{ margin:0 0 6px; font-size:1.4rem; font-weight:800; color:#1e293b; }
+        .auth-header p{ margin:0; color:#64748b; font-size:0.9rem; }
+
+        .form-group{ margin-bottom:16px; }
+        .form-group label{
+            display:block; font-weight:700; font-size:0.85rem;
+            color:#1e293b; margin-bottom:6px;
+        }
+        .form-group input, .form-group select{
+            width:100%; padding:11px 13px; border:1px solid #d8dee8;
+            border-radius:8px; font-size:0.92rem; font-family:inherit;
+            transition:.15s;
+        }
+        .form-group input:focus, .form-group select:focus{
+            outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12);
+        }
+
+        .dob-group{ display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:8px; }
+
+        .form-actions{ text-align:right; margin:-6px 0 16px; }
+        .forgot-link{ font-size:0.85rem; color:#2563eb; text-decoration:none; font-weight:600; }
+        .forgot-link:hover{ text-decoration:underline; }
+
+        .btn-submit{
+            width:100%; background:#2563eb; color:#fff; border:none;
+            padding:13px; border-radius:9px; font-size:0.98rem; font-weight:700;
+            cursor:pointer; transition:.15s;
+        }
+        .btn-submit:hover{ background:#1d4ed8; }
+        .btn-submit.btn-dark{ background:#1e293b; }
+        .btn-submit.btn-dark:hover{ background:#0f172a; }
+
+        .auth-footer{ text-align:center; margin-top:18px; font-size:0.88rem; color:#64748b; }
+        .auth-footer a{ color:#2563eb; font-weight:700; text-decoration:none; }
+        .auth-footer a:hover{ text-decoration:underline; }
+        .auth-footer.text-center{ text-align:center; }
+
+        .info-alert{
+            background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af;
+            border-radius:8px; padding:12px 14px; font-size:0.83rem;
+            line-height:1.6; margin-top:6px;
+        }
+
+        .inline-field{ display:flex; flex-direction:column; }
+
+        .captcha-wrapper{
+            display:flex; align-items:center; gap:10px; margin-bottom:18px;
+        }
+        .captcha-box{
+            flex:1; background:#f1f5f9; border:1px dashed #cbd5e1;
+            border-radius:8px; padding:10px; text-align:center;
+        }
+        #captcha-image-text{
+            font-size:1.2rem; font-weight:800; letter-spacing:4px; color:#334155;
+        }
+        .btn-refresh-captcha{
+            width:38px; height:38px; border:1px solid #d8dee8; border-radius:8px;
+            background:#fff; cursor:pointer; font-size:1.1rem; color:#2563eb;
+            flex-shrink:0;
+        }
+        .btn-refresh-captcha:hover{ background:#eff6ff; }
+
+        .text-center{ text-align:center; }
+    </style>
 </head>
 <body>
 
+    <a class="brand" href="../index.html">Đồ Cũ<span>VN</span></a>
+
     <div class="auth-wrapper">
-        
+
         <div id="login-card" class="auth-card active">
             <div class="auth-header">
                 <h2>Đăng Nhập</h2>
@@ -96,12 +186,12 @@
 
         <div id="forgot-card" class="auth-card">
             <div class="auth-header title-left">
-                <h2>QUÊN MẬT KHẨU</h2>
+                <h2>Quên mật khẩu</h2>
                 <div class="info-alert">
-                    ✔ Điền vào email của bạn để yêu cầu một mật khẩu mới. Một Email sẽ được gửi đến địa chỉ này để xác minh địa chỉ Email của bạn.
+                    ✔ Điền vào email của bạn để yêu cầu một mật khẩu mới. Một email sẽ được gửi đến địa chỉ này để xác minh.
                 </div>
             </div>
-            <form action="forgot.php" method="POST" class="auth-form text-center">
+            <form action="forgot.php" method="POST" class="auth-form" style="margin-top:18px;">
                 <div class="form-group inline-field">
                     <label for="forgot-email">Email</label>
                     <input type="email" id="forgot-email" name="email" required>
@@ -121,7 +211,7 @@
                     </button>
                 </div>
 
-                <button type="submit" class="btn-submit btn-dark">GỬI MẬT KHẨU</button>
+                <button type="submit" class="btn-submit btn-dark">Gửi mật khẩu</button>
             </form>
             <div class="auth-footer text-center">
                 <p>Quay lại <a href="#" onclick="switchForm('login-card')">Đăng nhập</a></p>
@@ -134,7 +224,7 @@
         function switchForm(cardId) {
             const cards = document.querySelectorAll('.auth-card');
             cards.forEach(card => card.classList.remove('active'));
-            
+
             const targetCard = document.getElementById(cardId);
             if (targetCard) {
                 targetCard.classList.add('active');
@@ -144,7 +234,6 @@
         function refreshCaptcha() {
             const num = Math.floor(100000 + Math.random() * 900000);
             document.getElementById('captcha-image-text').innerText = num;
-            
         }
 
         document.addEventListener("DOMContentLoaded", function() {
