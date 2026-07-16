@@ -72,6 +72,8 @@ if($product["user_id"]==$user_id){
 
 }
 
+$price = $product["price"];
+
 $conn->begin_transaction();
 
 try{
@@ -111,7 +113,7 @@ try{
 
     $cart_id=$conn->insert_id;
 
-    /* Thêm sản phẩm */
+    /* Thêm sản phẩm kèm giá lấy từ bảng products */
 
     $qty=1;
 
@@ -119,18 +121,20 @@ try{
         INSERT INTO cart_items(
             cart_id,
             product_id,
-            quantity
+            quantity,
+            price
         )
         VALUES(
-            ?,?,?
+            ?,?,?,?
         )
     ");
 
     $stmt->bind_param(
-        "iii",
+        "iiid",
         $cart_id,
         $product_id,
-        $qty
+        $qty,
+        $price
     );
 
     $stmt->execute();

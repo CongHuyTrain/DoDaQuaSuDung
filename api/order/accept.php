@@ -22,7 +22,7 @@ if(!$order){
 }
 $stmt=$conn->prepare("
 UPDATE orders
-SET status='confirmed'
+SET status='accepted'
 WHERE id=?
 ");
 $stmt->bind_param("i",$id);

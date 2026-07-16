@@ -10,14 +10,16 @@ function createOrder(
 $sql="
 
 SELECT
-c.product_id,
-c.quantity,
+ci.product_id,
+ci.quantity,
 p.user_id seller_id,
 p.price,
 p.status
 FROM cart c
+JOIN cart_items ci
+ON ci.cart_id=c.id
 JOIN products p
-ON c.product_id=p.id
+ON ci.product_id=p.id
 WHERE c.user_id=?
 
 ";
@@ -49,9 +51,6 @@ while($row = $rs->fetch_assoc()){
 $status = "pending";
 
 $order_ids = [];
-
-
-$status="pending";
 
 foreach($sellers as $seller_id => $items){
 
@@ -135,3 +134,5 @@ $stmt->bind_param("i",$buyer_id);
 $stmt->execute();
 
 return $order_ids;
+
+}

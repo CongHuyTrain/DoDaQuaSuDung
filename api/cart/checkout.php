@@ -29,19 +29,23 @@ if (!in_array($payment_method, ["cod", "momo"])) {
 /*
 ====================================
 Lấy giỏ hàng
+(sửa: phải join qua bảng cart_items vì bảng cart
+không có product_id/quantity)
 ====================================
 */
 
 $sql = "
 SELECT
-c.product_id,
-c.quantity,
+ci.product_id,
+ci.quantity,
 p.user_id AS seller_id,
 p.price,
 p.status
 FROM cart c
+INNER JOIN cart_items ci
+ON ci.cart_id=c.id
 INNER JOIN products p
-ON c.product_id=p.id
+ON ci.product_id=p.id
 WHERE c.user_id=?
 ";
 
@@ -86,9 +90,9 @@ while ($row = $rs->fetch_assoc()) {
 
 $status = "pending";
 
-$payment_status = ($payment_method == "cod")
-    ? "unpaid"
-    : "pending";
+// sửa: bảng orders chỉ nhận enum('pending','paid','failed'),
+// không có giá trị 'unpaid'
+$payment_status = "pending";
 
 $conn->begin_transaction();
 
@@ -121,7 +125,9 @@ try{
 
         "message"=>$message,
 
-        "order_id"=>$order_id
+        // sửa: biến $order_id chưa từng được khai báo,
+        // dùng đúng $order_ids trả về từ createOrder()
+        "order_id"=>$order_ids
 
     ]);
 

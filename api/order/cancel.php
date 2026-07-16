@@ -4,18 +4,14 @@ require_once "../../config/db.php";
 if(!isset($_SESSION["user_id"])){
     die("Bạn chưa đăng nhập.");
 }
-$user=$_SESSION["user_id"];
-$id=(int)$_GET["id"];
+$user=(int)$_SESSION["user_id"];
+$id=isset($_GET["id"])?(int)$_GET["id"]:0;
+
 $sql="
-    SELECT
-    o.*,
-    od.product_id
-    FROM orders o
-    INNER JOIN order_details od
-    ON o.id=od.order_id
-    WHERE
-    o.id=?
-    AND o.buyer_id=?
+    SELECT *
+    FROM orders
+    WHERE id=?
+    AND buyer_id=?
     LIMIT 1
 ";
 $stmt=$conn->prepare($sql);
@@ -25,8 +21,10 @@ $order=$stmt->get_result()->fetch_assoc();
 if(!$order){
     die("Không tìm thấy đơn.");
 }
+
 $conn->begin_transaction();
 try{
+
 $stmt=$conn->prepare("
     UPDATE orders
     SET status='cancelled'
@@ -34,13 +32,34 @@ $stmt=$conn->prepare("
 ");
 $stmt->bind_param("i",$id);
 $stmt->execute();
+
+/*
+----------------------------------
+Lấy TẤT CẢ sản phẩm trong đơn hàng
+(1 đơn có thể có nhiều sản phẩm)
+----------------------------------
+*/
+
 $stmt=$conn->prepare("
+    SELECT product_id
+    FROM order_details
+    WHERE order_id=?
+");
+$stmt->bind_param("i",$id);
+$stmt->execute();
+$rs=$stmt->get_result();
+
+$stmtUpdate=$conn->prepare("
     UPDATE products
     SET status='active'
     WHERE id=?
 ");
-$stmt->bind_param("i",$order["product_id"]);
-$stmt->execute();
+
+while($row=$rs->fetch_assoc()){
+    $stmtUpdate->bind_param("i",$row["product_id"]);
+    $stmtUpdate->execute();
+}
+
 $conn->commit();
 }catch(Exception $e){
 $conn->rollback();
