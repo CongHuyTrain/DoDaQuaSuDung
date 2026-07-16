@@ -31,6 +31,7 @@ $result = $conn->query("
         </div>
 
         <div class="panel">
+            <?php flashMessage(); ?>
             <div class="table-scroll">
                 <table class="admin-table">
                     <thead>
@@ -51,6 +52,7 @@ $result = $conn->query("
                     <?php else: while ($u = $result->fetch_assoc()):
                         $avatar = !empty($u["avatar"]) ? "../" . $u["avatar"] : "../assets/images/avatar.png";
                         [$label, $cls] = statusBadge($u["status"]);
+                        $isAdmin = $u["role"] === "admin";
                     ?>
                         <tr>
                             <td>#<?= (int)$u["id"] ?></td>
@@ -61,6 +63,9 @@ $result = $conn->query("
                             <td><?= e(strtoupper($u["role"])) ?></td>
                             <td class="center"><span class="badge <?= $cls ?>"><?= e($label) ?></span></td>
                             <td class="center">
+                                <?php if ($isAdmin): ?>
+                                    <span class="hint">— tài khoản quản trị —</span>
+                                <?php else: ?>
                                 <div class="action-group">
                                 <?php if ($u["status"] === "active"): ?>
                                     <a class="btn btn-sm btn-danger"
@@ -75,7 +80,13 @@ $result = $conn->query("
                                         Mở khóa
                                     </a>
                                 <?php endif; ?>
+                                    <a class="btn btn-sm btn-neutral"
+                                       href="../api/admin/delete-user.php?id=<?= (int)$u["id"] ?>"
+                                       onclick="return confirmAction('Xóa vĩnh viễn người dùng này? Chỉ xóa được nếu họ chưa có sản phẩm/đơn hàng nào.')">
+                                        Xóa
+                                    </a>
                                 </div>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; endif; ?>

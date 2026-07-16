@@ -1,12 +1,43 @@
 <?php
-session_start();
-require_once "../../config/db.php";
-$id=(int)$_GET["id"];
-$stmt=$conn->prepare("
-    DELETE FROM users
-    WHERE id=?
-");
-$stmt->bind_param("i",$id);
-$stmt->execute();
-header("Location: ../../admin/users.php");
-exit;
+require_once __DIR__ . "/inc/guard.php";
+
+$id = getRequiredId();
+if ($id === 0) {
+    redirectWithMessage("../../admin/users.php", "error", "ID người dùng không hợp lệ.");
+}
+
+if ($id === CURRENT_ADMIN_ID) {
+    redirectWithMessage("../../admin/users.php", "error", "Bạn không thể tự xóa chính tài khoản của mình.");
+}
+
+$check = $conn->prepare("SELECT role FROM users WHERE id=?");
+$check->bind_param("i", $id);
+$check->execute();
+$user = $check->get_result()->fetch_assoc();
+
+if (!$user) {
+    redirectWithMessage("../../admin/users.php", "error", "Không tìm thấy người dùng #$id.");
+}
+
+if ($user["role"] === "admin") {
+    redirectWithMessage("../../admin/users.php", "error", "Không thể xóa một tài khoản quản trị khác.");
+}
+
+$stmt = $conn->prepare("DELETE FROM users WHERE id=?");
+$stmt->bind_param("i", $id);
+
+if ($stmt->execute()) {
+    redirectWithMessage("../../admin/users.php", "success", "Đã xóa người dùng #$id.");
+} elseif (isForeignKeyError($conn)) {
+    // products.user_id, orders.buyer_id, orders.seller_id không có ON DELETE CASCADE
+    // -> xóa cứng một user còn sản phẩm/đơn hàng sẽ để lại dữ liệu mồ côi
+    // (đây chính là nguyên nhân 12 sản phẩm cũ từng trỏ tới user_id=1 không tồn tại).
+    // Chặn hẳn thao tác này thay vì cho xóa và phá vỡ dữ liệu.
+    redirectWithMessage(
+        "../../admin/users.php",
+        "error",
+        "Không thể xóa người dùng #$id vì còn sản phẩm hoặc đơn hàng liên quan. Hãy \"Khóa\" tài khoản này thay vì xóa."
+    );
+} else {
+    redirectWithMessage("../../admin/users.php", "error", "Xóa người dùng thất bại. Vui lòng thử lại.");
+}

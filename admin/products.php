@@ -58,6 +58,8 @@ if ($keyword !== "") {
 
         <div class="panel">
 
+            <?php flashMessage(); ?>
+
             <form method="GET" class="filter-bar">
                 <input type="text" name="keyword" placeholder="Tìm sản phẩm theo tên..." value="<?= e($keyword) ?>">
                 <button class="btn btn-outline">Tìm</button>

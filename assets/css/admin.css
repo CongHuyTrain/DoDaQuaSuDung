@@ -422,6 +422,7 @@ textarea{ resize:vertical; min-height:120px; }
 }
 .alert-error{ background:var(--ember-light); color:var(--ember-dark); }
 .alert-info{ background:var(--gold-light); color:#96690E; }
+.alert-success{ background:var(--moss-light); color:var(--moss); }
 
 .form-actions{
     display:flex;

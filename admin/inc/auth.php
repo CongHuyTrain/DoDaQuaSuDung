@@ -31,6 +31,21 @@ if (!function_exists("e")) {
     }
 }
 
+/**
+ * In ra banner thông báo (thành công/lỗi) khi trang được load sau một
+ * redirect từ api/admin/*.php (?msg=...&type=success|error).
+ */
+if (!function_exists("flashMessage")) {
+    function flashMessage(): void
+    {
+        if (empty($_GET["msg"])) {
+            return;
+        }
+        $type = ($_GET["type"] ?? "") === "success" ? "success" : "error";
+        echo '<div class="alert alert-' . $type . '">' . e($_GET["msg"]) . '</div>';
+    }
+}
+
 /** Format tiền VNĐ: 12500000 -> 12.500.000đ */
 if (!function_exists("money")) {
     function money($amount): string
