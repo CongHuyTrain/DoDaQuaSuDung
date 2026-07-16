@@ -700,3 +700,25 @@ footer .footer-bottom{
     .product-grid{ gap:10px; }
     .trust-strip{ display:none; } /* quá chật, ưu tiên sản phẩm */
 }
+
+/* Ép layout dropzone, chặn override từ style.css ngoài */
+.ap-drop{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    float:none !important;
+    position:static !important;
+    overflow:visible !important;
+}
+.ap-drop-icon, .ap-drop p, .ap-drop small{
+    display:block !important;
+    width:100% !important;
+    white-space:normal !important;
+    position:static !important;
+    float:none !important;
+    background:none !important;
+    border:none !important;
+    box-shadow:none !important;
+}
