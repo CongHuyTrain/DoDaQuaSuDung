@@ -262,7 +262,7 @@ onclick="return confirm('Từ chối đơn hàng?')">
 }
 ?>
 <?php
-if($row["status"]=="confirmed"){
+if($row["status"]=="accepted"){
 ?>
 <a
 class="btn complete"
