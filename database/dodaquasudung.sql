@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2026 at 07:45 AM
+-- Generation Time: Jul 16, 2026 at 09:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -34,6 +34,13 @@ CREATE TABLE `cart` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
+(2, 4, '2026-07-16 07:05:00', '2026-07-16 07:05:00');
+
 -- --------------------------------------------------------
 
 --
@@ -48,6 +55,14 @@ CREATE TABLE `cart_items` (
   `price` decimal(12,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `price`, `created_at`) VALUES
+(6, 2, 13, 1, 100000.00, '2026-07-16 07:05:00'),
+(7, 2, 1, 1, 12500000.00, '2026-07-16 07:05:13');
 
 -- --------------------------------------------------------
 
@@ -174,7 +189,7 @@ CREATE TABLE `orders` (
   `buyer_id` int(11) NOT NULL,
   `seller_id` int(11) NOT NULL,
   `total_amount` decimal(12,2) NOT NULL,
-  `status` enum('pending','accepted','rejected','completed','cancelled') DEFAULT 'pending',
+  `status` enum('pending','accepted','completed','cancelled','rejected') DEFAULT 'pending',
   `note` text DEFAULT NULL,
   `receiver_name` varchar(255) DEFAULT NULL,
   `receiver_phone` varchar(20) DEFAULT NULL,
@@ -186,14 +201,6 @@ CREATE TABLE `orders` (
   `payment_time` datetime DEFAULT NULL,
   `transaction_id` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`id`, `buyer_id`, `seller_id`, `total_amount`, `status`, `note`, `receiver_name`, `receiver_phone`, `receiver_address`, `created_at`, `updated_at`, `payment_method`, `payment_status`, `payment_time`, `transaction_id`) VALUES
-(1, 2, 3, 1007.00, 'cancelled', 'giao nhanh', 'Lê Công Huy', '01223456778', 'Trường GTVT TP Hồ Chí Minh', '2026-07-09 13:12:21', '2026-07-09 14:03:22', 'COD', 'pending', NULL, NULL),
-(3, 2, 3, 1007.00, 'cancelled', '', 'Lê Công Huy', '01223456778', 'test', '2026-07-09 14:03:40', '2026-07-09 14:03:54', 'COD', 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -209,14 +216,6 @@ CREATE TABLE `order_details` (
   `price` decimal(12,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `order_details`
---
-
-INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `price`, `created_at`) VALUES
-(1, 1, 13, 1, 1007.00, '2026-07-09 13:12:21'),
-(3, 3, 13, 1, 1007.00, '2026-07-09 14:03:40');
 
 -- --------------------------------------------------------
 
@@ -235,7 +234,7 @@ CREATE TABLE `products` (
   `condition_item` enum('new','like_new','good','fair') DEFAULT 'good',
   `location` varchar(255) DEFAULT NULL,
   `views` int(11) DEFAULT 0,
-  `status` enum('pending','active','sold','hidden','rejected') DEFAULT 'pending',
+  `status` enum('active','pending','sold','deleted') DEFAULT 'active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -245,19 +244,20 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
-(1, 3, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 7, 'pending', '2026-07-05 14:18:17', '2026-07-09 13:59:43'),
-(2, 3, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 5, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:05:19'),
-(3, 3, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:15'),
-(4, 3, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:06:39'),
-(5, 3, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 2, 'pending', '2026-07-05 14:18:17', '2026-07-09 14:26:38'),
-(6, 3, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'pending', '2026-07-05 14:18:17', '2026-07-10 03:48:34'),
-(7, 3, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
-(8, 3, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
-(9, 3, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
-(10, 3, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
-(11, 3, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:27'),
-(12, 3, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
-(13, 3, 5, 'TestĐt', 'đồ tốt', 1007.00, 'uploads/17834361531499.jpg', '', 'An giang', 6, 'active', '2026-07-07 14:55:53', '2026-07-09 14:23:55');
+(1, 1, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 21, 'active', '2026-07-05 14:18:17', '2026-07-16 07:05:12'),
+(2, 1, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 7, 'active', '2026-07-05 14:18:17', '2026-07-16 07:24:35'),
+(3, 1, 3, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, '', '2026-07-05 14:18:17', '2026-07-13 12:16:24'),
+(4, 1, 4, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'TP.HCM', 3, 'active', '2026-07-05 14:18:17', '2026-07-15 13:41:28'),
+(5, 1, 5, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 3, 'active', '2026-07-05 14:18:17', '2026-07-13 12:20:59'),
+(6, 1, 6, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'active', '2026-07-05 14:18:17', '2026-07-13 12:16:20'),
+(7, 1, 7, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:52:49'),
+(8, 1, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:53:13'),
+(9, 1, 9, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:29'),
+(10, 1, 10, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:56:54'),
+(11, 1, 1, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 2, 'active', '2026-07-05 14:18:17', '2026-07-13 12:13:25'),
+(12, 1, 4, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-05 14:55:52'),
+(13, 3, 1, 'Điện thoại đồ chơi', 'đồ tốt, còn xài được', 100000.00, 'uploads/17834361531499.jpg', 'new', 'An giang', 24, 'active', '2026-07-07 14:55:53', '2026-07-16 07:23:38'),
+(16, 3, 5, 'test', '', 23452541.00, 'uploads/17839464943621.jpg', 'new', 'An giang', 2, 'active', '2026-07-13 12:41:34', '2026-07-16 07:23:11');
 
 -- --------------------------------------------------------
 
@@ -502,13 +502,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `cart_items_log`
@@ -556,19 +556,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `product_images`
