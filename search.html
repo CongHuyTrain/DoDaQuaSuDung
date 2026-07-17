@@ -29,7 +29,6 @@
     </div>
 </header>
 
-<!-- THANH LỌC -->
 <div class="search-bar-page">
     <div class="container">
         <div class="search-row">
@@ -92,7 +91,7 @@
         })
         .catch(() => {});
 
-    // Đọc params từ URL và điền vào form
+  
     const urlParams = new URLSearchParams(location.search);
     const initQ    = urlParams.get('q') || '';
 
@@ -124,7 +123,7 @@
             return;
         }
 
-        // Cập nhật URL
+      
         const url = new URL(location);
         Object.entries(p).forEach(([k, v]) => v ? url.searchParams.set(k, v) : url.searchParams.delete(k));
         url.searchParams.set('page', page);
@@ -141,7 +140,7 @@
         doSearch();
     }
 
-    // Tự động tìm nếu có keyword từ URL
+
     if (initQ) doSearch(parseInt(urlParams.get('page')) || 1);
 </script>
 </body>

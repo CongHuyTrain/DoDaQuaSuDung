@@ -29,7 +29,7 @@ if (!ctype_digit((string) $productId)) {
     exit;
 }
 
-// Kiểm tra quyền sở hữu sản phẩm
+
 $check = $conn->prepare("
     SELECT image
     FROM products

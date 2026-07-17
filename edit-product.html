@@ -6,7 +6,7 @@
 <title>Sửa sản phẩm – Đồ Cũ VN</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-    /* ---- Trang Sửa sản phẩm (dùng chung theme với add-product.html) ---- */
+    
     .ap-wrap{ padding:24px 0 60px; }
     .ap-head{ margin-bottom:20px; }
     .ap-head h1{ font-size:1.5rem; font-weight:800; margin:6px 0 4px; }
@@ -133,7 +133,7 @@
                 </div>
             </div>
 
-            <!-- CỘT PHẢI: THÔNG TIN -->
+            
             <div class="ap-card">
                 <div class="ap-card-head">📝 Thông tin chi tiết</div>
                 <div class="ap-card-body">
@@ -204,7 +204,7 @@
         if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
     }
 
-    // Kiểm tra đăng nhập
+    
     fetch('api/auth-check.php')
         .then(r => r.json())
         .then(data => {
@@ -228,7 +228,7 @@
     }
     document.getElementById('product_id').value = productId;
 
-    // Ảnh: preview + kéo thả
+    
     const dropZone   = document.getElementById('dropZone');
     const imageInput = document.getElementById('image');
     const previewImg = document.getElementById('previewImg');
@@ -253,7 +253,7 @@
         if (file) { imageInput.files = e.dataTransfer.files; showPreview(URL.createObjectURL(file)); }
     });
 
-    // Tải danh mục + dữ liệu sản phẩm hiện tại
+    
     Promise.all([
         fetch('api/categories.php').then(r => r.json()),
         fetch(`api/my-products.php`, { credentials: 'include' }).then(r => r.json())
@@ -281,8 +281,7 @@
             document.getElementById('description').value = product.description || '';
             if (product.image) showPreview('/' + product.image);
 
-            // "status" chỉ cho phép chuyển giữa Đang bán / Đã bán.
-            // pending (chờ duyệt) do admin xử lý, deleted do nút Xóa xử lý — không cho sửa trực tiếp ở đây.
+           
             const statusSelect = document.getElementById('status');
             const lockedNote   = document.getElementById('statusLockedNote');
             if (product.status === 'active' || product.status === 'sold') {

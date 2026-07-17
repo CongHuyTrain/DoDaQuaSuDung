@@ -46,7 +46,7 @@ $activePage = 'profile';
     <title>Tài khoản của tôi – Đồ Cũ VN</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        /* ================= Trang Tài khoản (kiểu Shopee) ================= */
+       
         body{ background:#f5f6fa; }
 
         .acc-wrap{
@@ -54,7 +54,7 @@ $activePage = 'profile';
             display:grid; grid-template-columns:240px 1fr; gap:24px; align-items:start;
         }
 
-        /* ---- Sidebar ---- */
+        
         .acc-sidebar{
             background:#fff; border:1px solid #e2e8f0; border-radius:14px;
             padding:20px 0; position:sticky; top:20px;
@@ -103,7 +103,7 @@ $activePage = 'profile';
         .acc-nav-logout{ color:#dc2626 !important; }
         .acc-nav-logout:hover{ background:#fef2f2; }
 
-        /* ---- Content ---- */
+        
         .acc-content{ min-width:0; }
         .acc-card{
             background:#fff; border:1px solid #e2e8f0; border-radius:14px;
@@ -145,7 +145,7 @@ $activePage = 'profile';
         .acc-btn-save:hover{ background:#1d4ed8; }
         .acc-btn-save:disabled{ background:#93c5fd; cursor:not-allowed; }
 
-        /* ---- Cột avatar bên phải form hồ sơ ---- */
+        
         .acc-profile-grid{ display:flex; gap:40px; }
         .acc-profile-main{ flex:1; min-width:0; }
         .acc-avatar-col{
@@ -168,7 +168,7 @@ $activePage = 'profile';
         .acc-avatar-btn:hover{ border-color:#2563eb; color:#2563eb; }
         .acc-avatar-hint{ font-size:0.76rem; color:#94a3b8; text-align:center; margin-top:10px; line-height:1.5; }
 
-        /* ---- Toast thông báo ---- */
+        
         .acc-toast{
             position:fixed; top:24px; right:24px; z-index:999;
             background:#1e293b; color:#fff; padding:13px 20px; border-radius:10px;
@@ -209,7 +209,7 @@ $activePage = 'profile';
 
     <div class="acc-content">
 
-        <!-- ============ TAB: HỒ SƠ ============ -->
+        
         <div class="acc-card" id="tab-profile" style="<?php echo $activeTab === 'profile' ? '' : 'display:none;'; ?>">
             <div class="acc-card-head">
                 <h2>Hồ Sơ Của Tôi</h2>
@@ -295,7 +295,7 @@ $activePage = 'profile';
             </div>
         </div>
 
-        <!-- ============ TAB: ĐỔI MẬT KHẨU ============ -->
+        
         <div class="acc-card" id="tab-password" style="<?php echo $activeTab === 'password' ? '' : 'display:none;'; ?>">
             <div class="acc-card-head">
                 <h2>Đổi Mật Khẩu</h2>
@@ -343,7 +343,7 @@ function showToast(message, type){
     window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-// ---- Chuyển tab mà không reload trang ----
+
 function switchTab(tab){
     document.getElementById('tab-profile').style.display  = tab === 'profile'  ? '' : 'none';
     document.getElementById('tab-password').style.display = tab === 'password' ? '' : 'none';
@@ -360,7 +360,7 @@ document.querySelectorAll('.acc-nav-sub a').forEach(a => {
     });
 });
 
-// ---- Cập nhật hồ sơ ----
+
 document.getElementById('profile-form').addEventListener('submit', function(e){
     e.preventDefault();
     const btn = document.getElementById('profile-save-btn');
@@ -378,7 +378,7 @@ document.getElementById('profile-form').addEventListener('submit', function(e){
     .finally(() => { btn.disabled = false; btn.textContent = 'Lưu thay đổi'; });
 });
 
-// ---- Đổi mật khẩu ----
+
 document.getElementById('password-form').addEventListener('submit', function(e){
     e.preventDefault();
     if (document.getElementById('p-new').value !== document.getElementById('p-confirm').value) {

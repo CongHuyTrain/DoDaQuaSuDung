@@ -1,4 +1,4 @@
-/* Toàn bộ thiết lập chung */
+
 * {
     margin: 0;
     padding: 0;
@@ -15,14 +15,14 @@ body {
     padding: 20px;
 }
 
-/* Khung bao ngoài */
+
 .auth-wrapper {
     width: 100%;
-    max-width: 500px; /* Tăng nhẹ kích thước chiều ngang để vừa giao diện ngang mới */
+    max-width: 500px; 
     margin: 20px auto;
 }
 
-/* Các khung chức năng */
+
 .auth-card {
     background: #ffffff;
     padding: 40px 30px;
@@ -36,7 +36,7 @@ body {
     display: block;
 }
 
-/* Giao diện tiêu đề chuẩn */
+
 .auth-header {
     text-align: center;
     margin-bottom: 30px;
@@ -53,7 +53,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Dành riêng cho khung thông báo xanh nhạt ở trang Quên mật khẩu */
+
 .info-alert {
     background-color: #e3f2fd;
     border: 1px solid #cce5ff;
@@ -96,7 +96,7 @@ body {
     box-shadow: 0 0 8px rgba(102, 126, 234, 0.25);
 }
 
-/* Căn label sang bên trái nằm ngang so với ô Input (cho Quên mật khẩu) */
+
 @media (min-width: 400px) {
     .inline-field {
         display: flex;
@@ -137,12 +137,12 @@ body {
     background-position: right 8px center;
 }
 
-/* CSS dành cho phần hiển thị Mã xác nhận dạng đồ họa */
+
 .captcha-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 15px 0 25px 120px; /* Đẩy sang phải để thẳng hàng với ô input */
+    margin: 15px 0 25px 120px; 
     gap: 12px;
 }
 
@@ -195,7 +195,7 @@ body {
     text-decoration: underline;
 }
 
-/* Nút bấm hành động */
+
 .btn-submit {
     width: 100%;
     padding: 13px;
@@ -209,7 +209,7 @@ body {
     transition: opacity 0.3s ease;
 }
 
-/* Nút bấm màu tối cho Quên mật khẩu */
+
 .btn-submit.btn-dark {
     background: #222222;
     max-width: 160px;

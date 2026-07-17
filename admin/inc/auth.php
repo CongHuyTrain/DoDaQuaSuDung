@@ -1,16 +1,5 @@
 <?php
-/**
- * admin/inc/auth.php
- * Bootstrap dùng chung cho MỌI trang trong khu vực admin:
- *  - Mở session + kết nối DB
- *  - Chặn truy cập nếu chưa đăng nhập hoặc không phải admin
- *  - Cung cấp các hàm tiện ích dùng chung (escape HTML, format tiền, badge trạng thái)
- *
- * Trước đây chỉ dashboard.php có đoạn check quyền này, các file admin khác
- * (users.php, products.php, orders.php, reports.php, transactions.php,
- * edit-product.php) không hề kiểm tra -> ai gõ đúng URL cũng vào được.
- * Từ giờ mọi trang admin chỉ cần require_once "inc/auth.php" là đủ.
- */
+
 
 session_start();
 require_once __DIR__ . "/../../config/db.php";
@@ -23,7 +12,6 @@ if (
     exit;
 }
 
-/** Escape HTML an toàn, không lỗi khi giá trị NULL (PHP 8.1+) */
 if (!function_exists("e")) {
     function e($value): string
     {
@@ -31,10 +19,7 @@ if (!function_exists("e")) {
     }
 }
 
-/**
- * In ra banner thông báo (thành công/lỗi) khi trang được load sau một
- * redirect từ api/admin/*.php (?msg=...&type=success|error).
- */
+
 if (!function_exists("flashMessage")) {
     function flashMessage(): void
     {
@@ -54,11 +39,7 @@ if (!function_exists("money")) {
     }
 }
 
-/**
- * Trả về [nhãn hiển thị, class badge] cho một trạng thái, áp dụng chung
- * cho product / order / user status. Nếu gặp giá trị lạ hoặc rỗng
- * (ví dụ dữ liệu cũ bị lưu sai) thì vẫn hiển thị được thay vì vỡ giao diện.
- */
+
 if (!function_exists("statusBadge")) {
     function statusBadge(?string $status): array
     {

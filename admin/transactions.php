@@ -23,8 +23,6 @@ LEFT JOIN users u2 ON o.seller_id = u2.id
 WHERE o.id = ?
 LIMIT 1
 ";
-// Đổi các INNER JOIN cũ -> LEFT JOIN: nếu người mua/bán hoặc sản phẩm liên quan
-// đã bị xóa khỏi hệ thống, trang vẫn hiển thị được đơn hàng thay vì "Không tìm thấy".
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $order_id);

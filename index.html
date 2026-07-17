@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- HEADER -->
+
 <header>
     <div class="header-inner">
         <a class="logo" href="index.html">Đồ Cũ<span>VN</span></a>
@@ -19,7 +19,7 @@
             <button class="btn btn-primary" onclick="goSearch()">Tìm</button>
         </div>
 
-        <!-- Nút mở menu trên di động -->
+        
         <button class="nav-toggle" id="nav-toggle" aria-label="Mở menu" onclick="toggleNav()">
             <span></span><span></span><span></span>
         </button>
@@ -28,10 +28,10 @@
             <a href="index.html" class="btn btn-outline">Trang chủ</a>
             <a href="products.html" class="btn btn-outline">Sản phẩm</a>
 
-            <!-- Hiển thị khi CHƯA đăng nhập -->
+            
             <a href="pages/login.html" class="btn btn-primary" id="nav-guest">Đăng nhập</a>
 
-            <!-- Hiển thị khi ĐÃ đăng nhập -->
+            
             <div class="nav-user-area" id="nav-user" style="display:none;">
                 <a href="my-products.html" class="btn btn-outline" id="nav-my-orders" title="Tin đăng của tôi">📋 Tin đăng của tôi</a>
                 <a href="pages/cart.php" class="nav-cart-btn" id="nav-cart" title="Giỏ hàng">
@@ -55,7 +55,7 @@
     </div>
 </header>
 
-<!-- HERO -->
+
 <section class="hero">
     <div class="container">
         <h1>Mua bán đồ đã qua sử dụng</h1>
@@ -67,7 +67,7 @@
     </div>
 </section>
 
-<!-- CAM KẾT (đã sửa lỗi dư khoảng trống cuối hàng, chia đều 4 cột tuyệt đối) -->
+
 <div class="container">
     <div class="trust-strip">
         <div class="trust-item"><span class="dot">✓</span> Người bán đã xác thực</div>
@@ -77,7 +77,7 @@
     </div>
 </div>
 
-<!-- BANNER KHUYẾN MÃI (kiểu Shopee, dùng đúng tông ember/moss/gold) -->
+
 <section class="section" style="padding-bottom:0;">
     <div class="container">
         <div class="promo-wrap">
@@ -231,7 +231,6 @@
     </div>
 </footer>
 
-<!-- THANH ĐIỀU HƯỚNG DƯỚI (chỉ hiện trên di động) -->
 <nav class="mobile-tabbar">
     <a href="index.html" class="active"><span class="tab-icon">🏠</span>Trang chủ</a>
     <a href="products.html"><span class="tab-icon">📂</span>Danh mục</a>
@@ -245,18 +244,18 @@
 
 <script src="assets/js/main.js"></script>
 <script>
-    // Mở/đóng menu trên di động
+    
     function toggleNav(){
         document.getElementById('header-nav').classList.toggle('open');
     }
 
-    // Mở/đóng menu tài khoản (bấm) — dùng cho di động, desktop có thể hover trực tiếp
+    
     function toggleAccountMenu(e){
         e.stopPropagation();
         document.getElementById('nav-account').classList.toggle('open');
     }
 
-    // Bấm ra ngoài thì đóng menu tài khoản
+    
     document.addEventListener('click', function(e){
         const acc = document.getElementById('nav-account');
         if (acc && !acc.contains(e.target)) {
@@ -264,7 +263,7 @@
         }
     });
 
-    // Kiểm tra đăng nhập (dựa trên session PHP thật, không dùng sessionStorage)
+    
     fetch('api/auth-check.php')
         .then(r => r.json())
         .then(data => {
@@ -274,12 +273,12 @@
                 document.getElementById('nav-username').textContent =
                     (data.user.fullname || data.user.username);
 
-                // Cập nhật tab "Tài khoản" trên thanh dưới di động
+                
                 const tabAccount = document.getElementById('tab-account');
                 tabAccount.href = 'pages/dashboard.php';
                 tabAccount.innerHTML = '<span class="tab-icon">👤</span>' + (data.user.username);
 
-                // Lấy số lượng giỏ hàng cho cả badge desktop và mobile
+                
                 fetch('api/cart/count.php')
                     .then(r => r.json())
                     .then(c => {
@@ -296,9 +295,9 @@
                     .catch(() => {});
             }
         })
-        .catch(() => { /* Nếu lỗi, giữ nguyên giao diện khách (chưa đăng nhập) */ });
+        .catch(() => {  });
 
-    // Tìm kiếm
+    
     function goSearch() {
         const q = document.getElementById('header-search-input').value.trim();
         if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;

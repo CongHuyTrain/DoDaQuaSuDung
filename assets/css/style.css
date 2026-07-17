@@ -54,9 +54,7 @@ img{ max-width:100%; display:block; }
     padding:0 20px;
 }
 
-/* ==========================================================================
-   BUTTONS
-   ========================================================================== */
+
 
 .btn{
     display:inline-flex;
@@ -95,9 +93,7 @@ img{ max-width:100%; display:block; }
     background:var(--ember-light);
 }
 
-/* ==========================================================================
-   HEADER
-   ========================================================================== */
+
 
 header{
     position:sticky;
@@ -214,7 +210,7 @@ header{
     white-space:nowrap;
 }
 
-/* Nút menu di động (ẩn trên desktop) */
+
 .nav-toggle{
     display:none;
     width:40px;
@@ -235,9 +231,7 @@ header{
     transition:transform .2s ease, opacity .2s ease;
 }
 
-/* ==========================================================================
-   HERO
-   ========================================================================== */
+
 
 .hero{
     background:linear-gradient(120deg, var(--ember) 0%, #F07A44 55%, var(--gold) 100%);
@@ -300,7 +294,7 @@ header{
 }
 .hero-search button:hover{ background:var(--ember-dark); }
 
-/* Nút CTA ở hero (trang chủ dùng cặp nút này thay vì ô tìm kiếm hero-search) */
+
 .hero-cta{
     display:flex;
     gap:14px;
@@ -336,7 +330,6 @@ header{
     transform:translateY(-2px);
 }
 
-/* Dải cam kết nhỏ dưới hero */
 .trust-strip{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
@@ -372,9 +365,6 @@ header{
     flex-shrink:0;
 }
 
-/* ==========================================================================
-   SECTION / TITLE
-   ========================================================================== */
 
 .section{ padding:40px 0; }
 
@@ -401,9 +391,6 @@ header{
     max-width:620px;
 }
 
-/* ==========================================================================
-   CATEGORY CHIPS — dạng "thẻ giá" (signature element)
-   ========================================================================== */
 
 .category-list{
     display:flex;
@@ -429,7 +416,7 @@ header{
     color:var(--charcoal);
     transition:all .18s ease;
 }
-/* núm tròn mô phỏng lỗ thẻ giá */
+
 .category-chip::before{
     content:"";
     position:absolute;
@@ -458,9 +445,6 @@ header{
     border-color:rgba(255,255,255,.8);
 }
 
-/* ==========================================================================
-   PRODUCT GRID
-   ========================================================================== */
 
 .product-grid{
     display:grid;
@@ -468,9 +452,7 @@ header{
     gap:18px;
 }
 
-/* Thẻ sản phẩm — dự đoán theo cấu trúc phổ biến mà main.js có thể render.
-   Nếu class thật trong main.js khác, gửi file main.js để mình khớp lại
-   chính xác 100%. */
+
 .product-card{
     background:var(--white);
     border-radius:var(--radius-md);
@@ -609,9 +591,7 @@ header{
     color:var(--white);
 }
 
-/* ==========================================================================
-   BANNER KHUYẾN MÃI (trang chủ)
-   ========================================================================== */
+
 
 .promo-wrap{
     display:grid;
@@ -731,9 +711,7 @@ header{
 .promo-card.c1{ background:linear-gradient(135deg, var(--ember) 0%, #F0A93E 100%); }
 .promo-card.c2{ background:linear-gradient(135deg, #2F6B4F 0%, #1F4A37 100%); }
 
-/* ==========================================================================
-   VÌ SAO CHỌN ĐỒ CŨ VN — FEATURE GRID
-   ========================================================================== */
+/
 
 .feature-grid{
     display:grid;
@@ -777,9 +755,6 @@ header{
     line-height:1.55;
 }
 
-/* ==========================================================================
-   MUA BÁN CHỈ VỚI 3 BƯỚC — STEPS GRID
-   ========================================================================== */
 
 .steps-grid{
     display:grid;
@@ -819,9 +794,7 @@ header{
     line-height:1.55;
 }
 
-/* ==========================================================================
-   MENU TÀI KHOẢN DẠNG DROPDOWN (header)
-   ========================================================================== */
+
 
 .nav-account{ position:relative; }
 .nav-account-btn{
@@ -883,9 +856,7 @@ header{
 .nav-account:hover .nav-account-menu,
 .nav-account.open .nav-account-menu{ display:block; }
 
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
+
 
 footer{
     background:var(--ink);
@@ -912,17 +883,13 @@ footer .footer-bottom{
     opacity:.6;
 }
 
-/* ==========================================================================
-   MOBILE BOTTOM NAV (chỉ hiện trên di động)
-   ========================================================================== */
+
 
 .mobile-tabbar{
     display:none;
 }
 
-/* ==========================================================================
-   RESPONSIVE — TABLET
-   ========================================================================== */
+
 
 @media (max-width: 1024px){
     .product-grid{ grid-template-columns:repeat(3, 1fr); }
@@ -931,9 +898,6 @@ footer .footer-bottom{
     .steps-grid{ grid-template-columns:repeat(2, 1fr); }
 }
 
-/* ==========================================================================
-   RESPONSIVE — MOBILE
-   ========================================================================== */
 
 @media (max-width: 768px){
 
@@ -970,7 +934,7 @@ footer .footer-bottom{
     }
     .header-nav .btn{ width:100%; justify-content:flex-start; margin:4px 0; }
     .nav-user-area{ flex-direction:column; align-items:stretch; width:100%; }
-    .nav-cart-btn{ display:none; } /* thay bằng tab bar dưới */
+    .nav-cart-btn{ display:none; } 
 
     .hero{ padding:32px 0 46px; }
     .hero p{ font-size:14px; }
@@ -1003,7 +967,7 @@ footer .footer-bottom{
     footer{ padding:32px 0 96px; }
     footer .footer-grid{ grid-template-columns:1fr 1fr; gap:22px; }
 
-    /* Thanh điều hướng dưới cùng kiểu app */
+    
     .mobile-tabbar{
         display:flex;
         position:fixed;
@@ -1048,10 +1012,10 @@ footer .footer-bottom{
 
 @media (max-width: 420px){
     .product-grid{ gap:10px; }
-    .trust-strip{ display:none; } /* quá chật, ưu tiên sản phẩm */
+    .trust-strip{ display:none; } 
 }
 
-/* Ép layout dropzone, chặn override từ style.css ngoài */
+
 .ap-drop{
     display:flex !important;
     flex-direction:column !important;

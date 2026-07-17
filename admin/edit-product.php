@@ -7,8 +7,6 @@ if (!isset($_GET["id"])) {
 
 $id = (int)$_GET["id"];
 
-/* Danh sách trạng thái hợp lệ - PHẢI khớp với enum cột products.status trong DB.
-   (Xem sql/fix-schema.sql để mở rộng enum nếu muốn dùng 'hidden' / 'rejected'.) */
 $validStatuses = ["pending", "active", "sold", "hidden", "rejected", "deleted"];
 
 $categories = $conn->query("SELECT id, name FROM categories ORDER BY name");
@@ -39,9 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!is_numeric($price) || (float)$price < 0) {
         $error = "Giá sản phẩm không hợp lệ.";
     } elseif (!in_array($status, $validStatuses, true)) {
-        // Đây chính là lỗi từng khiến sản phẩm #3 bị lưu status = '' (rỗng):
-        // trước đây form gửi lên giá trị không nằm trong enum của cột products.status,
-        // MySQL tự chuyển thành chuỗi rỗng và sản phẩm biến mất khỏi mọi bộ lọc.
         $error = "Trạng thái không hợp lệ.";
     }
 
@@ -138,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <?php if (trim((string)$product["status"]) === ""): ?>
                 <div class="alert alert-info">
-                    ⚠️ Sản phẩm này đang có trạng thái không hợp lệ trong dữ liệu gốc (rỗng).
+                    Sản phẩm này đang có trạng thái không hợp lệ trong dữ liệu gốc.
                     Hãy chọn lại một trạng thái hợp lệ ở bên dưới rồi lưu để sửa lỗi.
                 </div>
             <?php endif; ?>
