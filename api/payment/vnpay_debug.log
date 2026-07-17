@@ -1,0 +1,4 @@
+[2026-07-17 12:00:06] CREATE returnUrl: https://cathouse-lying-unsigned.ngrok-free.dev/DoDaQuaSuDung/api/payment/vnpay_return.php
+[2026-07-17 12:00:06] CREATE txnRef: 202607171200061161
+[2026-07-17 12:00:06] CREATE amount: 10500000
+[2026-07-17 12:00:06] CREATE paymentUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=10500000&vnp_Command=pay&vnp_CreateDate=20260717120006&vnp_CurrCode=VND&vnp_ExpireDate=20260717121506&vnp_IpAddr=171.248.247.83&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+gio+hang&vnp_OrderType=billpayment&vnp_ReturnUrl=https%3A%2F%2Fcathouse-lying-unsigned.ngrok-free.dev%2FDoDaQuaSuDung%2Fapi%2Fpayment%2Fvnpay_return.php&vnp_TmnCode=OBX1RB6R&vnp_TxnRef=202607171200061161&vnp_Version=2.1.0&vnp_SecureHash=1e4743f0243e04c3a99c95db7d0114dbec888ff3bc8c39a6069757b27d4fde3f79ca63855f00344aa7c78706a3f287e64c31fef25296a673852fe282e150817c
