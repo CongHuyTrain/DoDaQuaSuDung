@@ -5,6 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đồ Cũ VN – Mua bán đồ đã qua sử dụng</title>
     <link rel="stylesheet" href="assets/css/style.css?v=2">
+
+    <style>
+    /* ---- Menu tài khoản dạng dropdown (thay cho tên + nút đăng xuất rời) ---- */
+    .nav-account{
+        position: relative;
+    }
+    .nav-account-btn{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: none;
+        border: 1px solid transparent;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1e293b;
+        font-family: inherit;
+        transition: .15s;
+    }
+    .nav-account-btn:hover{
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+    }
+    .nav-account-caret{
+        font-size: 0.7rem;
+        color: #64748b;
+        transition: transform .15s;
+    }
+    .nav-account.open .nav-account-caret{
+        transform: rotate(180deg);
+    }
+    .nav-account-menu{
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        min-width: 190px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+        padding: 6px;
+        z-index: 50;
+    }
+    .nav-account-menu a{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #1e293b;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .nav-account-menu a:hover{
+        background: #f1f5f9;
+    }
+    .nav-account-menu hr{
+        border: none;
+        border-top: 1px solid #f1f5f9;
+        margin: 4px 6px;
+    }
+    /* Hiện khi hover (desktop) hoặc khi có class .open (bấm, dùng cho di động) */
+    .nav-account:hover .nav-account-menu,
+    .nav-account.open .nav-account-menu{
+        display: block;
+    }
+    </style>
 </head>
 <body>
 
@@ -37,8 +109,18 @@
                     🛒
                     <span class="nav-cart-badge" id="nav-cart-count" style="display:none;">0</span>
                 </a>
-                <span class="nav-username" id="nav-username"></span>
-                <a href="pages/logout.php" class="btn btn-outline" id="nav-logout">Đăng xuất</a>
+                <div class="nav-account" id="nav-account">
+                    <button type="button" class="nav-account-btn" id="nav-account-btn" onclick="toggleAccountMenu(event)">
+                        <span id="nav-username"></span>
+                        <span class="nav-account-caret">▾</span>
+                    </button>
+                    <div class="nav-account-menu" id="nav-account-menu">
+                        <a href="pages/dashboard.php">👤 Tài khoản của tôi</a>
+                        <a href="pages/my-orders.php">🧾 Đơn mua</a>
+                        <hr>
+                        <a href="pages/logout.php">🚪 Đăng xuất</a>
+                    </div>
+                </div>
             </div>
         </nav>
     </div>
@@ -142,6 +224,20 @@
         document.getElementById('header-nav').classList.toggle('open');
     }
 
+    // Mở/đóng menu tài khoản (bấm) — dùng cho di động, desktop có thể hover trực tiếp
+    function toggleAccountMenu(e){
+        e.stopPropagation();
+        document.getElementById('nav-account').classList.toggle('open');
+    }
+
+    // Bấm ra ngoài thì đóng menu tài khoản
+    document.addEventListener('click', function(e){
+        const acc = document.getElementById('nav-account');
+        if (acc && !acc.contains(e.target)) {
+            acc.classList.remove('open');
+        }
+    });
+
     // Kiểm tra đăng nhập (dựa trên session PHP thật, không dùng sessionStorage)
     fetch('api/auth-check.php')
         .then(r => r.json())
@@ -150,7 +246,7 @@
                 document.getElementById('nav-guest').style.display = 'none';
                 document.getElementById('nav-user').style.display = 'flex';
                 document.getElementById('nav-username').textContent =
-                    '👤 ' + (data.user.fullname || data.user.username);
+                    (data.user.fullname || data.user.username);
 
                 // Cập nhật tab "Tài khoản" trên thanh dưới di động
                 const tabAccount = document.getElementById('tab-account');

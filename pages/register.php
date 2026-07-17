@@ -10,13 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST['confirm_password'];
     $gender = $_POST['gender'];
     $phone = trim($_POST['phone']);
+    $address = trim($_POST['address'] ?? '');
 
     $dob_day = $_POST['dob_day'];
     $dob_month = $_POST['dob_month'];
     $dob_year = $_POST['dob_year'];
     $dob = "$dob_year-$dob_month-$dob_day";
 
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($phone) || empty($address)) {
         echo "<script>
                 alert('Vui lòng điền đầy đủ các thông tin bắt buộc.');
                 history.back();
@@ -77,18 +78,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             gender,
             dob,
             phone,
+            address,
             role,
             status,
             created_at
         )
         VALUES
         (
-            ?,?,?,?,?,?,?,?, ?,NOW()
+            ?,?,?,?,?,?,?,?,?,?,NOW()
         )
     ");
 
     $stmt->bind_param(
-        "sssssssss",
+        "ssssssssss",
         $fullname,
         $username,
         $email,
@@ -96,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $gender,
         $dob,
         $phone,
+        $address,
         $role,
         $status
     );

@@ -5,6 +5,22 @@ if(!isset($_SESSION["user_id"])){
     header("Location: login.html");
     exit;
 }
+
+require_once "../config/db.php";
+
+$user_id=(int)$_SESSION["user_id"];
+
+$stmt=$conn->prepare("
+    SELECT fullname, phone, address
+    FROM users
+    WHERE id=?
+    LIMIT 1
+");
+$stmt->bind_param("i",$user_id);
+$stmt->execute();
+$profile=$stmt->get_result()->fetch_assoc() ?: ["fullname"=>"","phone"=>"","address"=>""];
+
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -44,6 +60,37 @@ if(!isset($_SESSION["user_id"])){
     padding:16px 0; font-size:0.95rem; color:#475569;
 }
 .checkout-total-line strong{ color:#f97316; font-size:1.2rem; }
+
+.receiver-box{
+    margin-top:20px; background:#fff; border:1px solid #e2e8f0;
+    padding:20px; border-radius:14px;
+}
+.receiver-box h3{ margin-top:0; font-size:1rem; font-weight:800; }
+.receiver-line{ margin:8px 0; font-size:0.92rem; color:#475569; }
+.receiver-line b{ color:#1e293b; font-weight:700; }
+.receiver-edit-link{
+    display:inline-block; margin-top:10px; color:#2563eb;
+    font-weight:600; font-size:0.85rem; text-decoration:none;
+}
+.receiver-edit-link:hover{ text-decoration:underline; }
+.receiver-warning{
+    background:#fffbeb; border:1px solid #fde68a; color:#92400e;
+    border-radius:8px; padding:12px 14px; font-size:0.88rem; line-height:1.6;
+}
+.receiver-warning a{ color:#92400e; font-weight:700; }
+.receiver-field{ margin-bottom:0; }
+.receiver-field label{
+    display:block; font-weight:700; font-size:0.85rem;
+    color:#1e293b; margin-bottom:6px;
+}
+.receiver-field textarea{
+    width:100%; padding:11px 13px; border:1px solid #d8dee8;
+    border-radius:8px; font-size:0.92rem; font-family:inherit;
+    transition:.15s; resize:vertical; min-height:60px;
+}
+.receiver-field textarea:focus{
+    outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
 
 .payment-box{
     margin-top:20px; background:#fff; border:1px solid #e2e8f0;
@@ -145,6 +192,27 @@ if(!isset($_SESSION["user_id"])){
         </div>
     </div>
 
+    <div class="receiver-box">
+        <h3>📍 Thông tin nhận hàng</h3>
+
+        <?php if (empty($profile["fullname"]) || empty($profile["phone"]) || empty($profile["address"])): ?>
+            <div class="receiver-warning">
+                ⚠️ Hồ sơ của bạn đang thiếu họ tên / số điện thoại / địa chỉ.
+                Vui lòng <a href="dashboard.php">cập nhật hồ sơ</a> trước khi đặt hàng.
+            </div>
+        <?php else: ?>
+            <div class="receiver-line"><b>Người nhận:</b> <?= htmlspecialchars($profile["fullname"]) ?></div>
+            <div class="receiver-line"><b>Số điện thoại:</b> <?= htmlspecialchars($profile["phone"]) ?></div>
+            <div class="receiver-line"><b>Địa chỉ:</b> <?= htmlspecialchars($profile["address"]) ?></div>
+            <a class="receiver-edit-link" href="dashboard.php">Đổi thông tin nhận hàng</a>
+        <?php endif; ?>
+
+        <div class="receiver-field" style="margin-top:14px;">
+            <label for="receiver-note">Ghi chú cho người bán (không bắt buộc)</label>
+            <textarea id="receiver-note" placeholder="Ví dụ: giao giờ hành chính, gọi trước khi đến..."></textarea>
+        </div>
+    </div>
+
     <div class="payment-box">
         <h3>Phương thức thanh toán</h3>
 
@@ -182,8 +250,8 @@ if(!isset($_SESSION["user_id"])){
             <div class="momo-inner">
                 <h4>Quét mã MoMo</h4>
                 <img src="../assets/images/momo-qr.jpg" alt="Mã QR MoMo">
-                <p><b>Chủ tài khoản:</b> Lê Công Huy</p>
-                <p><b>SĐT:</b> 035316xxxx</p>
+                <p><b>Chủ tài khoản:</b> Nguyễn Văn Huy</p>
+                <p><b>SĐT:</b> 09xxxxxxxx</p>
                 <p style="color:#ef4444;">Sau khi chuyển khoản hãy bấm "Đặt hàng"</p>
             </div>
         </div>
@@ -214,6 +282,13 @@ if(!isset($_SESSION["user_id"])){
 <script>
 
 let selectedItems=[];
+
+// Thông tin nhận hàng lấy sẵn từ hồ sơ người dùng (không cho gõ lại ở trang thanh toán)
+const receiverInfo={
+    name: <?= json_encode($profile["fullname"] ?? "") ?>,
+    phone: <?= json_encode($profile["phone"] ?? "") ?>,
+    address: <?= json_encode($profile["address"] ?? "") ?>
+};
 let selectedPayment="cod";
 
 // Phí vận chuyển tạm tính cố định (dự án chưa có bảng tính phí ship thực tế)
@@ -345,6 +420,14 @@ function renderCheckout(){
 
 async function placeOrder(){
 
+    if(!receiverInfo.name || !receiverInfo.phone || !receiverInfo.address){
+        alert("Vui lòng cập nhật đầy đủ họ tên, số điện thoại và địa chỉ trong hồ sơ trước khi đặt hàng.");
+        location.href="dashboard.php";
+        return;
+    }
+
+    const receiverNote=document.getElementById("receiver-note").value.trim();
+
     const payment=selectedPayment;
 
     if(payment==="vnpay"){
@@ -367,7 +450,11 @@ async function placeOrder(){
             headers:{ "Content-Type":"application/json" },
             body:JSON.stringify({
                 payment_method:payment,
-                product_ids:product_ids
+                product_ids:product_ids,
+                receiver_name:receiverInfo.name,
+                receiver_phone:receiverInfo.phone,
+                receiver_address:receiverInfo.address,
+                note:receiverNote
             })
         });
 
