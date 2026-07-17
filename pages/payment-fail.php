@@ -73,9 +73,13 @@ border-radius:8px;
 
 <h1>❌ Thanh toán thất bại</h1>
 
-<p>Mã đơn hàng:</p>
+<?php if ($order !== ""): ?>
+<p>Mã giao dịch:</p>
 
 <h2>#<?= htmlspecialchars($order) ?></h2>
+<?php else: ?>
+<p>Giao dịch không thành công, vui lòng thử lại.</p>
+<?php endif; ?>
 
 <a href="my-orders.php">
 

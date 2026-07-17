@@ -1,5 +1,8 @@
 <?php
 $order = $_GET["order"] ?? "";
+// Giỏ hàng có thể có sản phẩm từ nhiều người bán -> createOrder() có thể
+// tạo ra nhiều đơn cùng lúc, order sẽ là danh sách id cách nhau dấu phẩy.
+$orderIds = array_filter(array_map("trim", explode(",", $order)));
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -73,9 +76,15 @@ border-radius:8px;
 
 <h1>✅ Thanh toán thành công</h1>
 
-<p>Mã đơn hàng:</p>
+<?php if (!empty($orderIds)): ?>
+<p><?= count($orderIds) > 1 ? "Mã đơn hàng:" : "Mã đơn hàng:" ?></p>
 
-<h2>#<?= htmlspecialchars($order) ?></h2>
+<h2>
+<?php foreach ($orderIds as $i => $id): ?>
+#<?= htmlspecialchars($id) ?><?= $i < count($orderIds) - 1 ? ", " : "" ?>
+<?php endforeach; ?>
+</h2>
+<?php endif; ?>
 
 <a href="my-orders.php">
 

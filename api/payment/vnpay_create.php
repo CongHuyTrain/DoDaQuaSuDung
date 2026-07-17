@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once "../config/db.php";
+require_once "../../config/db.php";
 require_once "config.php";
 
 if (!isset($_SESSION["user_id"])) {
@@ -13,48 +13,51 @@ $user_id = (int)$_SESSION["user_id"];
 /*
 =====================================
 Lấy toàn bộ giỏ hàng
+
+Lưu ý: schema thật là cart (1 dòng / user) -> cart_items (từng sản phẩm,
+có cart_id + product_id) -> products. Bản cũ JOIN thẳng "cart c ...
+ON c.product_id=p.id" nhưng bảng cart KHÔNG có cột product_id nên luôn
+lỗi SQL ngay từ bước này - đây là nguyên nhân chính khiến thanh toán
+không chạy được.
 =====================================
 */
 
 $sql = "
 SELECT
-c.quantity,
-p.price
+    ci.product_id,
+    ci.quantity,
+    p.price
 FROM cart c
-INNER JOIN products p
-ON c.product_id=p.id
-WHERE c.user_id=?
-AND p.status='active'
+INNER JOIN cart_items ci ON ci.cart_id = c.id
+INNER JOIN products p ON p.id = ci.product_id
+WHERE c.user_id = ?
+AND p.status = 'active'
 ";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i",$user_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 
 $rs = $stmt->get_result();
 
 $total = 0;
+$hasItem = false;
 
-while($row = $rs->fetch_assoc()){
-
+while ($row = $rs->fetch_assoc()) {
+    $hasItem = true;
     $total += $row["price"] * $row["quantity"];
-
 }
 
-if($total<=0){
-
-    die("Giỏ hàng đang trống.");
-
+if (!$hasItem || $total <= 0) {
+    die("Giỏ hàng đang trống hoặc sản phẩm không còn được bán.");
 }
 
-/*
-=====================================
-Mã giao dịch
-=====================================
-*/
+
 
 $vnp_TxnRef =
 date("YmdHis").rand(1000,9999);
+
+$_SESSION["vnp_txn_ref"] = $vnp_TxnRef;
 
 $vnp_OrderInfo =
 "Thanh toan gio hang";
