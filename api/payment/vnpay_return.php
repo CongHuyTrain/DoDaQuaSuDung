@@ -36,17 +36,24 @@ $secureHash = hash_hmac(
     $vnp_HashSecret
 );
 
+vnpay_log("RETURN raw GET", $_GET);
+vnpay_log("RETURN computedHash", $secureHash);
+vnpay_log("RETURN receivedHash", $vnp_SecureHash);
+
 if ($secureHash !== $vnp_SecureHash) {
+    vnpay_log("RETURN result", "SIGNATURE MISMATCH -> fail");
     header("Location: ../../pages/payment-fail.php?order=" . urlencode($txnRef));
     exit;
 }
 
 if (empty($_SESSION["vnp_txn_ref"]) || $txnRef !== $_SESSION["vnp_txn_ref"]) {
+    vnpay_log("RETURN result", "TXN REF MISMATCH session=" . ($_SESSION["vnp_txn_ref"] ?? "(empty)") . " got=" . $txnRef);
     header("Location: ../../pages/payment-fail.php?order=" . urlencode($txnRef));
     exit;
 }
 
 if (($_GET["vnp_ResponseCode"] ?? "") !== "00") {
+    vnpay_log("RETURN result", "ResponseCode=" . ($_GET["vnp_ResponseCode"] ?? "?") . " -> fail");
     unset($_SESSION["vnp_txn_ref"]);
     header("Location: ../../pages/payment-fail.php?order=" . urlencode($txnRef));
     exit;

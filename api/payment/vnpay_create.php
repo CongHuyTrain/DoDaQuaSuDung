@@ -64,13 +64,28 @@ $vnp_OrderInfo =
 
 $vnp_OrderType = "billpayment";
 
-$vnp_Amount = $total * 100;
+// ép về số nguyên, tránh lỗi lệch số thập phân do phép nhân float
+$vnp_Amount = (int) round($total * 100);
 
 $vnp_Locale = "vn";
 
 $vnp_BankCode = "";
 
-$vnp_IpAddr = $_SERVER["REMOTE_ADDR"];
+/*
+Sau ngrok, REMOTE_ADDR thường là 127.0.0.1 hoặc ::1 (IP nội bộ của máy
+chạy ngrok agent), không phải IP thật của client. VNPay đôi khi từ chối
+giá trị IPv6/loopback không hợp lệ trong vnp_IpAddr. Lấy IP thật từ
+X-Forwarded-For nếu có, và fallback về 127.0.0.1 (IPv4) nếu không lấy
+được gì hợp lệ.
+*/
+$vnp_IpAddr = $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
+if (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+    $forwardedList = explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"]);
+    $vnp_IpAddr = trim($forwardedList[0]);
+}
+if (!filter_var($vnp_IpAddr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+    $vnp_IpAddr = "127.0.0.1";
+}
 
 $vnp_CreateDate = date("YmdHis");
 
@@ -148,6 +163,11 @@ $vnp_Url
 .$query
 ."&vnp_SecureHash="
 .$vnpSecureHash;
+
+vnpay_log("CREATE returnUrl", $vnp_Returnurl);
+vnpay_log("CREATE txnRef", $vnp_TxnRef);
+vnpay_log("CREATE amount", $vnp_Amount);
+vnpay_log("CREATE paymentUrl", $paymentUrl);
 
 header("Location: ".$paymentUrl);
 
