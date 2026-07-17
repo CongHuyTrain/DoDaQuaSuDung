@@ -4,12 +4,22 @@ function createOrder(
     mysqli $conn,
     int $buyer_id,
     string $payment_method,
-    string $payment_status
+    string $payment_status,
+    array $selected_product_ids = []
 ){
+
+if(empty($selected_product_ids)){
+
+    throw new Exception("Vui lòng chọn ít nhất 1 sản phẩm để mua.");
+
+}
+
+$placeholders = implode(",", array_fill(0, count($selected_product_ids), "?"));
 
 $sql="
 
 SELECT
+ci.id AS cart_item_id,
 ci.product_id,
 ci.quantity,
 p.user_id seller_id,
@@ -21,22 +31,28 @@ ON ci.cart_id=c.id
 JOIN products p
 ON ci.product_id=p.id
 WHERE c.user_id=?
+AND ci.product_id IN ($placeholders)
 
 ";
 
 $stmt=$conn->prepare($sql);
-$stmt->bind_param("i",$buyer_id);
+
+$types = "i" . str_repeat("i", count($selected_product_ids));
+$params = array_merge([$buyer_id], $selected_product_ids);
+
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 
 $rs=$stmt->get_result();
 
 if($rs->num_rows==0){
 
-throw new Exception("Giỏ hàng trống.");
+throw new Exception("Không tìm thấy sản phẩm đã chọn trong giỏ hàng.");
 
 }
 
 $sellers = [];
+$cart_item_ids = [];
 
 while($row = $rs->fetch_assoc()){
 
@@ -45,6 +61,7 @@ while($row = $rs->fetch_assoc()){
     }
 
     $sellers[$row["seller_id"]][] = $row;
+    $cart_item_ids[] = $row["cart_item_id"];
 
 }
 
@@ -125,13 +142,24 @@ foreach($sellers as $seller_id => $items){
 
 }
 
-$stmt = $conn->prepare("
-DELETE FROM cart
-WHERE user_id=?
-");
+/*
+----------------------------------
+Chỉ xóa những cart_items đã được chọn để mua,
+KHÔNG xóa cả giỏ hàng (giữ lại các sản phẩm chưa chọn)
+----------------------------------
+*/
 
-$stmt->bind_param("i",$buyer_id);
-$stmt->execute();
+if(!empty($cart_item_ids)){
+
+    $ph = implode(",", array_fill(0, count($cart_item_ids), "?"));
+
+    $stmt = $conn->prepare("DELETE FROM cart_items WHERE id IN ($ph)");
+
+    $stmt->bind_param(str_repeat("i", count($cart_item_ids)), ...$cart_item_ids);
+
+    $stmt->execute();
+
+}
 
 return $order_ids;
 

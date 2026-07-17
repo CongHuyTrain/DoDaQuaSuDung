@@ -32,9 +32,10 @@ if(!isset($_SESSION["user_id"])){
     padding:14px 16px; font-size:0.82rem; font-weight:700;
     border-bottom:1px solid #e2e8f0;
 }
-.cart-table thead th:nth-child(3),
+.cart-table thead th:nth-child(1){ width:44px; text-align:center; }
 .cart-table thead th:nth-child(4),
-.cart-table thead th:nth-child(5){ text-align:center; }
+.cart-table thead th:nth-child(5),
+.cart-table thead th:nth-child(6){ text-align:center; }
 
 .cart-table td{
     padding:16px; border-bottom:1px solid #f1f5f9; vertical-align:middle;
@@ -45,6 +46,8 @@ if(!isset($_SESSION["user_id"])){
     width:74px; height:74px; object-fit:cover; border-radius:10px;
     border:1px solid #e2e8f0;
 }
+.cart-check-col{ text-align:center; }
+.cart-check-col input[type=checkbox]{ width:18px; height:18px; cursor:pointer; accent-color:#f97316; }
 .cart-item-title{ font-weight:700; color:#1e293b; }
 .cart-price-col{ text-align:center; color:#64748b; }
 .cart-sub-col{ text-align:center; font-weight:800; color:#f97316; }
@@ -65,59 +68,45 @@ if(!isset($_SESSION["user_id"])){
 }
 .remove-btn:hover{ background:#fee2e2; }
 
-.summary{ margin-top:22px; display:flex; justify-content:flex-end; }
-.summary-box{
-    width:380px; background:#fff; border:1px solid #e2e8f0;
-    padding:20px; border-radius:14px;
+/* ---- Thanh dưới cùng kiểu Shopee: chọn tất cả / xóa / tổng tiền / mua hàng ---- */
+.cart-footer{
+    margin-top:18px; background:#fff; border:1px solid #e2e8f0;
+    border-radius:14px; padding:16px 20px;
+    display:flex; align-items:center; gap:20px; flex-wrap:wrap;
 }
-.summary-row{
-    display:flex; justify-content:space-between; margin-bottom:14px;
-    font-size:0.92rem; color:#475569;
+.footer-check{
+    display:flex; align-items:center; gap:8px; cursor:pointer;
+    font-size:0.92rem; font-weight:600; color:#1e293b; white-space:nowrap;
 }
-.summary-row hr{ display:none; }
-.summary-box hr{ border:none; border-top:1px solid #f1f5f9; margin:14px 0; }
-.total{ font-size:1rem; font-weight:800; color:#1e293b; margin-bottom:0; }
-.total span:last-child{ font-size:1.35rem; font-weight:900; color:#f97316; }
+.footer-check input[type=checkbox]{ width:18px; height:18px; cursor:pointer; accent-color:#f97316; }
+.footer-remove{
+    background:none; border:none; color:#f97316; font-weight:700;
+    cursor:pointer; font-size:0.9rem;
+}
+.footer-remove:hover{ text-decoration:underline; }
 
-.payment-box{
-    margin-top:20px; background:#fff; border:1px solid #e2e8f0;
-    padding:20px; border-radius:14px;
-}
-.payment-box h3{ margin-top:0; font-size:1rem; font-weight:800; }
-.payment-item{
-    margin:10px 0; padding:12px 14px; border:1px solid #e2e8f0;
-    border-radius:10px; transition:.15s; cursor:pointer;
-}
-.payment-item:has(input:checked){ border-color:#2563eb; background:#eff6ff; }
-.payment-item label{ cursor:pointer; font-size:0.92rem; font-weight:600; display:flex; align-items:center; gap:10px; }
+.footer-total{ margin-left:auto; text-align:right; }
+.footer-total-label{ font-size:0.85rem; color:#64748b; }
+.footer-total-label span{ font-weight:700; color:#1e293b; }
+.footer-total-amount{ font-size:1.35rem; font-weight:900; color:#f97316; }
 
-#momo-box{
-    display:none; margin-top:18px; padding:20px;
-    border:2px dashed #f97316; border-radius:14px;
-    text-align:center; background:#fff7ed;
-}
-#momo-box img{ width:220px; border-radius:14px; }
-#momo-box h4{ margin:14px 0 6px; font-size:0.98rem; }
-#momo-box p{ margin:5px; font-size:0.88rem; color:#475569; }
-
-.checkout{ margin-top:24px; text-align:right; }
-.checkout button{
+.footer-buy{
     background:#f97316; color:#fff; border:none;
-    padding:15px 34px; font-size:1rem; font-weight:800;
-    border-radius:10px; cursor:pointer; transition:.15s;
+    padding:14px 36px; font-size:1rem; font-weight:800;
+    border-radius:10px; cursor:pointer; transition:.15s; white-space:nowrap;
 }
-.checkout button:hover{ background:#ea6c00; }
+.footer-buy:hover{ background:#ea6c00; }
 
 .empty{
     padding:70px 20px; text-align:center; color:#94a3b8; font-size:0.95rem;
 }
-.empty::before{ content:''; }
 
 @media (max-width:800px){
-    .summary, .payment-box{ width:100%; }
-    .summary-box{ width:100%; }
     .cart-table{ font-size:0.82rem; }
     .cart-table img{ width:56px; height:56px; }
+    .cart-footer{ flex-direction:column; align-items:stretch; gap:12px; }
+    .footer-total{ margin-left:0; text-align:left; }
+    .footer-buy{ width:100%; }
 }
 </style>
 
@@ -147,59 +136,22 @@ if(!isset($_SESSION["user_id"])){
         </div>
     </div>
 
-    <div class="summary">
-        <div class="summary-box">
-            <div class="summary-row">
-                <span>Tạm tính</span>
-                <strong id="subtotal">0đ</strong>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+        <label class="footer-check">
+            <input type="checkbox" id="check-all-footer" onclick="toggleAll(this.checked)">
+            Chọn Tất Cả (<span id="total-count">0</span>)
+        </label>
+
+        <button class="footer-remove" onclick="removeSelected()">Xóa</button>
+
+        <div class="footer-total">
+            <div class="footer-total-label">
+                Tổng cộng (<span id="selected-count">0</span> sản phẩm):
             </div>
-            <div class="summary-row">
-                <span>Phí vận chuyển</span>
-                <strong>0đ</strong>
-            </div>
-            <hr>
-            <div class="summary-row total">
-                <span>Tổng cộng</span>
-                <span id="grand-total">0đ</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="payment-box">
-        <h3>💳 Phương thức thanh toán</h3>
-
-        <div class="payment-item">
-            <label>
-                <input type="radio" name="payment" value="vnpay" checked>
-                VNPAY Sandbox
-            </label>
+            <div class="footer-total-amount" id="footer-total-amount">0đ</div>
         </div>
 
-        <div class="payment-item">
-            <label>
-                <input type="radio" name="payment" value="momo">
-                MoMo QR
-            </label>
-        </div>
-
-        <div class="payment-item">
-            <label>
-                <input type="radio" name="payment" value="cod">
-                Thanh toán khi nhận hàng (COD)
-            </label>
-        </div>
-
-        <div id="momo-box">
-            <h4>Quét mã MoMo</h4>
-            <img src="../assets/images/momo-qr.jpg" alt="Mã QR MoMo">
-            <p><b>Chủ tài khoản:</b> Nguyễn Văn Huy</p>
-            <p><b>SĐT:</b> 09xxxxxxxx</p>
-            <p style="color:#ef4444;">Sau khi chuyển khoản hãy bấm "Thanh toán"</p>
-        </div>
-    </div>
-
-    <div class="checkout">
-        <button onclick="checkout()">💳 Thanh toán</button>
+        <button class="footer-buy" onclick="goCheckout()">Mua Hàng</button>
     </div>
 
 </div>
@@ -207,376 +159,241 @@ if(!isset($_SESSION["user_id"])){
 <script>
 
 let cart = [];
-
-document.querySelectorAll("input[name=payment]").forEach(r=>{
-
-    r.onchange=function(){
-
-        if(this.value=="momo"){
-
-            document.getElementById("momo-box").style.display="block";
-
-        }else{
-
-            document.getElementById("momo-box").style.display="none";
-
-        }
-
-    }
-
-});
+let selectedIds = new Set();
 
 function money(v){
-
     return Number(v).toLocaleString("vi-VN")+" đ";
-
 }
 
 function loadCart(){
 
-fetch("../api/cart/list.php")
+    fetch("../api/cart/list.php")
+    .then(r=>r.json())
+    .then(data=>{
 
-.then(r=>r.json())
+        if(!data.success){
+            document.getElementById("cart-content").innerHTML=
+            '<div class="empty">'+(data.message||"Không tải được giỏ hàng.")+'</div>';
+            document.getElementById("cart-footer").style.display="none";
+            return;
+        }
 
-.then(data=>{
+        cart=data.items||[];
 
-    if(!data.success){
+        // Mặc định chọn tất cả sản phẩm trong giỏ
+        selectedIds=new Set(cart.map(i=>i.product_id));
 
-        document.getElementById("cart-content").innerHTML=
-        '<div class="empty">'+data.message+'</div>';
+        renderCart();
 
-        return;
-
-    }
-
-    cart=data.items||[];
-
-    renderCart();
-
-});
+    });
 
 }
 
 function renderCart(){
 
-if(cart.length==0){
+    if(cart.length==0){
 
-document.getElementById("cart-content").innerHTML=
-`
-<div class="empty">
+        document.getElementById("cart-content").innerHTML=
+        `<div class="empty">🛒 Giỏ hàng đang trống</div>`;
 
-🛒 Giỏ hàng đang trống
+        document.getElementById("cart-footer").style.display="none";
 
-</div>
-`;
+        return;
 
-document.getElementById("subtotal").innerHTML="0 đ";
-document.getElementById("grand-total").innerHTML="0 đ";
+    }
 
-return;
+    document.getElementById("cart-footer").style.display="flex";
+
+    let html=`
+    <table class="cart-table">
+    <thead>
+    <tr>
+        <th><input type="checkbox" id="check-all-header" onclick="toggleAll(this.checked)"></th>
+        <th>Ảnh</th>
+        <th>Sản phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Thành tiền</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    `;
+
+    cart.forEach(item=>{
+
+        const price=Number(item.price);
+        const qty=Number(item.quantity);
+        const sub=price*qty;
+        const checked=selectedIds.has(item.product_id)?"checked":"";
+
+        html+=`
+        <tr>
+            <td class="cart-check-col">
+                <input type="checkbox" ${checked}
+                    onchange="toggleItem(${item.product_id}, this.checked)">
+            </td>
+            <td>
+                <img src="../${item.image}" alt="">
+            </td>
+            <td>
+                <span class="cart-item-title">${item.title}</span>
+            </td>
+            <td class="cart-price-col">
+                ${money(price)}
+            </td>
+            <td>
+                <div class="qty">
+                    <button onclick="updateQty(${item.product_id},${qty-1})">-</button>
+                    <span>${qty}</span>
+                    <button onclick="updateQty(${item.product_id},${qty+1})">+</button>
+                </div>
+            </td>
+            <td class="cart-sub-col">
+                ${money(sub)}
+            </td>
+            <td>
+                <button class="remove-btn" onclick="removeItem(${item.product_id})">Xóa</button>
+            </td>
+        </tr>
+        `;
+
+    });
+
+    html+=`</tbody></table>`;
+
+    document.getElementById("cart-content").innerHTML=html;
+
+    updateFooter();
 
 }
 
-let html=`
+function updateFooter(){
 
-<table class="cart-table">
+    const selectedItems=cart.filter(i=>selectedIds.has(i.product_id));
+    const total=selectedItems.reduce((s,i)=> s + Number(i.price)*Number(i.quantity), 0);
 
-<thead>
+    document.getElementById("total-count").textContent=cart.length;
+    document.getElementById("selected-count").textContent=selectedItems.length;
+    document.getElementById("footer-total-amount").textContent=money(total);
 
-<tr>
+    const allChecked = cart.length>0 && selectedIds.size===cart.length;
 
-<th>Ảnh</th>
+    const headerBox=document.getElementById("check-all-header");
+    const footerBox=document.getElementById("check-all-footer");
 
-<th>Sản phẩm</th>
+    if(headerBox) headerBox.checked=allChecked;
+    if(footerBox) footerBox.checked=allChecked;
 
-<th>Giá</th>
+}
 
-<th>Số lượng</th>
+function toggleAll(checked){
 
-<th>Thành tiền</th>
+    if(checked){
+        selectedIds=new Set(cart.map(i=>i.product_id));
+    }else{
+        selectedIds.clear();
+    }
 
-<th></th>
+    renderCart();
 
-</tr>
+}
 
-</thead>
+function toggleItem(product_id, checked){
 
-<tbody>
+    if(checked){
+        selectedIds.add(product_id);
+    }else{
+        selectedIds.delete(product_id);
+    }
 
-`;
-
-let total=0;
-
-cart.forEach(item=>{
-
-const price=Number(item.price);
-
-const qty=Number(item.quantity);
-
-const sub=price*qty;
-
-total+=sub;
-
-html+=`
-
-<tr>
-
-<td>
-
-<img
-src="../${item.image}"
-alt="">
-
-</td>
-
-<td>
-
-<span class="cart-item-title">${item.title}</span>
-
-</td>
-
-<td class="cart-price-col">
-
-${money(price)}
-
-</td>
-
-<td>
-
-<div class="qty">
-
-<button
-onclick="updateQty(${item.product_id},${qty-1})">
-
--
-
-</button>
-
-<span>
-
-${qty}
-
-</span>
-
-<button
-onclick="updateQty(${item.product_id},${qty+1})">
-
-+
-
-</button>
-
-</div>
-
-</td>
-
-<td class="cart-sub-col">
-
-${money(sub)}
-
-</td>
-
-<td>
-
-<button
-class="remove-btn"
-onclick="removeItem(${item.product_id})">
-
-Xóa
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`
-
-</tbody>
-
-</table>
-
-`;
-
-document.getElementById("cart-content").innerHTML=html;
-
-document.getElementById("subtotal").innerHTML=money(total);
-
-document.getElementById("grand-total").innerHTML=money(total);
+    updateFooter();
 
 }
 
 function updateQty(product_id,qty){
 
-if(qty<=0){
+    if(qty<=0){
+        removeItem(product_id);
+        return;
+    }
 
-removeItem(product_id);
-
-return;
-
-}
-
-fetch("../api/cart/update.php",{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/x-www-form-urlencoded"
-
-},
-
-body:
-
-"product_id="+product_id+
-
-"&quantity="+qty
-
-})
-
-.then(r=>r.json())
-
-.then(data=>{
-
-if(data.success){
-
-loadCart();
-
-}else{
-
-alert(data.message);
-
-}
-
-});
+    fetch("../api/cart/update.php",{
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+        body:"product_id="+product_id+"&quantity="+qty
+    })
+    .then(r=>r.json())
+    .then(data=>{
+        if(data.success){
+            loadCart();
+        }else{
+            alert(data.message);
+        }
+    });
 
 }
 
 function removeItem(product_id){
 
-if(!confirm("Xóa sản phẩm khỏi giỏ?")){
-
-return;
-
-}
-
-fetch("../api/cart/remove.php",{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/x-www-form-urlencoded"
-
-},
-
-body:
-
-"product_id="+product_id
-
-})
-
-.then(r=>r.json())
-
-.then(data=>{
-
-if(data.success){
-
-loadCart();
-
-}else{
-
-alert(data.message);
-
-}
-
-});
-
-}
-
-loadCart();
-
-</script>
-<script>
-
-async function checkout(){
-
-    if(cart.length==0){
-
-        alert("Giỏ hàng đang trống.");
-
+    if(!confirm("Xóa sản phẩm khỏi giỏ?")){
         return;
-
     }
 
-    const payment=document.querySelector(
-        "input[name=payment]:checked"
-    ).value;
-
-    if(payment=="vnpay"){
-
-        location.href=
-        "../api/payment/vnpay_create.php";
-
-        return;
-
-    }
-
-    if(payment=="momo"){
-
-        if(!confirm(
-            "Bạn xác nhận đã chuyển khoản MoMo?"
-        )){
-            return;
-        }
-
-    }
-
-    try{
-
-        const response=await fetch(
-            "../api/cart/checkout.php",
-            {
-
-                method:"POST",
-
-                headers:{
-                    "Content-Type":
-                    "application/x-www-form-urlencoded"
-                },
-
-                body:
-                "payment_method="+
-                encodeURIComponent(payment)
-
-            }
-        );
-
-        const data=await response.json();
-
-        if(!data.success){
-
+    fetch("../api/cart/remove.php",{
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+        body:"product_id="+product_id
+    })
+    .then(r=>r.json())
+    .then(data=>{
+        if(data.success){
+            loadCart();
+        }else{
             alert(data.message);
-
-            return;
-
         }
-
-        alert(data.message);
-
-        location.href="my-orders.php";
-
-    }
-    catch(e){
-
-        alert("Không thể kết nối tới máy chủ.");
-
-    }
+    });
 
 }
+
+function removeSelected(){
+
+    if(selectedIds.size==0){
+        alert("Vui lòng chọn sản phẩm cần xóa.");
+        return;
+    }
+
+    if(!confirm("Xóa "+selectedIds.size+" sản phẩm đã chọn khỏi giỏ hàng?")){
+        return;
+    }
+
+    const ids=Array.from(selectedIds);
+
+    Promise.all(ids.map(id=>
+        fetch("../api/cart/remove.php",{
+            method:"POST",
+            headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+            body:"product_id="+id
+        }).then(r=>r.json())
+    ))
+    .then(()=> loadCart());
+
+}
+
+function goCheckout(){
+
+    if(selectedIds.size==0){
+        alert("Vui lòng chọn ít nhất 1 sản phẩm để mua.");
+        return;
+    }
+
+    sessionStorage.setItem("checkout_ids", JSON.stringify(Array.from(selectedIds)));
+
+    location.href="checkout.php";
+
+}
+
+loadCart();
 
 </script>
 
