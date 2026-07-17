@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 17, 2026 at 03:46 AM
+-- Generation Time: Jul 17, 2026 at 06:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -40,7 +40,8 @@ CREATE TABLE `cart` (
 
 INSERT INTO `cart` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
 (3, 3, '2026-07-16 13:53:57', '2026-07-16 13:53:57'),
-(5, 4, '2026-07-17 01:22:41', '2026-07-17 01:22:41');
+(5, 4, '2026-07-17 01:22:41', '2026-07-17 01:22:41'),
+(6, 5, '2026-07-17 04:52:37', '2026-07-17 04:52:37');
 
 -- --------------------------------------------------------
 
@@ -63,7 +64,10 @@ CREATE TABLE `cart_items` (
 
 INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `price`, `created_at`) VALUES
 (12, 3, 16, 4, 25000.00, '2026-07-16 13:53:57'),
-(18, 5, 2, 1, 10900000.00, '2026-07-17 01:22:41');
+(19, 5, 22, 1, 89000.00, '2026-07-17 01:53:58'),
+(20, 5, 13, 1, 100000.00, '2026-07-17 02:26:43'),
+(21, 5, 6, 1, 28500000.00, '2026-07-17 04:30:05'),
+(22, 6, 17, 1, 105000.00, '2026-07-17 04:52:37');
 
 -- --------------------------------------------------------
 
@@ -211,7 +215,8 @@ INSERT INTO `orders` (`id`, `buyer_id`, `seller_id`, `total_amount`, `status`, `
 (11, 4, 3, 100000.00, 'cancelled', NULL, NULL, NULL, NULL, '2026-07-17 01:20:10', '2026-07-17 01:20:20', 'cod', 'pending', NULL, NULL),
 (12, 4, 3, 25000.00, 'accepted', NULL, NULL, NULL, NULL, '2026-07-17 01:20:40', '2026-07-17 01:35:41', 'cod', 'pending', NULL, NULL),
 (13, 4, 3, 16800000.00, 'accepted', NULL, NULL, NULL, NULL, '2026-07-17 01:22:07', '2026-07-17 01:27:22', 'cod', 'pending', NULL, NULL),
-(14, 4, 3, 8900000.00, 'completed', NULL, NULL, NULL, NULL, '2026-07-17 01:22:31', '2026-07-17 01:29:07', 'cod', 'pending', NULL, NULL);
+(14, 4, 3, 8900000.00, 'completed', NULL, NULL, NULL, NULL, '2026-07-17 01:22:31', '2026-07-17 01:29:07', 'cod', 'pending', NULL, NULL),
+(15, 4, 3, 10900000.00, 'pending', NULL, NULL, NULL, NULL, '2026-07-17 02:26:55', '2026-07-17 02:26:55', 'cod', 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -236,7 +241,8 @@ INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `price`
 (11, 11, 13, 1, 100000.00, '2026-07-17 01:20:10'),
 (12, 12, 16, 1, 25000.00, '2026-07-17 01:20:40'),
 (13, 13, 5, 1, 16800000.00, '2026-07-17 01:22:07'),
-(14, 14, 4, 1, 8900000.00, '2026-07-17 01:22:31');
+(14, 14, 4, 1, 8900000.00, '2026-07-17 01:22:31'),
+(15, 15, 2, 1, 10900000.00, '2026-07-17 02:26:55');
 
 -- --------------------------------------------------------
 
@@ -266,22 +272,30 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `image`, `condition_item`, `location`, `views`, `status`, `created_at`, `updated_at`) VALUES
 (1, 3, 1, 'iPhone 13 128GB', 'Máy đẹp 98%, pin 90%, đầy đủ phụ kiện', 12500000.00, 'uploads/iphone13.jpg', 'like_new', 'TP.HCM', 26, 'active', '2026-07-05 14:18:17', '2026-07-16 13:59:52'),
-(2, 3, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 10, 'active', '2026-07-05 14:18:17', '2026-07-17 01:22:40'),
+(2, 3, 2, 'Laptop Dell Inspiron 5515', 'Ryzen 5, RAM 16GB, SSD 512GB', 10900000.00, 'uploads/dell5515.jpg', 'good', 'Hà Nội', 10, 'pending', '2026-07-05 14:18:17', '2026-07-17 02:26:55'),
 (3, 3, 4, 'Canon EOS M50', 'Máy ảnh kèm lens kit', 9800000.00, 'uploads/canonm50.jpg', 'good', 'Đà Nẵng', 2, 'active', '2026-07-05 14:18:17', '2026-07-17 01:25:42'),
 (4, 3, 1, 'Samsung Galaxy S22', 'Máy nguyên zin, pin tốt', 8900000.00, 'uploads/s22.jpg', 'like_new', 'An giang', 4, 'sold', '2026-07-05 14:18:17', '2026-07-17 01:29:07'),
 (5, 3, 3, 'MacBook Air M1', 'RAM 8GB SSD 256GB', 16800000.00, 'uploads/mba_m1.jpg', 'like_new', 'Cần Thơ', 4, 'active', '2026-07-05 14:18:17', '2026-07-17 01:25:47'),
-(6, 3, 7, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 13:18:45'),
+(6, 3, 7, 'Xe máy Vision 2022', 'Xe chính chủ, ít đi', 28500000.00, 'uploads/vision2022.jpg', 'good', 'Đồng Nai', 3, 'active', '2026-07-05 14:18:17', '2026-07-17 04:30:04'),
 (7, 3, 8, 'Bàn học gỗ MDF', 'Kích thước 120x60cm', 900000.00, 'uploads/desk.jpg', 'good', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:05'),
 (8, 3, 8, 'Ghế Gaming DXRacer', 'Ghế còn mới 95%', 2500000.00, 'uploads/gamingchair.jpg', 'good', 'Bình Dương', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 12:24:50'),
 (9, 3, 8, 'Tủ lạnh Panasonic 255L', 'Hoạt động bình thường', 4200000.00, 'uploads/fridge.jpg', 'fair', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:25'),
 (10, 3, 8, 'Máy giặt LG Inverter', 'Giặt 9kg', 5200000.00, 'uploads/lgwasher.jpg', 'good', 'Hà Nội', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:37'),
 (11, 3, 3, 'iPad Air 4 Wifi', '64GB, ngoại hình đẹp', 9200000.00, 'uploads/ipadair4.jpg', 'like_new', 'Đà Nẵng', 2, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:43'),
 (12, 3, 10, 'AirPods Pro Gen 2', 'Full box, BH Apple', 4200000.00, 'uploads/airpods2.jpg', 'new', 'TP.HCM', 1, 'active', '2026-07-05 14:18:17', '2026-07-16 13:19:58'),
-(13, 3, 1, 'Điện thoại đồ chơi', 'đồ tốt, còn xài được', 100000.00, 'uploads/17834361531499.jpg', 'new', 'An giang', 30, 'active', '2026-07-07 14:55:53', '2026-07-17 01:20:20'),
+(13, 3, 1, 'Điện thoại đồ chơi', 'đồ tốt, còn xài được', 100000.00, 'uploads/17834361531499.jpg', 'new', 'An giang', 31, 'active', '2026-07-07 14:55:53', '2026-07-17 02:26:41'),
 (16, 3, 5, 'Ghế nhựa', '', 25000.00, 'uploads/17839464943621.jpg', 'new', 'An giang', 10, 'rejected', '2026-07-13 12:41:34', '2026-07-17 01:26:25'),
-(17, 3, 6, 'Set Quần, Áo Sơ Mi Và Áo Khoác Bé Trai', '', 105000.00, 'uploads/17842084441799.jpg', 'good', 'TP.HCM', 2, 'active', '2026-07-16 13:27:24', '2026-07-16 14:16:43'),
-(22, 3, 6, 'Đồ mùa đông', 'Do không thích', 89000.00, 'uploads/17842088866292.jpg', 'good', 'An giang', 0, 'active', '2026-07-16 13:34:46', '2026-07-17 01:25:05'),
-(23, 3, 6, 'Quần áo nữ, set áo thun xanh lá in hình cute', 'Do không vừa', 119000.00, 'uploads/17842095108335.jpg', 'like_new', 'An giang', 0, 'pending', '2026-07-16 13:45:10', '2026-07-16 13:45:10');
+(17, 3, 6, 'Set Quần, Áo Sơ Mi Và Áo Khoác Bé Trai', '', 105000.00, 'uploads/17842084441799.jpg', 'good', 'TP.HCM', 3, 'active', '2026-07-16 13:27:24', '2026-07-17 04:52:35'),
+(22, 3, 6, 'Đồ mùa đông', 'Do không thích', 89000.00, 'uploads/17842088866292.jpg', 'good', 'An giang', 1, 'active', '2026-07-16 13:34:46', '2026-07-17 01:53:49'),
+(23, 3, 6, 'Quần áo nữ, set áo thun xanh lá in hình cute', 'Do không vừa', 119000.00, 'uploads/17842095108335.jpg', 'like_new', 'An giang', 0, 'pending', '2026-07-16 13:45:10', '2026-07-16 13:45:10'),
+(24, 4, 5, 'Chảo inox', 'Đã bị tróc một lớp sơn', 45000.00, 'uploads/17842599335150.jpg', 'fair', 'TP.HCM', 0, 'pending', '2026-07-17 03:45:33', '2026-07-17 03:45:33'),
+(25, 4, 5, 'Bình siêu tốc 2000', 'Đi kèm dây sạc', 55000.00, 'uploads/17842607858240.jpg', 'new', 'Đồng Nai', 0, 'pending', '2026-07-17 03:59:45', '2026-07-17 03:59:45'),
+(26, 4, 5, 'Cối xây sinh tố 5000', 'kèm quà tặng', 43000.00, 'uploads/17842615427966.jpeg', 'like_new', 'Cần Thơ', 0, 'pending', '2026-07-17 04:12:22', '2026-07-17 04:12:22'),
+(27, 4, 5, 'Bếp thông minh', 'còn dùng được', 77000.00, 'uploads/17842621457866.jpg', 'fair', 'Đà Nẵng', 0, 'pending', '2026-07-17 04:22:25', '2026-07-17 04:22:25'),
+(28, 4, 5, 'Bếp gọn tiện nghi', '', 84000.00, 'uploads/17842622182240.jpg', 'like_new', 'Hà Nội', 0, 'pending', '2026-07-17 04:23:38', '2026-07-17 04:23:38'),
+(29, 4, 5, 'Robot hút bụi thông minh', 'Chuyển nhà nên pass lại, đã dùng được 2 năm', 75000.00, 'uploads/17842622652078.jpg', 'fair', 'Cần Thơ', 0, 'pending', '2026-07-17 04:24:25', '2026-07-17 04:24:25'),
+(30, 4, 5, 'Bình nước siêu tốc', '', 59000.00, 'uploads/17842634397929.jpg', 'new', 'TP.HCM', 0, 'pending', '2026-07-17 04:43:59', '2026-07-17 04:43:59'),
+(31, 4, 5, 'Xửng Hấp', '', 75000.00, 'uploads/17842637509315.jpg', 'good', 'An giang', 0, 'pending', '2026-07-17 04:49:10', '2026-07-17 04:49:10');
 
 -- --------------------------------------------------------
 
@@ -376,7 +390,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `phone`, `avatar`, `address`, `gender`, `dob`, `role`, `status`, `created_at`, `updated_at`) VALUES
 (2, 'huy', 'huy', 'leconghuy2005x1@gmail.com', '$2y$10$.Cfil.FMusLhQzmbuXkss.VN/Pbp8JsSlNGerWSqeEGqxPTBTQeaW', '0353166811', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-05 14:12:21', '2026-07-05 14:12:21'),
 (3, 'Administrator', 'admin', 'admin@gmail.com', '$2b$12$4xz4MM/KJvfFhRSyG04Sf.8gU46Kt0he8dHmCrSiwlXzck.6F2vtm', '0123456789', 'uploads/avatar/default.png', NULL, NULL, NULL, 'admin', 'active', '2026-07-07 04:14:47', '2026-07-07 04:14:47'),
-(4, 'hien', 'hien', 'huylc4327@gmail.com', '$2y$10$IJSWk2mJtKJzesAfckEM1egFKqJtMUcnbiwVFoIJsKpUZFgqAh0QG', '0353166812', 'uploads/avatar/default.png', NULL, 'Nam', '2005-12-02', 'user', 'active', '2026-07-09 14:25:57', '2026-07-09 14:25:57');
+(4, 'hien', 'hien', 'huylc4327@gmail.com', '$2y$10$IJSWk2mJtKJzesAfckEM1egFKqJtMUcnbiwVFoIJsKpUZFgqAh0QG', '0353166812', 'uploads/avatar/avatar_4_1784255164.jpg', '169 phường 25 đường d5 quận Bình Thạnh thành phố Hồ Chí Minh', 'Nam', '2005-12-02', 'user', 'active', '2026-07-09 14:25:57', '2026-07-17 02:26:09'),
+(5, 'Trung', 'Trung', 'leconghuy@gmail.com', '$2y$10$kc1bJXhdIovQSM/XScA6SueYuYKPovjkUA1PCLpLeboY/8zkx47zi', '0353165432', 'uploads/avatar/default.png', '179 phường 25 đường d5 quận Bình Thạnh thành phố Hồ Chí Minh', 'Nam', '2010-11-16', 'user', 'active', '2026-07-17 04:52:19', '2026-07-17 04:52:19');
 
 --
 -- Indexes for dumped tables
@@ -526,13 +541,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `cart_items_log`
@@ -580,19 +595,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `product_images`
@@ -622,7 +637,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
