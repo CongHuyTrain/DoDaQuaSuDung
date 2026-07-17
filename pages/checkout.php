@@ -250,9 +250,9 @@ $conn->close();
             <div class="momo-inner">
                 <h4>Quét mã MoMo</h4>
                 <img src="../assets/images/momo-qr.jpg" alt="Mã QR MoMo">
-                <p><b>Chủ tài khoản:</b> Nguyễn Văn Huy</p>
-                <p><b>SĐT:</b> 09xxxxxxxx</p>
-                <p style="color:#ef4444;">Sau khi chuyển khoản hãy bấm "Đặt hàng"</p>
+                <p><b>Chủ tài khoản:</b> Lê Công Huy</p>
+                <p><b>SĐT:</b> 03531668xx</p>
+                <p style="color:#ef4444;">Sau khi chuyển khoản, hãy bấm "Đặt hàng"</p>
             </div>
         </div>
     </div>
