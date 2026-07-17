@@ -27,5 +27,5 @@ WHERE id=?
 ");
 $stmt->bind_param("i",$id);
 $stmt->execute();
-header("Location: ../../pages/transactions.php");
+header("Location: ../../admin/orders.php");
 exit;

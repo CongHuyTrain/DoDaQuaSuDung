@@ -64,5 +64,5 @@ $conn->commit();
 }catch(Exception $e){
 $conn->rollback();
 }
-header("Location: ../../pages/transactions.php");
+header("Location: ../../admin/orders.php");
 exit;
