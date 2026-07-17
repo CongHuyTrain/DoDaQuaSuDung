@@ -71,13 +71,17 @@ if(!isset($_SESSION["user_id"])){
 .payment-item label{ cursor:pointer; font-size:0.92rem; font-weight:600; display:flex; align-items:center; gap:10px; }
 
 #momo-box{
-    display:none; margin-top:18px; padding:20px;
+    display:none; margin-top:18px; padding:28px 20px;
     border:2px dashed #f97316; border-radius:14px;
-    text-align:center; background:#fff7ed;
+    background:#fff7ed;
 }
-#momo-box img{ width:220px; border-radius:14px; }
-#momo-box h4{ margin:14px 0 6px; font-size:0.98rem; }
-#momo-box p{ margin:5px; font-size:0.88rem; color:#475569; }
+.momo-inner{
+    max-width:280px; margin:0 auto; text-align:center;
+}
+.momo-inner h4{ margin:0 0 16px; font-size:1rem; font-weight:800; }
+.momo-inner img{ width:100%; max-width:220px; border-radius:14px; }
+.momo-inner p{ margin:5px 0; font-size:0.88rem; color:#475569; }
+.momo-inner p:first-of-type{ margin-top:16px; }
 
 .summary-box{
     margin-top:20px; background:#fff; border:1px solid #e2e8f0;
@@ -153,21 +157,21 @@ if(!isset($_SESSION["user_id"])){
 
             <div class="payment-item">
                 <label>
-                    <input type="radio" name="payment" value="cod" checked>
+                    <input type="radio" name="payment" value="cod" checked autocomplete="off">
                     Thanh toán khi nhận hàng (COD)
                 </label>
             </div>
 
             <div class="payment-item">
                 <label>
-                    <input type="radio" name="payment" value="vnpay">
+                    <input type="radio" name="payment" value="vnpay" autocomplete="off">
                     VNPAY Sandbox
                 </label>
             </div>
 
             <div class="payment-item">
                 <label>
-                    <input type="radio" name="payment" value="momo">
+                    <input type="radio" name="payment" value="momo" autocomplete="off">
                     MoMo QR
                 </label>
             </div>
@@ -175,11 +179,13 @@ if(!isset($_SESSION["user_id"])){
         </div>
 
         <div id="momo-box">
-            <h4>Quét mã MoMo</h4>
-            <img src="../assets/images/momo-qr.jpg" alt="Mã QR MoMo">
-            <p><b>Chủ tài khoản:</b> Nguyễn Văn Huy</p>
-            <p><b>SĐT:</b> 09xxxxxxxx</p>
-            <p style="color:#ef4444;">Sau khi chuyển khoản hãy bấm "Đặt hàng"</p>
+            <div class="momo-inner">
+                <h4>Quét mã MoMo</h4>
+                <img src="../assets/images/momo-qr.jpg" alt="Mã QR MoMo">
+                <p><b>Chủ tài khoản:</b> Lê Công Huy</p>
+                <p><b>SĐT:</b> 035316xxxx</p>
+                <p style="color:#ef4444;">Sau khi chuyển khoản hãy bấm "Đặt hàng"</p>
+            </div>
         </div>
     </div>
 
@@ -208,6 +214,7 @@ if(!isset($_SESSION["user_id"])){
 <script>
 
 let selectedItems=[];
+let selectedPayment="cod";
 
 // Phí vận chuyển tạm tính cố định (dự án chưa có bảng tính phí ship thực tế)
 const SHIPPING_FEE=30000;
@@ -227,8 +234,26 @@ function togglePaymentOptions(){
     box.style.display = (box.style.display==="none") ? "block" : "none";
 }
 
+// Ép mặc định luôn là COD khi tải trang, tránh trường hợp trình duyệt
+// tự khôi phục lựa chọn radio cũ (bfcache / autofill) từ lần xem trước
+function resetPaymentToDefault(){
+
+    selectedPayment="cod";
+
+    document.querySelectorAll("input[name=payment]").forEach(r=>{
+        r.checked = (r.value==="cod");
+    });
+
+    document.getElementById("payment-selected-label").textContent=paymentLabels["cod"];
+    document.getElementById("momo-box").style.display="none";
+    document.getElementById("payment-options").style.display="none";
+
+}
+
 document.querySelectorAll("input[name=payment]").forEach(r=>{
     r.onchange=function(){
+
+        selectedPayment=this.value;
 
         document.getElementById("payment-selected-label").textContent=paymentLabels[this.value];
         document.getElementById("momo-box").style.display = (this.value==="momo") ? "block" : "none";
@@ -236,6 +261,8 @@ document.querySelectorAll("input[name=payment]").forEach(r=>{
 
     };
 });
+
+window.addEventListener("pageshow", resetPaymentToDefault);
 
 function loadCheckout(){
 
@@ -318,7 +345,7 @@ function renderCheckout(){
 
 async function placeOrder(){
 
-    const payment=document.querySelector("input[name=payment]:checked").value;
+    const payment=selectedPayment;
 
     if(payment==="vnpay"){
         // Lưu ý: vnpay_create.php hiện xử lý theo toàn bộ giỏ hàng,
@@ -366,6 +393,7 @@ async function placeOrder(){
 }
 
 loadCheckout();
+resetPaymentToDefault();
 
 </script>
 
