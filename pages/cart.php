@@ -17,7 +17,7 @@ if(!isset($_SESSION["user_id"])){
 <link rel="stylesheet" href="../assets/css/style.css">
 
 <style>
-/* ---- Trang giỏ hàng (dùng chung theme của assets/css/style.css) ---- */
+
 .cart-wrap{ padding:24px 0 60px; }
 .cart-title{ font-size:1.4rem; font-weight:800; margin:6px 0 20px; }
 
@@ -68,7 +68,7 @@ if(!isset($_SESSION["user_id"])){
 }
 .remove-btn:hover{ background:#fee2e2; }
 
-/* ---- Thanh dưới cùng kiểu Shopee: chọn tất cả / xóa / tổng tiền / mua hàng ---- */
+
 .cart-footer{
     margin-top:18px; background:#fff; border:1px solid #e2e8f0;
     border-radius:14px; padding:16px 20px;

@@ -1,7 +1,5 @@
 <?php
-// product-detail.php
-// File này chỉ để redirect sang product-detail.html
-// Giải quyết trường hợp link cũ vẫn trỏ vào .php
+
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 

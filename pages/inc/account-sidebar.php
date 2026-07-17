@@ -1,11 +1,5 @@
 <?php
-/**
- * Sidebar tài khoản dùng chung (kiểu Shopee).
- * Cần có sẵn trước khi include:
- *   $user          -> mảng thông tin user (từ bảng users)
- *   $unreadCount   -> số thông báo chưa đọc (int)
- *   $activePage    -> 'profile' | 'password' | 'notifications' | 'products' | 'orders' | 'cart'
- */
+
 $avatarRelPath = $user['avatar'] ?: 'uploads/avatar/default.png';
 $avatarFsPath  = __DIR__ . '/../../' . $avatarRelPath;
 $avatarSrc     = is_file($avatarFsPath) ? '../' . $avatarRelPath : null;

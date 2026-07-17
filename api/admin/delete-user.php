@@ -29,10 +29,7 @@ $stmt->bind_param("i", $id);
 if ($stmt->execute()) {
     redirectWithMessage("../../admin/users.php", "success", "Đã xóa người dùng #$id.");
 } elseif (isForeignKeyError($conn)) {
-    // products.user_id, orders.buyer_id, orders.seller_id không có ON DELETE CASCADE
-    // -> xóa cứng một user còn sản phẩm/đơn hàng sẽ để lại dữ liệu mồ côi
-    // (đây chính là nguyên nhân 12 sản phẩm cũ từng trỏ tới user_id=1 không tồn tại).
-    // Chặn hẳn thao tác này thay vì cho xóa và phá vỡ dữ liệu.
+    
     redirectWithMessage(
         "../../admin/users.php",
         "error",

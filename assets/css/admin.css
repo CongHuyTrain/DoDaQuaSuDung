@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
-/* ==========================================================================
-   Dùng chung bảng màu / biến với style.css (trang khách) để đồng bộ theme
-   ========================================================================== */
+
 :root{
     --ember:#E5572B;
     --ember-dark:#C2431A;
@@ -40,9 +38,7 @@ body{
 a{ text-decoration:none; color:inherit; }
 img{ max-width:100%; display:block; }
 
-/* ==========================================================================
-   LAYOUT
-   ========================================================================== */
+
 .admin-wrapper{
     display:flex;
     min-height:100vh;
@@ -91,9 +87,7 @@ img{ max-width:100%; display:block; }
     cursor:pointer;
 }
 
-/* ==========================================================================
-   SIDEBAR
-   ========================================================================== */
+
 .sidebar{
     width:var(--sidebar-w);
     min-height:100vh;
@@ -183,9 +177,7 @@ img{ max-width:100%; display:block; }
 }
 .sidebar-backsite:hover{ color:var(--white); }
 
-/* ==========================================================================
-   STAT CARDS
-   ========================================================================== */
+
 .stat-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
@@ -233,9 +225,7 @@ img{ max-width:100%; display:block; }
     letter-spacing:-.3px;
 }
 
-/* ==========================================================================
-   PANELS / TABLE CARD
-   ========================================================================== */
+
 .panel{
     background:var(--white);
     border-radius:var(--radius-lg);
@@ -300,9 +290,7 @@ table.admin-table{
     color:var(--charcoal);
 }
 
-/* ==========================================================================
-   BADGES (trạng thái) — dùng chung 1 hệ class, không phụ thuộc tên enum
-   ========================================================================== */
+
 .badge{
     display:inline-flex;
     align-items:center;
@@ -364,9 +352,7 @@ table.admin-table{
 
 .action-group{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
 
-/* ==========================================================================
-   FORMS (edit-product.php ...)
-   ========================================================================== */
+
 .form-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -431,9 +417,7 @@ textarea{ resize:vertical; min-height:120px; }
     grid-column:1/-1;
 }
 
-/* ==========================================================================
-   FILTER / SEARCH BAR
-   ========================================================================== */
+
 .filter-bar{
     display:flex;
     gap:10px;
@@ -446,9 +430,7 @@ textarea{ resize:vertical; min-height:120px; }
 }
 .filter-bar .btn{ flex-shrink:0; }
 
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
+
 @media (max-width: 1100px){
     .stat-grid{ grid-template-columns:repeat(2, 1fr); }
     .form-grid{ grid-template-columns:1fr; }

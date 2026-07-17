@@ -6,7 +6,7 @@
     <title>Chi tiết sản phẩm – Đồ Cũ VN</title>
     <link rel="stylesheet" href="assets/css/style.css?v=1783406030">
     <style>
-        /* Layout 3 cột */
+        
         .pd-wrap {
             display: grid;
             grid-template-columns: 1fr 1fr 320px;
@@ -14,7 +14,7 @@
             padding: 24px 0 60px;
             align-items: start;
         }
-        /* Gallery */
+        
         .pd-gallery { display: flex; flex-direction: column; gap: 10px; }
         .pd-main-img {
             width: 100%; aspect-ratio: 4/3; object-fit: cover;
@@ -122,14 +122,14 @@
             font-size: 0.82rem; color: #92400e; line-height: 1.6;
         }
 
-        /* Condition badge */
+        
         .pd-badge {
             display: inline-block; padding: 3px 12px;
             border-radius: 99px; font-size: 0.8rem; font-weight: 700;
             margin-bottom: 10px;
         }
 
-        /* Responsive */
+        
         @media (max-width: 900px) {
             .pd-wrap { grid-template-columns: 1fr 300px; }
             .pd-desc { grid-column: 1 / -1; }
@@ -170,7 +170,7 @@
 
 <div class="container">
 
-    <!-- Breadcrumb -->
+  
     <nav class="breadcrumb" id="bc" style="display:none;">
         <a href="index.html">Trang chủ</a> ›
         <a href="products.html">Sản phẩm</a> ›
@@ -178,38 +178,38 @@
         <span id="bc-title"></span>
     </nav>
 
-    <!-- Loading -->
+   
     <div id="el-loading" class="loading" style="padding:100px 0;">
         <div class="spinner"></div>
         <p>Đang tải sản phẩm...</p>
     </div>
 
-    <!-- Not found -->
+    
     <div id="el-notfound" style="display:none; text-align:center; padding:80px 0;">
         <div style="font-size:3rem;">😕</div>
         <p style="margin-top:12px; color:#64748b;">Sản phẩm không tồn tại hoặc đã bị ẩn.</p>
         <a href="products.html" class="btn btn-primary" style="margin-top:20px; display:inline-block;">← Quay lại</a>
     </div>
 
-    <!-- Nội dung chính -->
+    
     <div id="el-main" style="display:none;">
         <div class="pd-wrap">
 
-            <!-- CỘT 1: GALLERY -->
+            
             <div class="pd-gallery">
                 <img id="pd-img" class="pd-main-img" src="" alt=""
                     onerror="this.src='';this.style.background='#f1f5f9';this.alt='Không có ảnh'">
                 <div class="pd-thumbs" id="pd-thumbs"></div>
             </div>
 
-            <!-- CỘT 2: MÔ TẢ -->
+           
             <div class="pd-desc">
                 <div>
                     <span class="pd-badge" id="pd-badge"></span>
                     <h1 class="pd-title" id="pd-title"></h1>
                 </div>
 
-                <!-- Thông tin nhanh -->
+               
                 <div class="pd-box">
                     <div class="pd-box-head">📋 Thông tin sản phẩm</div>
                     <div class="pd-box-body">
@@ -231,7 +231,7 @@
                 </div>
             </div>
 
-            <!-- CỘT 3: SIDEBAR -->
+          
             <div class="pd-sidebar">
                 <div class="pd-price-box">
                     <div class="pd-price-label">Giá bán</div>
@@ -296,7 +296,7 @@ function goSearch() {
     if (q) location.href = `search.html?q=${encodeURIComponent(q)}`;
 }
 
-// Trạng thái đăng nhập (dựa trên session PHP thật)
+
 const authPromise = fetch('api/auth-check.php')
     .then(r => r.json())
     .then(data => {
@@ -341,13 +341,13 @@ if (!pid) {
             const p = data.data;
             document.title = p.title + ' – Đồ Cũ VN';
 
-            // Breadcrumb
+            
             document.getElementById('bc').style.display = 'flex';
             document.getElementById('bc-cat').textContent = p.category_name;
             document.getElementById('bc-cat').href = 'products.html?category_id=' + p.category_id;
             document.getElementById('bc-title').textContent = p.title;
 
-            // Gallery
+            
             imgs = (data.images && data.images.length) ? data.images : (p.image ? [p.image] : []);
             if (imgs.length) {
                 document.getElementById('pd-img').src = imgs[0];
@@ -360,14 +360,14 @@ if (!pid) {
                 document.getElementById('pd-img').style.background = '#f1f5f9';
             }
 
-            // Badge + tiêu đề
+            
             const cond = COND[p.condition_item] || { label: p.condition_item, cls: '' };
             const badge = document.getElementById('pd-badge');
             badge.textContent = cond.label;
             badge.className = 'pd-badge badge ' + cond.cls;
             document.getElementById('pd-title').textContent = p.title;
 
-            // Specs
+            
             document.getElementById('sp-condition').textContent = cond.label;
             document.getElementById('sp-category').textContent  = p.category_name;
             document.getElementById('sp-location').textContent  = p.location || 'Không xác định';
@@ -377,21 +377,21 @@ const tr = document.createElement("tr");
 tr.innerHTML = `<td>Lượt xem</td><td>${p.views ?? 0}</td>`;
 document.querySelector(".pd-specs").appendChild(tr);
 
-            // Mô tả
+            
             if (p.description) {
                 document.getElementById('pd-desc-text').textContent = p.description;
             } else {
                 document.getElementById('pd-desc-box').style.display = 'none';
             }
 
-            // Giá
+            
             document.getElementById('pd-price').textContent = p.price_formatted;
 
-            // Nút mua
+            
             const pdAction = document.getElementById('pd-action');
 
             if (p.status && p.status !== 'active') {
-                // Sản phẩm đã bán / đang chờ duyệt / đã ẩn -> không cho mua
+                
                 const statusMsg = p.status === 'sold'
                     ? '✅ Sản phẩm đã được bán'
                     : (p.status === 'pending' ? '⏳ Sản phẩm đang chờ duyệt' : '🚫 Sản phẩm không còn khả dụng');
@@ -409,7 +409,7 @@ document.querySelector(".pd-specs").appendChild(tr);
                         class="pd-btn-buy">🔑 Đăng nhập để mua</a>`;
             }
 
-            // Người bán
+           
             document.getElementById('pd-seller-name').textContent = p.seller_name || '';
             document.getElementById('pd-avatar').textContent = (p.seller_name || '?').charAt(0).toUpperCase();
             document.getElementById('pd-date2').textContent = fmtDate(p.created_at);
@@ -422,10 +422,10 @@ document.querySelector(".pd-specs").appendChild(tr);
                 document.getElementById('pd-email-row').style.display = 'flex';
             }
 
-            // Hiện nội dung
+           
             document.getElementById('el-main').style.display = 'block';
 
-            // Sản phẩm liên quan
+            
             if (data.related && data.related.length) {
                 document.getElementById('pd-related').style.display = 'block';
                 document.getElementById('pd-related-grid').innerHTML =

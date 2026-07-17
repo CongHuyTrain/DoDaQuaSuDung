@@ -28,8 +28,7 @@ if ($stmt->execute()) {
     }
     redirectWithMessage("../../admin/products.php", "success", "Đã xóa sản phẩm #$id.");
 } elseif (isForeignKeyError($conn)) {
-    // Cột order_details.product_id không có ON DELETE CASCADE/SET NULL,
-    // nên sản phẩm đã từng nằm trong một đơn hàng sẽ không thể xóa cứng.
+    
     redirectWithMessage(
         "../../admin/products.php",
         "error",

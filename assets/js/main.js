@@ -1,9 +1,3 @@
-// assets/js/main.js
-// Dùng cho các trang công khai (index.html, products.html, search.html...).
-// Hàm quan trọng nhất: loadProducts() - tải danh sách sản phẩm từ
-// api/products.php và vẽ phân trang có thể bấm được thật sự (trước đây hàm
-// này chưa hề được viết -> gọi loadProducts(...) trong index.html bị lỗi
-// "loadProducts is not defined", nút phân trang chỉ là HTML/JS trống).
 
 const CONDITION_LABEL = {
     new: "Mới",
@@ -12,7 +6,7 @@ const CONDITION_LABEL = {
     fair: "Khá"
 };
 
-/** Escape HTML để tránh lỗi hiển thị / XSS khi render tên sản phẩm, địa điểm... */
+
 function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str ?? "";

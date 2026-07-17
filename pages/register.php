@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Kiểm tra username hoặc email đã tồn tại
+    
     $stmt = $conn->prepare("
         SELECT id
         FROM users

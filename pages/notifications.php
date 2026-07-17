@@ -22,7 +22,7 @@ if (!$user) {
     exit;
 }
 
-// Đánh dấu tất cả đã đọc khi người dùng bấm nút
+
 if (isset($_GET['mark_all'])) {
     $mark = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ?");
     $mark->bind_param("i", $user_id);

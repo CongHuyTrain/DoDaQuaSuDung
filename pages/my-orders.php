@@ -7,12 +7,7 @@ if (!isset($_SESSION["user_id"])) {
 require_once "../config/db.php";
 $buyer_id = $_SESSION["user_id"];
 
-/*
-----------------------------------
-Lấy toàn bộ đơn hàng mà user hiện tại là NGƯỜI MUA
-kèm chi tiết từng sản phẩm trong đơn
-----------------------------------
-*/
+
 
 $sql = "
 SELECT
@@ -48,7 +43,7 @@ $stmt->bind_param("i", $buyer_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Gom các dòng theo order_id, vì 1 đơn có thể có nhiều sản phẩm
+
 $orders = [];
 
 while ($row = $result->fetch_assoc()) {

@@ -283,7 +283,7 @@ $conn->close();
 
 let selectedItems=[];
 
-// Thông tin nhận hàng lấy sẵn từ hồ sơ người dùng (không cho gõ lại ở trang thanh toán)
+
 const receiverInfo={
     name: <?= json_encode($profile["fullname"] ?? "") ?>,
     phone: <?= json_encode($profile["phone"] ?? "") ?>,
@@ -291,7 +291,7 @@ const receiverInfo={
 };
 let selectedPayment="cod";
 
-// Phí vận chuyển tạm tính cố định (dự án chưa có bảng tính phí ship thực tế)
+
 const SHIPPING_FEE=30000;
 
 const paymentLabels={
@@ -309,8 +309,7 @@ function togglePaymentOptions(){
     box.style.display = (box.style.display==="none") ? "block" : "none";
 }
 
-// Ép mặc định luôn là COD khi tải trang, tránh trường hợp trình duyệt
-// tự khôi phục lựa chọn radio cũ (bfcache / autofill) từ lần xem trước
+
 function resetPaymentToDefault(){
 
     selectedPayment="cod";
